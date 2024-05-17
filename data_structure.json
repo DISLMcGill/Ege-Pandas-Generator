@@ -1,0 +1,28 @@
+{
+    "entities": {
+        "team": {
+            "properties": { "National_name": { "type": "int", "min": 1, "max": 20 }, "Group": { "type": "string", "starting character": "a" }, "Number_player": { "type": "int", "min": 1, "max": 20 } },
+            "primary_key": "National_name"
+        },
+        "association": {
+            "properties": { "Association_name": { "type": "int", "min": 1, "max": 20 }, "National_name": { "type": "string", "starting character": "a" } },
+            "primary_key": "Association_name",
+            "foreign_keys": { "National_name": "team" }
+        },
+
+        "coach": {
+            "properties": { "Role": { "type": "int", "min": 1, "max": 20 }, "National_name": { "type": "string", "starting character": "a" } },
+            "primary_key": ["Role", "National_name"],
+            "foreign_keys": { "National_name": "team" }
+        },
+        "stadium": {
+            "properties": { "name": { "type": "int", "min": 1, "max": 20 }, "city": { "type": "string", "starting character": "a" }, "location": { "type": "string", "starting character": "a" } },
+            "primary_key": "name"
+        },
+        "match": {
+            "properties": { "ID": { "type": "int", "min": 1, "max": 64 }, "teamName1": { "type": "string", "min": 1, "max": 20 }, "teamName2": { "type": "string", "starting character": "a" }, "stadiumName": { "type": "string", "starting character": "a" }, "date": { "type": "date" }, "time": { "type": "time" }, "length": { "type": "integer", "min": 1, "max": 20 }, "round": { "type": "int", "min": 1, "max": 1 } },
+            "primary_key": "ID",
+            "foreign_keys": { "teamName1": "team", "teamName2": "team", "stadiumName": "stadium" }
+        }
+    }
+}

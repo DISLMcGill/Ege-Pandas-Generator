@@ -1,0 +1,579 @@
+Query, Valid, Execution Time, Cardinality 
+("df0 = customer[['CUSTKEY','C_NAME','NATIONKEY','ACCTBAL','C_COMMENT']].groupby(by=['CUSTKEY']).agg('max', numeric_only=True) \n",)(True,),(0.010553598403930664,),2
+("df1 = customer[['CUSTKEY','ADDRESS','PHONE','ACCTBAL','MKTSEGMENT','C_COMMENT']].agg('mean', numeric_only=True) \n",)(True,),(0.011907815933227539,),2
+("df2 = customer[['CUSTKEY','NATIONKEY','PHONE','ACCTBAL','MKTSEGMENT']].groupby(by=['PHONE']).agg('min', numeric_only=True) \n",)(True,),(0.009437322616577148,),2
+("df3 = customer[['C_NAME','ADDRESS','NATIONKEY','ACCTBAL','C_COMMENT']].groupby(by=['C_COMMENT']).agg('count') \n",)(True,),(0.008516550064086914,),2
+("df4 = customer[['ADDRESS','NATIONKEY','PHONE','ACCTBAL','C_COMMENT']].groupby(by=['PHONE']).agg('mean', numeric_only=True) \n",)(True,),(0.014654397964477539,),2
+("df5 = customer[['CUSTKEY','NATIONKEY','PHONE','ACCTBAL','MKTSEGMENT']].groupby(by=['PHONE']).agg('min', numeric_only=True) \n",)(True,),(0.01367950439453125,),2
+("df6 = customer[(customer['CUSTKEY'] > (21091)) | (customer['CUSTKEY'] != (11781))][['CUSTKEY','C_NAME','ADDRESS','PHONE','ACCTBAL','MKTSEGMENT']].agg('count') \n",)(True,),(0.030415058135986328,),6
+("df7 = customer[['CUSTKEY','C_NAME','NATIONKEY','PHONE','ACCTBAL','MKTSEGMENT','C_COMMENT']].groupby(by=['PHONE']).agg('mean', numeric_only=True) \n",)(True,),(0.006268978118896484,),2
+("df8 = customer[customer['NATIONKEY'] <= 15].groupby(by=['CUSTKEY']).agg('count') \n",)(True,),(0.01982855796813965,),1
+("df9 = customer[['CUSTKEY','C_NAME','ADDRESS','PHONE','ACCTBAL','C_COMMENT']].groupby(by=['C_NAME']).agg('min', numeric_only=True) \n",)(True,),(0.005929470062255859,),2
+("df10 = customer[customer['NATIONKEY'] <= 12].groupby(by=['PHONE']).agg('min', numeric_only=True) \n",)(True,),(0.009326457977294922,),1
+("df11 = customer[customer['CUSTKEY'] > 16346].groupby(by=['PHONE']).agg('min', numeric_only=True) \n",)(False,),(0.009511947631835938,),0
+("df12 = customer[customer['ACCTBAL'] == 1.1549092660598035].groupby(by=['ACCTBAL']).agg('mean', numeric_only=True) \n",)(False,),(0.00988316535949707,),0
+("df13 = customer[customer['CUSTKEY'] <= 5501].groupby(by=['ADDRESS']).agg('count') \n",)(True,),(0.008890628814697266,),2
+("df14 = customer[customer['NATIONKEY'] <= 24].agg('count')[['CUSTKEY','C_NAME','ADDRESS','NATIONKEY','PHONE','ACCTBAL']] \n",)(True,),(0.01976323127746582,),6
+("df15 = customer[customer['ACCTBAL'] >= 3134.897427846239].groupby(by=['CUSTKEY']).agg('mean', numeric_only=True) \n",)(True,),(0.02128434181213379,),1
+("df16 = customer[customer['ACCTBAL'] == 861.313479237336].groupby(by=['ADDRESS']).agg('min', numeric_only=True) \n",)(False,),(0.018823862075805664,),0
+("df17 = customer[['CUSTKEY','C_NAME','NATIONKEY','PHONE','ACCTBAL','MKTSEGMENT','C_COMMENT']].agg('max', numeric_only=True) \n",)(True,),(0.007760763168334961,),3
+("df18 = customer[(customer['CUSTKEY'] <= (5501)) | (customer['ACCTBAL'] > (4211.495082881883)) | (customer['CUSTKEY'] == (19369))].groupby(by=['ADDRESS']).agg('mean', numeric_only=True) \n",)(True,),(0.029874801635742188,),2
+("df19 = customer[['CUSTKEY','C_NAME','NATIONKEY','PHONE','ACCTBAL','C_COMMENT']].groupby(by=['ACCTBAL']).agg('min', numeric_only=True) \n",)(True,),(0.011890649795532227,),2
+("df20 = customer[(customer['NATIONKEY'] > (5)) | (customer['ACCTBAL'] <= (2600.124945585919)) | (customer['CUSTKEY'] != (11654))].groupby(by=['PHONE']).agg('mean', numeric_only=True) \n",)(True,),(0.04897451400756836,),2
+("df21 = customer[(customer['NATIONKEY'] == (20)) & (customer['ACCTBAL'] >= (2495.2795869934666)) | (customer['NATIONKEY'] == (5))].groupby(by=['ACCTBAL']).agg('mean', numeric_only=True) \n",)(False,),(0.03584933280944824,),0
+("df22 = customer[customer['NATIONKEY'] > 4].groupby(by=['C_NAME']).agg('count') \n",)(True,),(0.012051582336425781,),2
+("df23 = customer[(customer['NATIONKEY'] < (22)) | (customer['NATIONKEY'] != (3))].groupby(by=['CUSTKEY']).agg('mean', numeric_only=True) \n",)(True,),(0.03218865394592285,),2
+("df24 = customer[(customer['CUSTKEY'] >= (24172)) & (customer['CUSTKEY'] == (4264))].groupby(by=['CUSTKEY']).agg('mean', numeric_only=True) \n",)(False,),(0.019937515258789062,),0
+("df25 = customer[['CUSTKEY','C_NAME','ADDRESS','PHONE','ACCTBAL','C_COMMENT']].groupby(by=['C_NAME']).agg('count') \n",)(True,),(0.008533000946044922,),2
+("df26 = customer[['CUSTKEY','C_NAME','ADDRESS','PHONE','ACCTBAL','C_COMMENT']][(customer['CUSTKEY'] <= (20650)) | (customer['NATIONKEY'] == (20))] \n",)(True,),(0.036696672439575195,),2
+("df27 = customer[customer['NATIONKEY'] == 21].groupby(by=['CUSTKEY']).agg('min', numeric_only=True) \n",)(False,),(0.018238067626953125,),0
+("df28 = customer[['CUSTKEY','C_NAME','NATIONKEY','PHONE','ACCTBAL','C_COMMENT']].groupby(by=['PHONE']).agg('mean', numeric_only=True) \n",)(True,),(0.010842561721801758,),2
+("df29 = customer[['CUSTKEY','C_NAME','ADDRESS','PHONE','ACCTBAL','MKTSEGMENT']].groupby(by=['PHONE']).agg('max', numeric_only=True) \n",)(True,),(0.008298158645629883,),2
+("df30 = customer[customer['ACCTBAL'] < 173.93777138591008].groupby(by=['PHONE']).agg('mean', numeric_only=True) \n",)(True,),(0.015458106994628906,),1
+("df31 = customer[['CUSTKEY','C_NAME','ADDRESS','PHONE','ACCTBAL','C_COMMENT']][customer['NATIONKEY'] == 11].agg('mean', numeric_only=True) \n",)(True,),(0.027579069137573242,),2
+("df32 = customer[['CUSTKEY','C_NAME','NATIONKEY','PHONE','ACCTBAL','C_COMMENT']].groupby(by=['CUSTKEY']).agg('max', numeric_only=True) \n",)(True,),(0.013547182083129883,),2
+("df33 = customer[customer['NATIONKEY'] != 3].groupby(by=['PHONE']).agg('min', numeric_only=True) \n",)(True,),(0.021738052368164062,),2
+("df34 = customer[customer['NATIONKEY'] < 24][['CUSTKEY','C_NAME','ADDRESS','PHONE','ACCTBAL','MKTSEGMENT']] \n",)(True,),(0.024810075759887695,),2
+("df35 = customer[(customer['ACCTBAL'] > (4211.495082881883)) & (customer['NATIONKEY'] >= (10))].agg('min', numeric_only=True) \n",)(True,),(0.019448518753051758,),3
+("df36 = customer[['CUSTKEY','C_NAME','ADDRESS','NATIONKEY','ACCTBAL','C_COMMENT']].groupby(by=['CUSTKEY']).agg('max', numeric_only=True) \n",)(True,),(0.012669801712036133,),2
+("df37 = customer[['CUSTKEY','C_NAME','NATIONKEY','PHONE','ACCTBAL','C_COMMENT']].groupby(by=['CUSTKEY']).agg('min', numeric_only=True) \n",)(True,),(0.012256622314453125,),2
+("df38 = customer[customer['NATIONKEY'] == 20].agg('mean', numeric_only=True) \n",)(True,),(0.01876378059387207,),3
+("df39 = customer[['CUSTKEY','C_NAME','ADDRESS','NATIONKEY','ACCTBAL','C_COMMENT']].groupby(by=['ACCTBAL']).agg('max', numeric_only=True) \n",)(True,),(0.01385354995727539,),2
+("df40 = customer[['CUSTKEY','C_NAME','NATIONKEY','PHONE','ACCTBAL','C_COMMENT']].groupby(by=['PHONE']).agg('mean', numeric_only=True) \n",)(True,),(0.00742340087890625,),2
+("df41 = customer[['CUSTKEY','C_NAME','ADDRESS','PHONE','ACCTBAL','C_COMMENT']].groupby(by=['ACCTBAL']).agg('mean', numeric_only=True) \n",)(True,),(0.01419687271118164,),2
+("df42 = customer[customer['CUSTKEY'] == 14955].agg('count') \n",)(True,),(0.021047592163085938,),8
+("df43 = customer[customer['ACCTBAL'] < 6370.86474043319].groupby(by=['C_NAME']).agg('min', numeric_only=True) \n",)(True,),(0.01901865005493164,),1
+("df44 = customer[(customer['ACCTBAL'] == (3758.9203886554224)) & (customer['CUSTKEY'] < (10918))][['C_NAME','ADDRESS','NATIONKEY','PHONE','ACCTBAL','MKTSEGMENT','C_COMMENT']] \n",)(False,),(0.03702664375305176,),0
+("df45 = customer[['CUSTKEY','C_NAME','ADDRESS','NATIONKEY','ACCTBAL','C_COMMENT']].groupby(by=['CUSTKEY']).agg('mean', numeric_only=True) \n",)(True,),(0.011462688446044922,),2
+("df46 = customer[['CUSTKEY','C_NAME','NATIONKEY','PHONE','ACCTBAL','C_COMMENT']].groupby(by=['ACCTBAL']).agg('min', numeric_only=True) \n",)(True,),(0.010405778884887695,),2
+("df47 = customer[['CUSTKEY','C_NAME','NATIONKEY','PHONE','ACCTBAL','MKTSEGMENT','C_COMMENT']].groupby(by=['C_NAME']).agg('count') \n",)(True,),(0.010454416275024414,),2
+("df48 = customer[(customer['CUSTKEY'] == (17372)) | (customer['ACCTBAL'] < (7550.535377213937))].groupby(by=['CUSTKEY']).agg('min', numeric_only=True) \n",)(True,),(0.02402043342590332,),1
+("df49 = customer[customer['CUSTKEY'] <= 5501].groupby(by=['CUSTKEY']).agg('mean', numeric_only=True) \n",)(True,),(0.020874977111816406,),2
+("df50 = customer[customer['CUSTKEY'] > 15339].groupby(by=['CUSTKEY']).agg('min', numeric_only=True) \n",)(False,),(0.02351832389831543,),0
+("df51 = customer[customer['ACCTBAL'] >= 3134.897427846239].groupby(by=['CUSTKEY']).agg('min', numeric_only=True) \n",)(True,),(0.022621870040893555,),1
+("df52 = customer[['CUSTKEY','PHONE','C_COMMENT']].groupby(by=['C_COMMENT']).agg('max', numeric_only=True) \n",)(True,),(0.008411645889282227,),2
+("df53 = customer[['ACCTBAL','MKTSEGMENT','C_COMMENT']].groupby(by=['C_COMMENT']).agg('max', numeric_only=True) \n",)(True,),(0.008421182632446289,),2
+("df54 = customer[['C_NAME','NATIONKEY']].groupby(by=['C_NAME']).agg('min', numeric_only=True) \n",)(True,),(0.007430315017700195,),2
+("df55 = customer[['ADDRESS','NATIONKEY','C_COMMENT']].groupby(by=['ADDRESS']).agg('max', numeric_only=True) \n",)(True,),(0.009409189224243164,),2
+("df56 = customer[['CUSTKEY','PHONE','C_COMMENT']].agg('max', numeric_only=True) \n",)(True,),(0.010745048522949219,),1
+("df57 = customer[['CUSTKEY','MKTSEGMENT']].groupby(by=['MKTSEGMENT']).agg('mean', numeric_only=True) \n",)(True,),(0.009601593017578125,),2
+("df58 = customer[['ADDRESS','PHONE']].groupby(by=['ADDRESS']).agg('max', numeric_only=True) \n",)(False,),(0.007049083709716797,),2
+("df59 = customer[['ACCTBAL','MKTSEGMENT','C_COMMENT']].agg('min', numeric_only=True) \n",)(True,),(0.006634235382080078,),1
+("df60 = customer[['ADDRESS','PHONE']].groupby(by=['PHONE']).agg('min', numeric_only=True) \n",)(False,),(0.010537147521972656,),2
+("df61 = customer[['ADDRESS','PHONE']].groupby(by=['PHONE']).agg('min', numeric_only=True) \n",)(False,),(0.011870622634887695,),2
+("df62 = customer[['ACCTBAL','MKTSEGMENT','C_COMMENT']].groupby(by=['ACCTBAL']).agg('min', numeric_only=True) \n",)(False,),(0.012485980987548828,),2
+("df63 = customer[['ADDRESS','PHONE','C_COMMENT']].groupby(by=['ADDRESS']).agg('max', numeric_only=True) \n",)(False,),(0.013497591018676758,),2
+("df64 = customer[['C_NAME','NATIONKEY','PHONE']].groupby(by=['PHONE']).agg('count') \n",)(True,),(0.01135873794555664,),2
+("df65 = customer[['CUSTKEY','PHONE','C_COMMENT']].groupby(by=['PHONE']).agg('mean', numeric_only=True) \n",)(True,),(0.010605335235595703,),2
+("df66 = customer[['CUSTKEY','MKTSEGMENT']].groupby(by=['MKTSEGMENT']).agg('max', numeric_only=True) \n",)(True,),(0.013663291931152344,),2
+("df67 = customer[['ADDRESS','C_COMMENT']].agg('max', numeric_only=True) \n",)(False,),(0.006455898284912109,),0
+("df68 = customer[['ADDRESS','PHONE','C_COMMENT']].groupby(by=['ADDRESS']).agg('count') \n",)(True,),(0.010187625885009766,),2
+("df69 = customer[['ADDRESS','PHONE']].groupby(by=['PHONE']).agg('count') \n",)(True,),(0.006294727325439453,),2
+("df70 = customer[['CUSTKEY','PHONE','C_COMMENT']].groupby(by=['C_COMMENT']).agg('mean', numeric_only=True) \n",)(True,),(0.011364936828613281,),2
+("df71 = customer[['CUSTKEY','MKTSEGMENT']].groupby(by=['MKTSEGMENT']).agg('max', numeric_only=True) \n",)(True,),(0.013094425201416016,),2
+("df72 = customer[['MKTSEGMENT']].groupby(by=['MKTSEGMENT']).agg('max', numeric_only=True) \n",)(False,),(0.010657548904418945,),2
+("df73 = customer[['MKTSEGMENT']].groupby(by=['MKTSEGMENT']).agg('count') \n",)(False,),(0.0123748779296875,),2
+("df74 = customer[['NATIONKEY']].groupby(by=['NATIONKEY']).agg('mean', numeric_only=True) \n",)(False,),(0.012596607208251953,),2
+("df75 = customer[customer['CUSTKEY'] >= 22050].groupby(by=['PHONE']).agg('max', numeric_only=True) \n",)(False,),(0.023253679275512695,),0
+("df76 = customer[(customer['CUSTKEY'] <= (14141)) | (customer['CUSTKEY'] <= (21602)) | (customer['CUSTKEY'] != (5164))].groupby(by=['ACCTBAL']).agg('max', numeric_only=True) \n",)(True,),(0.05202960968017578,),2
+("df77 = customer[customer['ACCTBAL'] >= -543.324606506797].groupby(by=['C_NAME']).agg('mean', numeric_only=True) \n",)(True,),(0.01864790916442871,),2
+("df78 = customer[(customer['NATIONKEY'] >= (4)) | (customer['NATIONKEY'] != (17)) & (customer['NATIONKEY'] >= (11))][['PHONE']] \n",)(True,),(0.0208282470703125,),2
+("df79 = customer[(customer['ACCTBAL'] <= (8726.018894494384)) | (customer['NATIONKEY'] >= (11))].groupby(by=['MKTSEGMENT']).agg('min', numeric_only=True) \n",)(True,),(0.03771567344665527,),1
+("df80 = customer[customer['ACCTBAL'] > 8716.603906499942][['ADDRESS']] \n",)(True,),(0.016402244567871094,),1
+("df81 = customer[['C_NAME']].groupby(by=['C_NAME']).agg('min', numeric_only=True) \n",)(False,),(0.010792016983032227,),2
+("df82 = customer[(customer['NATIONKEY'] > (15)) & (customer['CUSTKEY'] >= (26326)) | (customer['CUSTKEY'] <= (14141)) & (customer['ACCTBAL'] != (7982.4262013646385))][['CUSTKEY']] \n",)(True,),(0.02791881561279297,),2
+("df83 = customer[(customer['NATIONKEY'] <= (11)) & (customer['CUSTKEY'] < (28873))].groupby(by=['C_NAME']).agg('min', numeric_only=True) \n",)(True,),(0.02547597885131836,),1
+("df84 = customer[customer['NATIONKEY'] >= 23].groupby(by=['NATIONKEY']).agg('max', numeric_only=True) \n",)(False,),(0.023027658462524414,),0
+("df85 = customer[(customer['ACCTBAL'] >= (2834.463893534687)) | (customer['CUSTKEY'] <= (9304))].groupby(by=['NATIONKEY']).agg('min', numeric_only=True) \n",)(True,),(0.033246755599975586,),2
+("df86 = customer[(customer['NATIONKEY'] >= (21)) | (customer['CUSTKEY'] <= (14141)) | (customer['ACCTBAL'] < (7021.2379214730745))].agg('max', numeric_only=True) \n",)(True,),(0.02350449562072754,),3
+("df87 = customer[customer['NATIONKEY'] <= 21].agg('min', numeric_only=True)[['ACCTBAL']] \n",)(True,),(0.025548696517944336,),1
+("df88 = customer[(customer['ACCTBAL'] >= (3514.9326003319884)) & (customer['CUSTKEY'] <= (21602)) | (customer['ACCTBAL'] != (2252.5242304237167))].groupby(by=['ACCTBAL']).agg('mean', numeric_only=True) \n",)(True,),(0.0479121208190918,),2
+("df89 = customer[(customer['CUSTKEY'] == (28265)) & (customer['ACCTBAL'] != (2252.5242304237167)) & (customer['ACCTBAL'] == (1467.9303071114105))].groupby(by=['NATIONKEY']).agg('mean', numeric_only=True) \n",)(False,),(0.03789258003234863,),0
+("df90 = customer[(customer['NATIONKEY'] <= (23)) | (customer['ACCTBAL'] == (6703.26356774405))].agg('max', numeric_only=True)[['ACCTBAL']] \n",)(True,),(0.03433704376220703,),1
+("df91 = customer[(customer['ACCTBAL'] <= (9277.915120511147)) | (customer['NATIONKEY'] <= (12)) & (customer['NATIONKEY'] == (23))].groupby(by=['PHONE']).agg('mean', numeric_only=True) \n",)(True,),(0.04477429389953613,),2
+("df92 = customer[(customer['ACCTBAL'] == (9191.779518310648)) & (customer['ACCTBAL'] > (636.5429867741134)) | (customer['NATIONKEY'] >= (6))].groupby(by=['PHONE']).agg('count') \n",)(True,),(0.022872209548950195,),2
+("df93 = customer[(customer['ACCTBAL'] <= (2853.6585791620887)) | (customer['CUSTKEY'] != (6330)) & (customer['ACCTBAL'] == (8644.031050181331))].groupby(by=['ACCTBAL']).agg('count') \n",)(True,),(0.0352177619934082,),1
+("df94 = customer[customer['CUSTKEY'] < 26235].groupby(by=['C_NAME']).agg('min', numeric_only=True) \n",)(True,),(0.01676154136657715,),2
+("df95 = customer[['MKTSEGMENT']].groupby(by=['MKTSEGMENT']).agg('min', numeric_only=True) \n",)(False,),(0.010324478149414062,),2
+("df96 = customer[customer['ACCTBAL'] != -866.9507549396294].groupby(by=['C_COMMENT']).agg('count') \n",)(True,),(0.011496543884277344,),2
+("df97 = customer[['C_COMMENT']].groupby(by=['C_COMMENT']).agg('count') \n",)(False,),(0.008652448654174805,),2
+("df98 = customer[['MKTSEGMENT']].groupby(by=['MKTSEGMENT']).agg('count') \n",)(False,),(0.006365060806274414,),2
+("df99 = customer[customer['CUSTKEY'] == 1748][['C_NAME']].agg('max', numeric_only=True) \n",)(False,),(0.01681828498840332,),0
+("df100 = customer[customer['NATIONKEY'] == 23][['NATIONKEY']].agg('count') \n",)(True,),(0.022043228149414062,),1
+("df101 = customer[customer['ACCTBAL'] >= 2834.463893534687].groupby(by=['MKTSEGMENT']).agg('count') \n",)(True,),(0.021613359451293945,),1
+("df102 = customer[(customer['CUSTKEY'] < (24183)) & (customer['NATIONKEY'] <= (1))].groupby(by=['PHONE']).agg('max', numeric_only=True) \n",)(False,),(0.021863698959350586,),0
+("df103 = customer[['ADDRESS']].groupby(by=['ADDRESS']).agg('min', numeric_only=True) \n",)(False,),(0.009393930435180664,),2
+("df104 = customer[customer['CUSTKEY'] == 1748].groupby(by=['C_NAME']).agg('count') \n",)(False,),(0.020917415618896484,),0
+("df105 = customer[(customer['ACCTBAL'] >= (5303.308942850799)) & (customer['NATIONKEY'] >= (6)) & (customer['NATIONKEY'] != (11)) & (customer['NATIONKEY'] != (12))].groupby(by=['PHONE']).agg('min', numeric_only=True) \n",)(True,),(0.04964184761047363,),1
+("df106 = customer[(customer['NATIONKEY'] == (21)) & (customer['NATIONKEY'] <= (6))].groupby(by=['PHONE']).agg('mean', numeric_only=True) \n",)(False,),(0.03459024429321289,),0
+("df107 = customer[(customer['NATIONKEY'] == (21)) & (customer['NATIONKEY'] > (4))][['CUSTKEY']] \n",)(False,),(0.02087569236755371,),0
+("df108 = customer[(customer['ACCTBAL'] < (597.7623520733409)) & (customer['NATIONKEY'] <= (6))].agg('count')[['NATIONKEY']] \n",)(True,),(0.02936863899230957,),1
+("df109 = customer[['MKTSEGMENT']].groupby(by=['MKTSEGMENT']).agg('mean', numeric_only=True) \n",)(False,),(0.0060787200927734375,),2
+("df110 = customer[(customer['ACCTBAL'] <= (3915.139444199537)) & (customer['NATIONKEY'] > (15))].groupby(by=['ACCTBAL']).agg('min', numeric_only=True) \n",)(True,),(0.016394615173339844,),1
+("df111 = customer[(customer['NATIONKEY'] != (8)) | (customer['NATIONKEY'] <= (11))].groupby(by=['C_COMMENT']).agg('max', numeric_only=True) \n",)(True,),(0.020491361618041992,),2
+("df112 = customer[customer['NATIONKEY'] >= 4].groupby(by=['C_NAME']).agg('max', numeric_only=True) \n",)(True,),(0.008319616317749023,),2
+("df113 = customer[customer['NATIONKEY'] <= 11].groupby(by=['PHONE']).agg('mean', numeric_only=True) \n",)(True,),(0.023448467254638672,),1
+("df114 = customer[(customer['NATIONKEY'] == (1)) | (customer['CUSTKEY'] <= (22805)) & (customer['ACCTBAL'] >= (5303.308942850799)) | (customer['CUSTKEY'] > (23185)) | (customer['NATIONKEY'] < (0)) | (customer['ACCTBAL'] == (8644.031050181331))].groupby(by=['ACCTBAL']).agg('mean', numeric_only=True) \n",)(True,),(0.08105611801147461,),1
+("df115 = customer[['MKTSEGMENT']][customer['CUSTKEY'] == 28265] \n",)(False,),(0.013910531997680664,),0
+("df116 = customer[(customer['CUSTKEY'] != (6330)) | (customer['CUSTKEY'] != (5164))].groupby(by=['C_NAME']).agg('mean', numeric_only=True) \n",)(True,),(0.014588356018066406,),2
+("df117 = lineitem[['ORDERKEY','LINENUMBER','LINESTATUS','SHIPMODE']].groupby(by=['SHIPMODE']).agg('count') \n",)(True,),(0.012970209121704102,),2
+("df118 = lineitem[['DISCOUNT','LINESTATUS','SHIPINSTRUCT','SHIPMODE']].groupby(by=['LINESTATUS']).agg('max', numeric_only=True) \n",)(True,),(0.009593725204467773,),2
+("df119 = lineitem[['ORDERKEY','PARTKEY','SUPPKEY','QUANTITY','L_COMMENT']].groupby(by=['QUANTITY']).agg('min', numeric_only=True) \n",)(True,),(0.010356664657592773,),2
+("df120 = lineitem[['EXTENDEDPRICE','TAX','LINESTATUS','SHIPINSTRUCT','SHIPMODE']].groupby(by=['TAX']).agg('count') \n",)(True,),(0.012792587280273438,),2
+("df121 = lineitem[['LINENUMBER','EXTENDEDPRICE','DISCOUNT','RETURNFLAG','LINESTATUS']].groupby(by=['EXTENDEDPRICE']).agg('mean', numeric_only=True) \n",)(True,),(0.009288311004638672,),2
+("df122 = lineitem[['ORDERKEY','PARTKEY','SUPPKEY','QUANTITY','L_COMMENT']].groupby(by=['ORDERKEY']).agg('max', numeric_only=True) \n",)(True,),(0.013424396514892578,),2
+("df123 = lineitem[['ORDERKEY','PARTKEY','QUANTITY','EXTENDEDPRICE','LINESTATUS']].groupby(by=['LINESTATUS']).agg('count') \n",)(True,),(0.0056765079498291016,),2
+("df124 = lineitem[['ORDERKEY','LINESTATUS','SHIPINSTRUCT']].groupby(by=['ORDERKEY']).agg('max', numeric_only=True) \n",)(False,),(0.011456727981567383,),2
+("df125 = lineitem[['LINENUMBER','EXTENDEDPRICE','DISCOUNT','RETURNFLAG','LINESTATUS']].groupby(by=['EXTENDEDPRICE']).agg('max', numeric_only=True) \n",)(True,),(0.007086515426635742,),2
+("df126 = lineitem[['LINENUMBER','EXTENDEDPRICE','DISCOUNT','RETURNFLAG','LINESTATUS']].groupby(by=['EXTENDEDPRICE']).agg('max', numeric_only=True) \n",)(True,),(0.011384248733520508,),2
+("df127 = lineitem[['LINENUMBER','EXTENDEDPRICE','DISCOUNT','RETURNFLAG','LINESTATUS']].groupby(by=['LINESTATUS']).agg('min', numeric_only=True) \n",)(True,),(0.0104827880859375,),2
+("df128 = lineitem[['LINENUMBER','QUANTITY','TAX','RETURNFLAG']].groupby(by=['LINENUMBER']).agg('max', numeric_only=True) \n",)(True,),(0.00829458236694336,),2
+("df129 = lineitem[['LINENUMBER','QUANTITY','RETURNFLAG','LINESTATUS','SHIPMODE']].groupby(by=['SHIPMODE']).agg('max', numeric_only=True) \n",)(True,),(0.009604692459106445,),2
+("df130 = lineitem[['LINENUMBER','QUANTITY','RETURNFLAG','LINESTATUS','SHIPMODE']].groupby(by=['SHIPMODE']).agg('max', numeric_only=True) \n",)(True,),(0.011609077453613281,),2
+("df131 = lineitem[['ORDERKEY','PARTKEY','SUPPKEY','QUANTITY','L_COMMENT']].agg('count') \n",)(True,),(0.006094455718994141,),5
+("df132 = lineitem[['LINENUMBER','QUANTITY','TAX','RETURNFLAG']].groupby(by=['LINENUMBER']).agg('mean', numeric_only=True) \n",)(True,),(0.013312339782714844,),2
+("df133 = lineitem[['PARTKEY','SUPPKEY','DISCOUNT','SHIPINSTRUCT','L_COMMENT']].agg('min', numeric_only=True) \n",)(True,),(0.006251811981201172,),3
+("df134 = lineitem[['PARTKEY','SUPPKEY','DISCOUNT','SHIPINSTRUCT','L_COMMENT']].groupby(by=['SUPPKEY']).agg('min', numeric_only=True) \n",)(True,),(0.010674715042114258,),2
+("df135 = lineitem[['EXTENDEDPRICE','DISCOUNT','RETURNFLAG','LINESTATUS','L_COMMENT']].groupby(by=['DISCOUNT']).agg('count') \n",)(True,),(0.010831832885742188,),2
+("df136 = lineitem[['EXTENDEDPRICE','DISCOUNT','SHIPMODE']].groupby(by=['SHIPMODE']).agg('max', numeric_only=True) \n",)(True,),(0.012779474258422852,),2
+("df137 = lineitem[['ORDERKEY','PARTKEY','SUPPKEY','RETURNFLAG','SHIPINSTRUCT']].groupby(by=['SHIPINSTRUCT']).agg('min', numeric_only=True) \n",)(True,),(0.010303020477294922,),2
+("df138 = lineitem[['EXTENDEDPRICE','DISCOUNT','SHIPMODE']].groupby(by=['SHIPMODE']).agg('count') \n",)(True,),(0.010758638381958008,),2
+("df139 = lineitem[['SUPPKEY','LINENUMBER','DISCOUNT','LINESTATUS']].groupby(by=['LINESTATUS']).agg('count') \n",)(True,),(0.04414963722229004,),2
+("df140 = lineitem[['QUANTITY','EXTENDEDPRICE','TAX','RETURNFLAG','L_COMMENT']].agg('mean', numeric_only=True) \n",)(True,),(0.004004478454589844,),3
+("df141 = lineitem[['ORDERKEY','SUPPKEY','RETURNFLAG','L_COMMENT']].groupby(by=['SUPPKEY']).agg('min', numeric_only=True) \n",)(True,),(0.011272907257080078,),2
+("df142 = lineitem[['SUPPKEY','LINENUMBER','DISCOUNT','LINESTATUS']].groupby(by=['LINESTATUS']).agg('max', numeric_only=True) \n",)(True,),(0.006908893585205078,),2
+("df143 = lineitem[['SUPPKEY','LINENUMBER','DISCOUNT','LINESTATUS']].groupby(by=['LINESTATUS']).agg('min', numeric_only=True) \n",)(True,),(0.006371498107910156,),2
+("df144 = lineitem[['PARTKEY','SUPPKEY','DISCOUNT','SHIPINSTRUCT','L_COMMENT']].agg('max', numeric_only=True) \n",)(True,),(0.005695343017578125,),3
+("df145 = lineitem[['ORDERKEY','SUPPKEY','RETURNFLAG','L_COMMENT']].groupby(by=['RETURNFLAG']).agg('count') \n",)(True,),(0.010350227355957031,),2
+("df146 = lineitem[['ORDERKEY','PARTKEY','SUPPKEY','RETURNFLAG','SHIPINSTRUCT']].groupby(by=['SUPPKEY']).agg('min', numeric_only=True) \n",)(True,),(0.015889883041381836,),2
+("df147 = lineitem[['ORDERKEY','SUPPKEY','RETURNFLAG','L_COMMENT']].groupby(by=['SUPPKEY']).agg('min', numeric_only=True) \n",)(True,),(0.009403467178344727,),2
+("df148 = lineitem[['ORDERKEY','PARTKEY','SUPPKEY','RETURNFLAG','SHIPINSTRUCT']].groupby(by=['SUPPKEY']).agg('min', numeric_only=True) \n",)(True,),(0.013533592224121094,),2
+("df149 = lineitem[['EXTENDEDPRICE','DISCOUNT','SHIPMODE']].groupby(by=['SHIPMODE']).agg('min', numeric_only=True) \n",)(True,),(0.011641979217529297,),2
+("df150 = lineitem[['ORDERKEY','PARTKEY','SUPPKEY','LINENUMBER','QUANTITY','DISCOUNT','TAX','RETURNFLAG','SHIPMODE','L_COMMENT']].groupby(by=['SHIPMODE']).agg('max', numeric_only=True) \n",)(True,),(0.0114898681640625,),2
+("df151 = lineitem[['ORDERKEY','SUPPKEY','LINENUMBER','QUANTITY','EXTENDEDPRICE','DISCOUNT','TAX','RETURNFLAG','LINESTATUS','SHIPMODE']].groupby(by=['QUANTITY']).agg('count') \n",)(True,),(0.013111114501953125,),2
+("df152 = lineitem[['ORDERKEY','PARTKEY','SUPPKEY','EXTENDEDPRICE','DISCOUNT','TAX','LINESTATUS','SHIPINSTRUCT','SHIPMODE']].groupby(by=['ORDERKEY']).agg('count') \n",)(True,),(0.0123443603515625,),2
+("df153 = lineitem[['ORDERKEY','SUPPKEY','LINENUMBER','QUANTITY','EXTENDEDPRICE','DISCOUNT','TAX','RETURNFLAG','LINESTATUS','SHIPMODE']].groupby(by=['ORDERKEY']).agg('count') \n",)(True,),(0.009356260299682617,),2
+("df154 = lineitem[['ORDERKEY','SUPPKEY','LINENUMBER','QUANTITY','DISCOUNT','TAX','RETURNFLAG','LINESTATUS','SHIPINSTRUCT','L_COMMENT']].groupby(by=['L_COMMENT']).agg('count') \n",)(True,),(0.011420726776123047,),2
+("df155 = lineitem[['ORDERKEY','SUPPKEY','LINENUMBER','QUANTITY','EXTENDEDPRICE','DISCOUNT','TAX','RETURNFLAG','LINESTATUS','SHIPMODE']].groupby(by=['ORDERKEY']).agg('max', numeric_only=True) \n",)(True,),(0.011356830596923828,),2
+("df156 = lineitem[['ORDERKEY','PARTKEY','QUANTITY','EXTENDEDPRICE','DISCOUNT','TAX','SHIPINSTRUCT','SHIPMODE','L_COMMENT']].groupby(by=['TAX']).agg('min', numeric_only=True) \n",)(True,),(0.014763355255126953,),2
+("df157 = lineitem[['ORDERKEY','PARTKEY','SUPPKEY','QUANTITY','EXTENDEDPRICE','RETURNFLAG','SHIPINSTRUCT','SHIPMODE','L_COMMENT']].groupby(by=['QUANTITY']).agg('min', numeric_only=True) \n",)(True,),(0.010352134704589844,),2
+("df158 = lineitem[['ORDERKEY','PARTKEY','SUPPKEY','EXTENDEDPRICE','DISCOUNT','TAX','LINESTATUS','SHIPINSTRUCT','SHIPMODE']].groupby(by=['SUPPKEY']).agg('min', numeric_only=True) \n",)(True,),(0.010719537734985352,),2
+("df159 = lineitem[['ORDERKEY','PARTKEY','QUANTITY','EXTENDEDPRICE','DISCOUNT','TAX','SHIPINSTRUCT','SHIPMODE','L_COMMENT']].groupby(by=['ORDERKEY']).agg('count') \n",)(True,),(0.01061391830444336,),2
+("df160 = lineitem[['ORDERKEY','PARTKEY','SUPPKEY','EXTENDEDPRICE','DISCOUNT','TAX','LINESTATUS','SHIPINSTRUCT','SHIPMODE']].groupby(by=['PARTKEY']).agg('min', numeric_only=True) \n",)(True,),(0.012445211410522461,),2
+("df161 = lineitem[['ORDERKEY','PARTKEY','SUPPKEY','LINENUMBER','QUANTITY','DISCOUNT','TAX','RETURNFLAG','SHIPMODE','L_COMMENT']].groupby(by=['ORDERKEY']).agg('min', numeric_only=True) \n",)(True,),(0.014847040176391602,),2
+("df162 = lineitem[['ORDERKEY','PARTKEY','SUPPKEY','LINENUMBER','QUANTITY','DISCOUNT','TAX','RETURNFLAG','SHIPMODE','L_COMMENT']].groupby(by=['ORDERKEY']).agg('min', numeric_only=True) \n",)(True,),(0.0070037841796875,),2
+("df163 = lineitem[['ORDERKEY','PARTKEY','SUPPKEY','LINENUMBER','EXTENDEDPRICE','TAX','RETURNFLAG','LINESTATUS','SHIPINSTRUCT','SHIPMODE']].groupby(by=['SHIPMODE']).agg('count') \n",)(True,),(0.012063980102539062,),2
+("df164 = lineitem[['ORDERKEY','PARTKEY','SUPPKEY','EXTENDEDPRICE','DISCOUNT','TAX','LINESTATUS','SHIPINSTRUCT','SHIPMODE']].agg('min', numeric_only=True) \n",)(True,),(0.010511398315429688,),6
+("df165 = lineitem[['ORDERKEY','PARTKEY','QUANTITY','EXTENDEDPRICE','DISCOUNT','RETURNFLAG','LINESTATUS','SHIPINSTRUCT','L_COMMENT']].groupby(by=['ORDERKEY']).agg('mean', numeric_only=True) \n",)(True,),(0.006002902984619141,),2
+("df166 = lineitem[['ORDERKEY','PARTKEY','QUANTITY','EXTENDEDPRICE','DISCOUNT','RETURNFLAG','LINESTATUS','SHIPINSTRUCT','L_COMMENT']].groupby(by=['SHIPINSTRUCT']).agg('max', numeric_only=True) \n",)(True,),(0.011451482772827148,),2
+("df167 = lineitem[['ORDERKEY','PARTKEY','SUPPKEY','QUANTITY','EXTENDEDPRICE','RETURNFLAG','SHIPINSTRUCT','SHIPMODE','L_COMMENT']].groupby(by=['PARTKEY']).agg('min', numeric_only=True) \n",)(True,),(0.013978719711303711,),2
+("df168 = lineitem[['ORDERKEY','PARTKEY','QUANTITY','EXTENDEDPRICE','DISCOUNT','RETURNFLAG','LINESTATUS','SHIPINSTRUCT','L_COMMENT']].groupby(by=['L_COMMENT']).agg('count') \n",)(True,),(0.011563777923583984,),2
+("df169 = lineitem[['ORDERKEY','SUPPKEY','LINENUMBER','QUANTITY','DISCOUNT','TAX','RETURNFLAG','LINESTATUS','SHIPINSTRUCT','L_COMMENT']].groupby(by=['RETURNFLAG']).agg('count') \n",)(True,),(0.01139378547668457,),2
+("df170 = lineitem[['ORDERKEY','SUPPKEY','LINENUMBER','QUANTITY','EXTENDEDPRICE','DISCOUNT','TAX','RETURNFLAG','LINESTATUS','SHIPMODE']].agg('max', numeric_only=True) \n",)(True,),(0.008445262908935547,),7
+("df171 = lineitem[['ORDERKEY','PARTKEY','SUPPKEY','LINENUMBER','QUANTITY','DISCOUNT','TAX','RETURNFLAG','SHIPMODE','L_COMMENT']].groupby(by=['SUPPKEY']).agg('mean', numeric_only=True) \n",)(True,),(0.007468223571777344,),2
+("df172 = lineitem[['ORDERKEY','PARTKEY','SUPPKEY','QUANTITY','EXTENDEDPRICE','RETURNFLAG','SHIPINSTRUCT','SHIPMODE','L_COMMENT']].groupby(by=['ORDERKEY']).agg('count') \n",)(True,),(0.00638127326965332,),2
+("df173 = lineitem[['ORDERKEY','PARTKEY','QUANTITY','EXTENDEDPRICE','DISCOUNT','TAX','SHIPINSTRUCT','SHIPMODE','L_COMMENT']].groupby(by=['ORDERKEY']).agg('max', numeric_only=True) \n",)(True,),(0.0074465274810791016,),2
+("df174 = lineitem[['ORDERKEY','PARTKEY','SUPPKEY','EXTENDEDPRICE','DISCOUNT','TAX','SHIPMODE']].groupby(by=['SHIPMODE']).agg('min', numeric_only=True) \n",)(True,),(0.013480424880981445,),2
+("df175 = lineitem[['ORDERKEY','SUPPKEY','LINENUMBER','QUANTITY','LINESTATUS','SHIPINSTRUCT','L_COMMENT']].groupby(by=['LINENUMBER']).agg('mean', numeric_only=True) \n",)(True,),(0.01045083999633789,),2
+("df176 = lineitem[['ORDERKEY','PARTKEY','SUPPKEY','EXTENDEDPRICE','DISCOUNT','TAX','SHIPMODE']].groupby(by=['PARTKEY']).agg('max', numeric_only=True) \n",)(True,),(0.014497756958007812,),2
+("df177 = lineitem[['PARTKEY','LINENUMBER','QUANTITY','EXTENDEDPRICE','TAX','SHIPINSTRUCT','L_COMMENT']].groupby(by=['PARTKEY']).agg('mean', numeric_only=True) \n",)(True,),(0.007831096649169922,),2
+("df178 = lineitem[['ORDERKEY','SUPPKEY','LINENUMBER','QUANTITY','LINESTATUS','SHIPINSTRUCT','L_COMMENT']].groupby(by=['SUPPKEY']).agg('count') \n",)(True,),(0.009764671325683594,),2
+("df179 = lineitem[['LINENUMBER','DISCOUNT','RETURNFLAG','LINESTATUS','SHIPINSTRUCT','SHIPMODE','L_COMMENT']].groupby(by=['SHIPINSTRUCT']).agg('max', numeric_only=True) \n",)(True,),(0.00926518440246582,),2
+("df180 = lineitem[['PARTKEY','SUPPKEY','QUANTITY','EXTENDEDPRICE','DISCOUNT']].groupby(by=['DISCOUNT']).agg('count') \n",)(True,),(0.006305694580078125,),2
+("df181 = lineitem[['ORDERKEY','LINENUMBER','QUANTITY','EXTENDEDPRICE','DISCOUNT','RETURNFLAG','L_COMMENT']].groupby(by=['EXTENDEDPRICE']).agg('max', numeric_only=True) \n",)(True,),(0.005463600158691406,),2
+("df182 = lineitem[['ORDERKEY','SUPPKEY','LINENUMBER','QUANTITY','LINESTATUS','SHIPINSTRUCT','L_COMMENT']].groupby(by=['ORDERKEY']).agg('max', numeric_only=True) \n",)(True,),(0.009940385818481445,),2
+("df183 = lineitem[['ORDERKEY','LINENUMBER','EXTENDEDPRICE','SHIPINSTRUCT','SHIPMODE','L_COMMENT']].groupby(by=['SHIPMODE']).agg('mean', numeric_only=True) \n",)(True,),(0.008832931518554688,),2
+("df184 = lineitem[['ORDERKEY','SUPPKEY','LINENUMBER','QUANTITY','LINESTATUS','SHIPINSTRUCT','L_COMMENT']].groupby(by=['SHIPINSTRUCT']).agg('mean', numeric_only=True) \n",)(True,),(0.01136469841003418,),2
+("df185 = lineitem[['ORDERKEY','SUPPKEY','LINENUMBER','QUANTITY','LINESTATUS','SHIPINSTRUCT','L_COMMENT']].groupby(by=['LINENUMBER']).agg('min', numeric_only=True) \n",)(True,),(0.005530357360839844,),2
+("df186 = nation[['NATIONKEY','N_NAME','REGIONKEY','N_COMMENT']].groupby(by=['NATIONKEY']).agg('min', numeric_only=True) \n",)(True,),(0.009688377380371094,),2
+("df187 = nation[['NATIONKEY','N_NAME','REGIONKEY','N_COMMENT']].groupby(by=['REGIONKEY']).agg('count') \n",)(True,),(0.011603593826293945,),2
+("df188 = nation[['N_NAME','N_COMMENT']].groupby(by=['N_NAME']).agg('min', numeric_only=True) \n",)(False,),(0.014447212219238281,),2
+("df189 = nation[['NATIONKEY','N_COMMENT']].groupby(by=['NATIONKEY']).agg('max', numeric_only=True) \n",)(False,),(0.013244867324829102,),2
+("df190 = nation[['N_NAME','N_COMMENT']].groupby(by=['N_NAME']).agg('max', numeric_only=True) \n",)(False,),(0.01354837417602539,),2
+("df191 = nation[['NATIONKEY','N_NAME','REGIONKEY']].groupby(by=['NATIONKEY']).agg('count') \n",)(True,),(0.013873815536499023,),2
+("df192 = nation[['N_NAME','N_COMMENT']].groupby(by=['N_NAME']).agg('mean', numeric_only=True) \n",)(False,),(0.013411521911621094,),2
+("df193 = nation[['NATIONKEY','N_NAME','N_COMMENT']].agg('count') \n",)(True,),(0.007894277572631836,),3
+("df194 = nation[['NATIONKEY','N_NAME','REGIONKEY']].groupby(by=['N_NAME']).agg('count') \n",)(True,),(0.010465621948242188,),2
+("df195 = nation[['N_NAME','REGIONKEY','N_COMMENT']].groupby(by=['REGIONKEY']).agg('count') \n",)(True,),(0.011381387710571289,),2
+("df196 = nation[['NATIONKEY','N_NAME','N_COMMENT']].groupby(by=['N_NAME']).agg('max', numeric_only=True) \n",)(True,),(0.01451563835144043,),2
+("df197 = nation[nation['REGIONKEY'] <= 2].agg('max', numeric_only=True) \n",)(True,),(0.017565011978149414,),2
+("df198 = nation[['NATIONKEY','N_NAME']][nation['NATIONKEY'] > 7] \n",)(True,),(0.02312445640563965,),2
+("df199 = nation[nation['REGIONKEY'] == 0].agg('count') \n",)(True,),(0.015391111373901367,),4
+("df200 = nation[['N_COMMENT']][nation['REGIONKEY'] >= 1] \n",)(True,),(0.012042999267578125,),2
+("df201 = nation[['NATIONKEY']].groupby(by=['NATIONKEY']).agg('min', numeric_only=True) \n",)(False,),(0.0096893310546875,),2
+("df202 = nation[['NATIONKEY','REGIONKEY','N_COMMENT']][nation['NATIONKEY'] >= 24].agg('count') \n",)(True,),(0.02460932731628418,),3
+("df203 = nation[(nation['NATIONKEY'] >= (20)) | (nation['REGIONKEY'] > (0))].groupby(by=['NATIONKEY']).agg('max', numeric_only=True) \n",)(True,),(0.03440403938293457,),2
+("df204 = nation[(nation['REGIONKEY'] == (2)) | (nation['REGIONKEY'] > (1))][['N_NAME','REGIONKEY']] \n",)(True,),(0.019915342330932617,),1
+("df205 = nation[(nation['NATIONKEY'] > (5)) | (nation['REGIONKEY'] != (4)) & (nation['NATIONKEY'] == (11))].groupby(by=['NATIONKEY']).agg('max', numeric_only=True) \n",)(True,),(0.039603233337402344,),2
+("df206 = nation[(nation['REGIONKEY'] > (2)) & (nation['REGIONKEY'] <= (4))].groupby(by=['N_COMMENT']).agg('count') \n",)(True,),(0.028379440307617188,),1
+("df207 = nation[['N_NAME','REGIONKEY','N_COMMENT']].groupby(by=['REGIONKEY']).agg('max', numeric_only=True) \n",)(False,),(0.010329961776733398,),2
+("df208 = nation[(nation['REGIONKEY'] > (1)) | (nation['NATIONKEY'] != (10)) & (nation['REGIONKEY'] > (1)) & (nation['NATIONKEY'] > (18))].groupby(by=['NATIONKEY']).agg('max', numeric_only=True) \n",)(True,),(0.0323028564453125,),1
+("df209 = nation[(nation['NATIONKEY'] >= (5)) & (nation['REGIONKEY'] >= (0)) | (nation['NATIONKEY'] == (11))].groupby(by=['NATIONKEY']).agg('count') \n",)(True,),(0.04152870178222656,),2
+("df210 = nation[(nation['NATIONKEY'] > (12)) & (nation['NATIONKEY'] > (11))].groupby(by=['REGIONKEY']).agg('min', numeric_only=True) \n",)(True,),(0.029419422149658203,),2
+("df211 = nation[(nation['NATIONKEY'] >= (4)) & (nation['NATIONKEY'] <= (11))].groupby(by=['N_COMMENT']).agg('max', numeric_only=True) \n",)(False,),(0.03585171699523926,),0
+("df212 = nation[(nation['REGIONKEY'] == (0)) | (nation['REGIONKEY'] > (3))].groupby(by=['NATIONKEY']).agg('min', numeric_only=True) \n",)(False,),(0.025503158569335938,),0
+("df213 = nation[(nation['REGIONKEY'] <= (1)) | (nation['NATIONKEY'] > (24))].agg('max', numeric_only=True) \n",)(True,),(0.033601999282836914,),2
+("df214 = nation[['NATIONKEY']].groupby(by=['NATIONKEY']).agg('mean', numeric_only=True) \n",)(False,),(0.00709986686706543,),2
+("df215 = nation[(nation['REGIONKEY'] != (4)) | (nation['NATIONKEY'] >= (14))].groupby(by=['N_COMMENT']).agg('min', numeric_only=True) \n",)(True,),(0.03103804588317871,),2
+("df216 = nation[['N_COMMENT']].groupby(by=['N_COMMENT']).agg('count') \n",)(False,),(0.010395526885986328,),2
+("df217 = nation[(nation['REGIONKEY'] == (1)) | (nation['NATIONKEY'] >= (17)) & (nation['NATIONKEY'] <= (20))].groupby(by=['REGIONKEY']).agg('min', numeric_only=True) \n",)(True,),(0.03912997245788574,),1
+("df218 = nation[['N_NAME','REGIONKEY','N_COMMENT']].groupby(by=['N_COMMENT']).agg('count') \n",)(True,),(0.0050067901611328125,),2
+("df219 = nation[['NATIONKEY','N_NAME']].groupby(by=['NATIONKEY']).agg('mean', numeric_only=True) \n",)(False,),(0.0059854984283447266,),2
+("df220 = nation[(nation['REGIONKEY'] != (0)) | (nation['REGIONKEY'] < (1)) & (nation['REGIONKEY'] == (3))][['REGIONKEY','N_COMMENT']].agg('count') \n",)(True,),(0.03682899475097656,),2
+("df221 = nation[['REGIONKEY','N_COMMENT']].groupby(by=['REGIONKEY']).agg('max', numeric_only=True) \n",)(False,),(0.007328510284423828,),2
+("df222 = nation[['NATIONKEY','N_NAME','REGIONKEY']].groupby(by=['N_NAME']).agg('max', numeric_only=True) \n",)(True,),(0.007565021514892578,),2
+("df223 = nation[(nation['REGIONKEY'] == (1)) | (nation['NATIONKEY'] < (9))].groupby(by=['N_COMMENT']).agg('min', numeric_only=True) \n",)(True,),(0.03116440773010254,),1
+("df224 = nation[(nation['NATIONKEY'] < (23)) & (nation['NATIONKEY'] >= (5))].groupby(by=['N_COMMENT']).agg('mean', numeric_only=True) \n",)(True,),(0.034667253494262695,),1
+("df225 = nation[nation['NATIONKEY'] < 9][['NATIONKEY','N_NAME','N_COMMENT']] \n",)(False,),(0.018793106079101562,),0
+("df226 = nation[nation['NATIONKEY'] >= 17].groupby(by=['N_COMMENT']).agg('mean', numeric_only=True) \n",)(True,),(0.02406477928161621,),1
+("df227 = nation[(nation['REGIONKEY'] >= (1)) | (nation['REGIONKEY'] >= (0))].groupby(by=['N_COMMENT']).agg('min', numeric_only=True) \n",)(True,),(0.03740358352661133,),2
+("df228 = nation[(nation['NATIONKEY'] <= (1)) & (nation['REGIONKEY'] != (2))][['NATIONKEY','REGIONKEY','N_COMMENT']] \n",)(False,),(0.0209200382232666,),0
+("df229 = nation[nation['REGIONKEY'] >= 1][['REGIONKEY']].agg('max', numeric_only=True) \n",)(True,),(0.010397195816040039,),1
+("df230 = nation[['NATIONKEY']].groupby(by=['NATIONKEY']).agg('min', numeric_only=True) \n",)(False,),(0.0050830841064453125,),2
+("df231 = nation[['N_COMMENT']].groupby(by=['N_COMMENT']).agg('min', numeric_only=True) \n",)(False,),(0.0049991607666015625,),2
+("df232 = nation[nation['NATIONKEY'] >= 5].groupby(by=['NATIONKEY']).agg('min', numeric_only=True) \n",)(True,),(0.019895315170288086,),2
+("df233 = nation[nation['REGIONKEY'] >= 1].groupby(by=['REGIONKEY']).agg('count') \n",)(True,),(0.01835012435913086,),2
+("df234 = nation[['NATIONKEY']].groupby(by=['NATIONKEY']).agg('count') \n",)(False,),(0.009458780288696289,),2
+("df235 = nation[nation['NATIONKEY'] == 2][['N_NAME','REGIONKEY','N_COMMENT']] \n",)(False,),(0.017933130264282227,),0
+("df236 = nation[nation['REGIONKEY'] >= 1].groupby(by=['N_COMMENT']).agg('min', numeric_only=True) \n",)(True,),(0.02980184555053711,),2
+("df237 = nation[['NATIONKEY','N_NAME','REGIONKEY']].groupby(by=['N_NAME']).agg('max', numeric_only=True) \n",)(True,),(0.0070879459381103516,),2
+("df238 = nation[(nation['NATIONKEY'] < (6)) & (nation['REGIONKEY'] != (0))][['N_COMMENT']] \n",)(False,),(0.03655266761779785,),0
+("df239 = nation[['NATIONKEY','REGIONKEY','N_COMMENT']].groupby(by=['NATIONKEY']).agg('min', numeric_only=True) \n",)(True,),(0.014437198638916016,),2
+("df240 = nation[['NATIONKEY','N_NAME']].groupby(by=['N_NAME']).agg('min', numeric_only=True) \n",)(True,),(0.014721155166625977,),2
+("df241 = nation[['NATIONKEY','N_NAME','REGIONKEY']].groupby(by=['NATIONKEY']).agg('max', numeric_only=True) \n",)(True,),(0.006371259689331055,),2
+("df242 = nation[(nation['REGIONKEY'] >= (3)) | (nation['REGIONKEY'] <= (4))][['NATIONKEY','N_NAME']] \n",)(True,),(0.026558399200439453,),2
+("df243 = nation[(nation['NATIONKEY'] >= (9)) & (nation['NATIONKEY'] > (18))].groupby(by=['NATIONKEY']).agg('max', numeric_only=True) \n",)(True,),(0.017534494400024414,),1
+("df244 = nation[nation['NATIONKEY'] >= 17].agg('min', numeric_only=True) \n",)(True,),(0.012774229049682617,),2
+("df245 = nation[['NATIONKEY','N_NAME','REGIONKEY']].groupby(by=['NATIONKEY']).agg('max', numeric_only=True) \n",)(True,),(0.0054585933685302734,),2
+("df246 = nation[['REGIONKEY','N_COMMENT']].groupby(by=['REGIONKEY']).agg('count') \n",)(True,),(0.004716157913208008,),2
+("df247 = nation[['NATIONKEY']].groupby(by=['NATIONKEY']).agg('count') \n",)(False,),(0.005979299545288086,),2
+("df248 = nation[nation['NATIONKEY'] < 23].groupby(by=['NATIONKEY']).agg('mean', numeric_only=True) \n",)(True,),(0.00959634780883789,),1
+("df249 = nation[(nation['REGIONKEY'] <= (4)) | (nation['NATIONKEY'] <= (12)) & (nation['REGIONKEY'] <= (4))].groupby(by=['REGIONKEY']).agg('mean', numeric_only=True) \n",)(True,),(0.03909873962402344,),2
+("df250 = nation[nation['NATIONKEY'] < 2].groupby(by=['REGIONKEY']).agg('min', numeric_only=True) \n",)(False,),(0.010338544845581055,),0
+("df251 = orders[['ORDERKEY','ORDERPRIORITY','CLERK']].agg('max', numeric_only=True) \n",)(True,),(0.005097389221191406,),1
+("df252 = orders[['ORDERSTATUS','CLERK']].groupby(by=['ORDERSTATUS']).agg('max', numeric_only=True) \n",)(False,),(0.004415273666381836,),2
+("df253 = orders[['ORDERSTATUS','CLERK','O_COMMENT']].groupby(by=['O_COMMENT']).agg('min', numeric_only=True) \n",)(False,),(0.012312650680541992,),2
+("df254 = orders[['ORDERSTATUS','CLERK','O_COMMENT']].groupby(by=['CLERK']).agg('count') \n",)(True,),(0.01230311393737793,),2
+("df255 = orders[['CUSTKEY','ORDERSTATUS','TOTALPRICE']].agg('min', numeric_only=True) \n",)(True,),(0.010504722595214844,),2
+("df256 = orders[['CUSTKEY','ORDERSTATUS','TOTALPRICE']].groupby(by=['ORDERSTATUS']).agg('count') \n",)(True,),(0.011496782302856445,),2
+("df257 = orders[['CUSTKEY','ORDERSTATUS','TOTALPRICE']].agg('mean', numeric_only=True) \n",)(True,),(0.013367176055908203,),2
+("df258 = orders[['ORDERSTATUS','CLERK']].groupby(by=['CLERK']).agg('max', numeric_only=True) \n",)(False,),(0.013208389282226562,),2
+("df259 = orders[['ORDERSTATUS','CLERK']].groupby(by=['ORDERSTATUS']).agg('mean', numeric_only=True) \n",)(False,),(0.01156306266784668,),2
+("df260 = orders[['CLERK','O_COMMENT']].groupby(by=['O_COMMENT']).agg('min', numeric_only=True) \n",)(False,),(0.012382984161376953,),2
+("df261 = orders[['CLERK','O_COMMENT']].groupby(by=['O_COMMENT']).agg('max', numeric_only=True) \n",)(False,),(0.013290882110595703,),2
+("df262 = orders[['CUSTKEY','ORDERSTATUS','TOTALPRICE']].groupby(by=['TOTALPRICE']).agg('count') \n",)(True,),(0.010725021362304688,),2
+("df263 = orders[['CLERK','O_COMMENT']].groupby(by=['CLERK']).agg('max', numeric_only=True) \n",)(False,),(0.007336854934692383,),2
+("df264 = orders[['CLERK','O_COMMENT']].groupby(by=['O_COMMENT']).agg('mean', numeric_only=True) \n",)(False,),(0.012616157531738281,),2
+("df265 = orders[['ORDERSTATUS','CLERK','O_COMMENT']].groupby(by=['CLERK']).agg('mean', numeric_only=True) \n",)(False,),(0.010162353515625,),2
+("df266 = orders[['ORDERKEY','ORDERPRIORITY','CLERK']].groupby(by=['ORDERKEY']).agg('mean', numeric_only=True) \n",)(False,),(0.009580373764038086,),2
+("df267 = orders[['TOTALPRICE','ORDERPRIORITY','CLERK']].groupby(by=['CLERK']).agg('min', numeric_only=True) \n",)(True,),(0.010172843933105469,),2
+("df268 = orders[['ORDERKEY','CUSTKEY','ORDERSTATUS','TOTALPRICE','ORDERPRIORITY','CLERK','SHIPPRIORITY','O_COMMENT']].groupby(by=['CUSTKEY']).agg('max', numeric_only=True) \n",)(True,),(0.011373758316040039,),2
+("df269 = orders[['ORDERKEY','CUSTKEY','ORDERSTATUS','TOTALPRICE','ORDERPRIORITY','CLERK','SHIPPRIORITY','O_COMMENT']].groupby(by=['TOTALPRICE']).agg('max', numeric_only=True) \n",)(True,),(0.011807918548583984,),2
+("df270 = orders[['ORDERKEY','CUSTKEY','ORDERSTATUS','TOTALPRICE','ORDERPRIORITY','CLERK','SHIPPRIORITY','O_COMMENT']].agg('min', numeric_only=True) \n",)(True,),(0.008600473403930664,),4
+("df271 = orders[['ORDERKEY','CUSTKEY','ORDERSTATUS','TOTALPRICE','ORDERPRIORITY','CLERK','SHIPPRIORITY','O_COMMENT']].groupby(by=['CUSTKEY']).agg('max', numeric_only=True) \n",)(True,),(0.009898185729980469,),2
+("df272 = orders[['ORDERKEY','CUSTKEY','ORDERSTATUS','TOTALPRICE','ORDERPRIORITY','CLERK','SHIPPRIORITY','O_COMMENT']].groupby(by=['SHIPPRIORITY']).agg('max', numeric_only=True) \n",)(True,),(0.018340110778808594,),1
+("df273 = orders[['ORDERKEY','CUSTKEY','ORDERPRIORITY','O_COMMENT']].groupby(by=['CUSTKEY']).agg('mean', numeric_only=True) \n",)(True,),(0.005260467529296875,),2
+("df274 = orders[orders['TOTALPRICE'] != 82848.26144453828].groupby(by=['CLERK']).agg('mean', numeric_only=True) \n",)(True,),(0.01626443862915039,),2
+("df275 = orders[['CUSTKEY','ORDERSTATUS','ORDERPRIORITY','CLERK','SHIPPRIORITY','O_COMMENT']][(orders['SHIPPRIORITY'] >= (0)) & (orders['TOTALPRICE'] != (23369.403718073212)) & (orders['SHIPPRIORITY'] >= (0)) | (orders['SHIPPRIORITY'] < (0))] \n",)(True,),(0.0399777889251709,),2
+("df276 = orders[(orders['TOTALPRICE'] == (59114.83731104354)) & (orders['SHIPPRIORITY'] != (0))].groupby(by=['SHIPPRIORITY']).agg('count') \n",)(False,),(0.02087235450744629,),0
+("df277 = orders[(orders['TOTALPRICE'] == (158027.80661478103)) | (orders['CUSTKEY'] >= (6017))].groupby(by=['ORDERSTATUS']).agg('min', numeric_only=True) \n",)(True,),(0.029163837432861328,),2
+("df278 = orders[(orders['ORDERKEY'] < (835810)) & (orders['CUSTKEY'] < (1824)) | (orders['CUSTKEY'] < (16570)) & (orders['CUSTKEY'] <= (3135))][['CUSTKEY','ORDERSTATUS','TOTALPRICE','ORDERPRIORITY','CLERK','O_COMMENT']] \n",)(False,),(0.03246927261352539,),0
+("df279 = orders[(orders['TOTALPRICE'] == (128744.01739973984)) & (orders['ORDERKEY'] < (793306))][['ORDERSTATUS','ORDERPRIORITY','SHIPPRIORITY','O_COMMENT']] \n",)(False,),(0.01391744613647461,),0
+("df280 = orders[orders['CUSTKEY'] == 24910].groupby(by=['ORDERSTATUS']).agg('count') \n",)(False,),(0.009666204452514648,),0
+("df281 = orders[orders['SHIPPRIORITY'] <= 0].groupby(by=['CLERK']).agg('min', numeric_only=True) \n",)(True,),(0.012335062026977539,),2
+("df282 = orders[(orders['ORDERKEY'] >= (908543)) | (orders['ORDERKEY'] > (434745))].groupby(by=['SHIPPRIORITY']).agg('count') \n",)(True,),(0.014978408813476562,),1
+("df283 = orders[(orders['CUSTKEY'] != (6224)) | (orders['SHIPPRIORITY'] == (0)) | (orders['CUSTKEY'] == (6086)) | (orders['SHIPPRIORITY'] == (0))][['ORDERKEY','ORDERSTATUS','ORDERPRIORITY','SHIPPRIORITY']].agg('mean', numeric_only=True) \n",)(True,),(0.028067588806152344,),2
+("df284 = orders[(orders['TOTALPRICE'] == (373077.1375931858)) & (orders['ORDERKEY'] < (723257)) | (orders['CUSTKEY'] > (984)) | (orders['SHIPPRIORITY'] != (0)) | (orders['ORDERKEY'] != (328273))].groupby(by=['SHIPPRIORITY']).agg('mean', numeric_only=True) \n",)(True,),(0.028421640396118164,),1
+("df285 = orders[['ORDERKEY','CUSTKEY','SHIPPRIORITY','O_COMMENT']].agg('min', numeric_only=True) \n",)(True,),(0.005377769470214844,),3
+("df286 = orders[(orders['SHIPPRIORITY'] <= (0)) | (orders['SHIPPRIORITY'] != (0)) | (orders['SHIPPRIORITY'] < (0)) | (orders['SHIPPRIORITY'] == (0))].groupby(by=['SHIPPRIORITY']).agg('mean', numeric_only=True) \n",)(True,),(0.03586220741271973,),1
+("df287 = orders[(orders['SHIPPRIORITY'] != (0)) | (orders['CUSTKEY'] >= (22294))][['ORDERKEY','TOTALPRICE','ORDERPRIORITY','O_COMMENT']] \n",)(True,),(0.030505895614624023,),1
+("df288 = orders[['ORDERSTATUS','ORDERPRIORITY','SHIPPRIORITY','O_COMMENT']].groupby(by=['SHIPPRIORITY']).agg('min', numeric_only=True) \n",)(False,),(0.00947117805480957,),1
+("df289 = orders[(orders['ORDERKEY'] >= (626901)) | (orders['ORDERKEY'] != (358505)) | (orders['TOTALPRICE'] >= (300216.93522537965))].groupby(by=['CLERK']).agg('min', numeric_only=True) \n",)(True,),(0.04104876518249512,),2
+("df290 = orders[['CUSTKEY','ORDERSTATUS','ORDERPRIORITY','CLERK','SHIPPRIORITY','O_COMMENT']].groupby(by=['CLERK']).agg('count') \n",)(True,),(0.013477563858032227,),2
+("df291 = orders[(orders['TOTALPRICE'] <= (126326.03769489226)) | (orders['CUSTKEY'] >= (21229))].groupby(by=['ORDERKEY']).agg('min', numeric_only=True) \n",)(True,),(0.023626327514648438,),2
+("df292 = orders[(orders['TOTALPRICE'] == (128744.01739973984)) | (orders['SHIPPRIORITY'] > (0))].groupby(by=['CLERK']).agg('count') \n",)(False,),(0.028567075729370117,),0
+("df293 = orders[(orders['ORDERKEY'] <= (163361)) | (orders['TOTALPRICE'] != (23369.403718073212)) | (orders['SHIPPRIORITY'] > (0))].groupby(by=['SHIPPRIORITY']).agg('mean', numeric_only=True) \n",)(True,),(0.05104804039001465,),1
+("df294 = orders[orders['CUSTKEY'] > 24038].groupby(by=['CLERK']).agg('min', numeric_only=True) \n",)(True,),(0.018963098526000977,),1
+("df295 = orders[['CUSTKEY','ORDERSTATUS','ORDERPRIORITY','CLERK','SHIPPRIORITY','O_COMMENT']].groupby(by=['SHIPPRIORITY']).agg('min', numeric_only=True) \n",)(True,),(0.012078523635864258,),1
+("df296 = orders[orders['ORDERKEY'] <= 326442][['ORDERKEY','ORDERSTATUS','ORDERPRIORITY','SHIPPRIORITY']] \n",)(True,),(0.020760536193847656,),1
+("df297 = orders[['ORDERSTATUS','ORDERPRIORITY','SHIPPRIORITY','O_COMMENT']].groupby(by=['ORDERSTATUS']).agg('min', numeric_only=True) \n",)(True,),(0.009871959686279297,),2
+("df298 = orders[(orders['CUSTKEY'] <= (5925)) & (orders['ORDERKEY'] >= (1042042)) | (orders['SHIPPRIORITY'] >= (0))].groupby(by=['ORDERSTATUS']).agg('max', numeric_only=True) \n",)(True,),(0.04154348373413086,),2
+("df299 = orders[['ORDERSTATUS','ORDERPRIORITY','SHIPPRIORITY','O_COMMENT']].groupby(by=['SHIPPRIORITY']).agg('min', numeric_only=True) \n",)(False,),(0.012524604797363281,),1
+("df300 = orders[(orders['CUSTKEY'] != (23707)) | (orders['ORDERKEY'] <= (681216)) | (orders['CUSTKEY'] <= (3756)) | (orders['SHIPPRIORITY'] != (0))].agg('count') \n",)(True,),(0.041192054748535156,),8
+("df301 = orders[orders['SHIPPRIORITY'] != 0].groupby(by=['ORDERPRIORITY']).agg('min', numeric_only=True) \n",)(False,),(0.013844728469848633,),0
+("df302 = orders[['CUSTKEY','ORDERSTATUS','ORDERPRIORITY','CLERK','SHIPPRIORITY','O_COMMENT']].agg('mean', numeric_only=True) \n",)(True,),(0.009707927703857422,),2
+("df303 = orders[(orders['TOTALPRICE'] < (124147.23809142548)) | (orders['TOTALPRICE'] != (338288.1805902726)) | (orders['ORDERKEY'] < (793306))].groupby(by=['ORDERSTATUS']).agg('min', numeric_only=True) \n",)(True,),(0.049407005310058594,),2
+("df304 = orders[orders['TOTALPRICE'] > 358925.1984038798].groupby(by=['CLERK']).agg('count') \n",)(False,),(0.021504640579223633,),0
+("df305 = orders[orders['ORDERKEY'] != 22293][['CUSTKEY','ORDERSTATUS','CLERK','O_COMMENT']].agg('min', numeric_only=True) \n",)(True,),(0.02515101432800293,),1
+("df306 = orders[(orders['TOTALPRICE'] < (120439.08473106928)) | (orders['TOTALPRICE'] == (78812.91742051761))].groupby(by=['SHIPPRIORITY']).agg('mean', numeric_only=True) \n",)(True,),(0.01880645751953125,),1
+("df307 = orders[(orders['ORDERKEY'] == (841459)) | (orders['CUSTKEY'] <= (20292)) | (orders['SHIPPRIORITY'] == (0))][['ORDERSTATUS','ORDERPRIORITY','SHIPPRIORITY','O_COMMENT']].agg('min', numeric_only=True) \n",)(True,),(0.025049448013305664,),1
+("df308 = orders[['ORDERSTATUS','TOTALPRICE','ORDERPRIORITY','O_COMMENT']][orders['SHIPPRIORITY'] <= 0].agg('min', numeric_only=True) \n",)(True,),(0.009494304656982422,),1
+("df309 = orders[(orders['CUSTKEY'] != (23093)) | (orders['SHIPPRIORITY'] == (0)) & (orders['TOTALPRICE'] != (207771.9761644392)) | (orders['SHIPPRIORITY'] > (0)) & (orders['TOTALPRICE'] != (112961.70765337691))].groupby(by=['ORDERSTATUS']).agg('count') \n",)(True,),(0.07016277313232422,),2
+("df310 = orders[(orders['SHIPPRIORITY'] != (0)) | (orders['SHIPPRIORITY'] < (0)) & (orders['ORDERKEY'] <= (326442)) | (orders['CUSTKEY'] < (19790))].groupby(by=['CUSTKEY']).agg('mean', numeric_only=True) \n",)(True,),(0.04669928550720215,),1
+("df311 = orders[['CUSTKEY','ORDERSTATUS','TOTALPRICE','ORDERPRIORITY','CLERK','O_COMMENT']][(orders['CUSTKEY'] <= (5032)) | (orders['SHIPPRIORITY'] >= (0)) | (orders['CUSTKEY'] == (16992)) & (orders['SHIPPRIORITY'] == (0)) | (orders['SHIPPRIORITY'] >= (0))] \n",)(True,),(0.03703904151916504,),2
+("df312 = orders[['ORDERKEY','CUSTKEY','ORDERPRIORITY','O_COMMENT']].groupby(by=['CUSTKEY']).agg('mean', numeric_only=True) \n",)(True,),(0.011468648910522461,),2
+("df313 = orders[['ORDERSTATUS','TOTALPRICE','ORDERPRIORITY','O_COMMENT']][(orders['SHIPPRIORITY'] != (0)) | (orders['CUSTKEY'] == (16992)) | (orders['ORDERKEY'] > (782015)) & (orders['CUSTKEY'] > (24038))] \n",)(True,),(0.04897665977478027,),1
+("df314 = orders[orders['ORDERKEY'] >= 908543].groupby(by=['ORDERSTATUS']).agg('min', numeric_only=True) \n",)(True,),(0.0167844295501709,),1
+("df315 = orders[orders['TOTALPRICE'] != 82848.26144453828].groupby(by=['SHIPPRIORITY']).agg('mean', numeric_only=True) \n",)(True,),(0.023819446563720703,),1
+("df316 = orders[(orders['ORDERKEY'] >= (531404)) & (orders['SHIPPRIORITY'] >= (0))].groupby(by=['CUSTKEY']).agg('mean', numeric_only=True) \n",)(True,),(0.023996353149414062,),1
+("df317 = orders[['ORDERSTATUS','TOTALPRICE','ORDERPRIORITY','O_COMMENT']].groupby(by=['TOTALPRICE']).agg('mean', numeric_only=True) \n",)(False,),(0.0063703060150146484,),2
+("df318 = part[['BRAND','CONTAINER']].groupby(by=['BRAND']).agg('max', numeric_only=True) \n",)(False,),(0.012237310409545898,),2
+("df319 = part[['BRAND','CONTAINER']].groupby(by=['BRAND']).agg('min', numeric_only=True) \n",)(False,),(0.01157522201538086,),2
+("df320 = part[['BRAND','CONTAINER']].groupby(by=['BRAND']).agg('min', numeric_only=True) \n",)(False,),(0.010383844375610352,),2
+("df321 = part[['P_NAME','CONTAINER','RETAILPRICE','PT_COMMENT']].groupby(by=['PT_COMMENT']).agg('mean', numeric_only=True) \n",)(True,),(0.01250457763671875,),2
+("df322 = part[['PARTKEY','P_NAME','RETAILPRICE','PT_COMMENT']].agg('max', numeric_only=True) \n",)(True,),(0.009322881698608398,),2
+("df323 = part[['BRAND','CONTAINER']].groupby(by=['CONTAINER']).agg('count') \n",)(True,),(0.007015705108642578,),2
+("df324 = part[['P_NAME','TYPE','CONTAINER','PT_COMMENT']].groupby(by=['PT_COMMENT']).agg('mean', numeric_only=True) \n",)(False,),(0.009433507919311523,),2
+("df325 = part[['PARTKEY','P_NAME','RETAILPRICE','PT_COMMENT']].groupby(by=['P_NAME']).agg('max', numeric_only=True) \n",)(True,),(0.0065724849700927734,),2
+("df326 = part[['BRAND','CONTAINER']].groupby(by=['BRAND']).agg('mean', numeric_only=True) \n",)(False,),(0.009611129760742188,),2
+("df327 = part[['MFGR','BRAND','SIZE','PT_COMMENT']].agg('min', numeric_only=True) \n",)(True,),(0.01138162612915039,),1
+("df328 = part[['PARTKEY','TYPE','RETAILPRICE']].groupby(by=['TYPE']).agg('min', numeric_only=True) \n",)(True,),(0.013418912887573242,),2
+("df329 = part[['P_NAME','TYPE','CONTAINER','PT_COMMENT']].groupby(by=['PT_COMMENT']).agg('count') \n",)(True,),(0.009431123733520508,),2
+("df330 = part[['PARTKEY','P_NAME','RETAILPRICE','PT_COMMENT']].groupby(by=['PARTKEY']).agg('mean', numeric_only=True) \n",)(True,),(0.011520624160766602,),2
+("df331 = part[['P_NAME','CONTAINER','RETAILPRICE','PT_COMMENT']].agg('min', numeric_only=True) \n",)(True,),(0.008354663848876953,),1
+("df332 = part[['PARTKEY','TYPE','RETAILPRICE']].groupby(by=['PARTKEY']).agg('min', numeric_only=True) \n",)(True,),(0.012737512588500977,),2
+("df333 = part[['TYPE','RETAILPRICE']].groupby(by=['RETAILPRICE']).agg('min', numeric_only=True) \n",)(False,),(0.012751340866088867,),2
+("df334 = part[['PARTKEY','P_NAME','RETAILPRICE','PT_COMMENT']].groupby(by=['PT_COMMENT']).agg('count') \n",)(True,),(0.01335597038269043,),2
+("df335 = part[['MFGR','BRAND','SIZE','PT_COMMENT']].groupby(by=['BRAND']).agg('mean', numeric_only=True) \n",)(True,),(0.012656927108764648,),2
+("df336 = part[['BRAND','CONTAINER']].groupby(by=['BRAND']).agg('min', numeric_only=True) \n",)(False,),(0.010400056838989258,),2
+("df337 = part[['P_NAME','CONTAINER','RETAILPRICE','PT_COMMENT']].groupby(by=['P_NAME']).agg('min', numeric_only=True) \n",)(True,),(0.011150121688842773,),2
+("df338 = part[['PARTKEY','P_NAME','RETAILPRICE','PT_COMMENT']].groupby(by=['RETAILPRICE']).agg('min', numeric_only=True) \n",)(True,),(0.012120246887207031,),2
+("df339 = part[['PARTKEY','CONTAINER','PT_COMMENT']].groupby(by=['CONTAINER']).agg('max', numeric_only=True) \n",)(True,),(0.011077642440795898,),2
+("df340 = part[['P_NAME','MFGR']].groupby(by=['P_NAME']).agg('count') \n",)(True,),(0.007640838623046875,),2
+("df341 = part[['MFGR','TYPE']].groupby(by=['MFGR']).agg('count') \n",)(True,),(0.011243343353271484,),2
+("df342 = part[['CONTAINER','RETAILPRICE']].groupby(by=['CONTAINER']).agg('max', numeric_only=True) \n",)(True,),(0.008578062057495117,),2
+("df343 = part[['PARTKEY','P_NAME','CONTAINER']].groupby(by=['CONTAINER']).agg('count') \n",)(True,),(0.012780189514160156,),2
+("df344 = part[['P_NAME','CONTAINER','PT_COMMENT']].groupby(by=['P_NAME']).agg('max', numeric_only=True) \n",)(False,),(0.010950088500976562,),2
+("df345 = part[['PARTKEY','P_NAME','BRAND']].agg('mean', numeric_only=True) \n",)(True,),(0.008428573608398438,),1
+("df346 = part[['MFGR','TYPE']].agg('min', numeric_only=True) \n",)(False,),(0.008652210235595703,),0
+("df347 = part[['PARTKEY','P_NAME','BRAND']].groupby(by=['P_NAME']).agg('count') \n",)(True,),(0.012364387512207031,),2
+("df348 = part[['PARTKEY','CONTAINER','PT_COMMENT']].groupby(by=['CONTAINER']).agg('min', numeric_only=True) \n",)(True,),(0.010620355606079102,),2
+("df349 = part[['CONTAINER','RETAILPRICE']].groupby(by=['CONTAINER']).agg('count') \n",)(True,),(0.008284568786621094,),2
+("df350 = part[['PARTKEY','P_NAME','CONTAINER']].groupby(by=['P_NAME']).agg('mean', numeric_only=True) \n",)(True,),(0.006512880325317383,),2
+("df351 = part[['PARTKEY','P_NAME','CONTAINER']].agg('max', numeric_only=True) \n",)(True,),(0.006093025207519531,),1
+("df352 = part[['PARTKEY','P_NAME','CONTAINER']].groupby(by=['CONTAINER']).agg('mean', numeric_only=True) \n",)(True,),(0.012601613998413086,),2
+("df353 = part[['P_NAME','MFGR']].agg('min', numeric_only=True) \n",)(False,),(0.009471893310546875,),0
+("df354 = part[['PARTKEY','CONTAINER','PT_COMMENT']].groupby(by=['CONTAINER']).agg('count') \n",)(True,),(0.011540412902832031,),2
+("df355 = part[['P_NAME','CONTAINER','PT_COMMENT']].groupby(by=['P_NAME']).agg('max', numeric_only=True) \n",)(False,),(0.01054072380065918,),2
+("df356 = part[['PARTKEY','P_NAME','SIZE','PT_COMMENT']].groupby(by=['PT_COMMENT']).agg('mean', numeric_only=True) \n",)(True,),(0.0062334537506103516,),2
+("df357 = part[['P_NAME','MFGR','BRAND']].groupby(by=['BRAND']).agg('mean', numeric_only=True) \n",)(False,),(0.013988018035888672,),2
+("df358 = part[['MFGR','BRAND','CONTAINER','RETAILPRICE']].groupby(by=['BRAND']).agg('max', numeric_only=True) \n",)(True,),(0.009554624557495117,),2
+("df359 = part[['PARTKEY','CONTAINER','RETAILPRICE','PT_COMMENT']].groupby(by=['CONTAINER']).agg('min', numeric_only=True) \n",)(True,),(0.010625839233398438,),2
+("df360 = part[['MFGR','BRAND','CONTAINER','RETAILPRICE']].groupby(by=['BRAND']).agg('mean', numeric_only=True) \n",)(True,),(0.010680675506591797,),2
+("df361 = part[['MFGR','BRAND','CONTAINER','RETAILPRICE']].groupby(by=['CONTAINER']).agg('max', numeric_only=True) \n",)(True,),(0.01172637939453125,),2
+("df362 = part[['PARTKEY','P_NAME','MFGR','SIZE','RETAILPRICE']].groupby(by=['MFGR']).agg('mean', numeric_only=True) \n",)(True,),(0.009278059005737305,),2
+("df363 = part[['MFGR','BRAND','CONTAINER','RETAILPRICE']].groupby(by=['RETAILPRICE']).agg('count') \n",)(True,),(0.011478185653686523,),2
+("df364 = part[['MFGR','BRAND','TYPE','RETAILPRICE','PT_COMMENT']].groupby(by=['BRAND']).agg('min', numeric_only=True) \n",)(True,),(0.008964300155639648,),2
+("df365 = part[['P_NAME','MFGR','BRAND']].agg('count') \n",)(True,),(0.007380962371826172,),3
+("df366 = part[['P_NAME','BRAND','TYPE','PT_COMMENT']].agg('mean', numeric_only=True) \n",)(False,),(0.008414268493652344,),0
+("df367 = part[['PARTKEY','CONTAINER','RETAILPRICE','PT_COMMENT']].groupby(by=['RETAILPRICE']).agg('count') \n",)(True,),(0.012540340423583984,),2
+("df368 = part[['PARTKEY','P_NAME','MFGR','SIZE','RETAILPRICE']].groupby(by=['RETAILPRICE']).agg('count') \n",)(True,),(0.01242208480834961,),2
+("df369 = part[['PARTKEY','P_NAME','SIZE','PT_COMMENT']].groupby(by=['P_NAME']).agg('mean', numeric_only=True) \n",)(True,),(0.013569831848144531,),2
+("df370 = part[['PARTKEY','SIZE','RETAILPRICE','PT_COMMENT']].groupby(by=['RETAILPRICE']).agg('mean', numeric_only=True) \n",)(True,),(0.012884855270385742,),2
+("df371 = part[['P_NAME','MFGR','BRAND']].groupby(by=['MFGR']).agg('min', numeric_only=True) \n",)(False,),(0.01143503189086914,),2
+("df372 = part[['MFGR','BRAND','TYPE','RETAILPRICE','PT_COMMENT']].groupby(by=['RETAILPRICE']).agg('count') \n",)(True,),(0.008485794067382812,),2
+("df373 = part[['PARTKEY','P_NAME','SIZE','PT_COMMENT']].groupby(by=['PT_COMMENT']).agg('max', numeric_only=True) \n",)(True,),(0.009397506713867188,),2
+("df374 = part[['PARTKEY','P_NAME','SIZE','PT_COMMENT']].groupby(by=['PARTKEY']).agg('mean', numeric_only=True) \n",)(True,),(0.008231878280639648,),2
+("df375 = part[['P_NAME','BRAND','TYPE','PT_COMMENT']].groupby(by=['PT_COMMENT']).agg('count') \n",)(True,),(0.006412029266357422,),2
+("df376 = part[['P_NAME','MFGR','BRAND','RETAILPRICE']].groupby(by=['RETAILPRICE']).agg('mean', numeric_only=True) \n",)(False,),(0.011540889739990234,),2
+("df377 = part[['MFGR','BRAND','CONTAINER','RETAILPRICE']].groupby(by=['RETAILPRICE']).agg('max', numeric_only=True) \n",)(False,),(0.011573314666748047,),2
+("df378 = part[['MFGR']].groupby(by=['MFGR']).agg('count') \n",)(False,),(0.011852502822875977,),2
+("df379 = part[['PARTKEY','TYPE','PT_COMMENT']].groupby(by=['PT_COMMENT']).agg('count') \n",)(True,),(0.010352134704589844,),2
+("df380 = part[['TYPE','SIZE','CONTAINER']].groupby(by=['CONTAINER']).agg('count') \n",)(True,),(0.00830531120300293,),2
+("df381 = part[['MFGR','SIZE']].groupby(by=['MFGR']).agg('count') \n",)(True,),(0.01328277587890625,),2
+("df382 = part[['PARTKEY','TYPE','PT_COMMENT']].groupby(by=['TYPE']).agg('max', numeric_only=True) \n",)(True,),(0.012231111526489258,),2
+("df383 = part[['PARTKEY','CONTAINER','PT_COMMENT']].groupby(by=['PARTKEY']).agg('max', numeric_only=True) \n",)(False,),(0.0071718692779541016,),2
+("df384 = part[['MFGR','SIZE']].groupby(by=['SIZE']).agg('count') \n",)(True,),(0.005377769470214844,),2
+("df385 = part[['BRAND','TYPE','CONTAINER']].groupby(by=['CONTAINER']).agg('count') \n",)(True,),(0.01335763931274414,),2
+("df386 = part[['CONTAINER','RETAILPRICE','PT_COMMENT']].groupby(by=['RETAILPRICE']).agg('max', numeric_only=True) \n",)(False,),(0.010499238967895508,),2
+("df387 = part[['BRAND','TYPE','CONTAINER']].groupby(by=['CONTAINER']).agg('min', numeric_only=True) \n",)(False,),(0.011507034301757812,),2
+("df388 = part[['PARTKEY','CONTAINER','PT_COMMENT']].agg('count') \n",)(True,),(0.010976314544677734,),3
+("df389 = part[['BRAND','TYPE','CONTAINER']].agg('count') \n",)(True,),(0.010572195053100586,),3
+("df390 = part[['BRAND','SIZE']].groupby(by=['SIZE']).agg('min', numeric_only=True) \n",)(False,),(0.010452508926391602,),2
+("df391 = part[['BRAND','SIZE']].groupby(by=['SIZE']).agg('max', numeric_only=True) \n",)(False,),(0.011553049087524414,),2
+("df392 = part[['MFGR']].groupby(by=['MFGR']).agg('mean', numeric_only=True) \n",)(False,),(0.015377521514892578,),2
+("df393 = part[['PARTKEY','CONTAINER','PT_COMMENT']].groupby(by=['PARTKEY']).agg('max', numeric_only=True) \n",)(False,),(0.010809183120727539,),2
+("df394 = part[['BRAND','TYPE','CONTAINER']].groupby(by=['TYPE']).agg('max', numeric_only=True) \n",)(False,),(0.010213136672973633,),2
+("df395 = partsupp[['PARTKEY','SUPPKEY','P_COMMENT']].groupby(by=['P_COMMENT']).agg('min', numeric_only=True) \n",)(True,),(0.010271549224853516,),2
+("df396 = partsupp[['PARTKEY','AVAILQTY','SUPPLYCOST']].groupby(by=['SUPPLYCOST']).agg('max', numeric_only=True) \n",)(True,),(0.00960993766784668,),2
+("df397 = partsupp[['SUPPKEY','AVAILQTY','P_COMMENT']].groupby(by=['AVAILQTY']).agg('count') \n",)(True,),(0.009278297424316406,),2
+("df398 = partsupp[['SUPPKEY','AVAILQTY','SUPPLYCOST','P_COMMENT']].groupby(by=['SUPPKEY']).agg('min', numeric_only=True) \n",)(True,),(0.006209611892700195,),2
+("df399 = partsupp[['PARTKEY','SUPPKEY','AVAILQTY','SUPPLYCOST']].groupby(by=['AVAILQTY']).agg('mean', numeric_only=True) \n",)(True,),(0.006098270416259766,),2
+("df400 = partsupp[['SUPPKEY','AVAILQTY','SUPPLYCOST']].groupby(by=['SUPPKEY']).agg('count') \n",)(True,),(0.0070629119873046875,),2
+("df401 = partsupp[['PARTKEY','AVAILQTY','SUPPLYCOST']].agg('count') \n",)(True,),(0.00959467887878418,),3
+("df402 = partsupp[['PARTKEY']].groupby(by=['PARTKEY']).agg('max', numeric_only=True) \n",)(False,),(0.011461973190307617,),2
+("df403 = partsupp[['AVAILQTY','SUPPLYCOST']].groupby(by=['SUPPLYCOST']).agg('min', numeric_only=True) \n",)(True,),(0.009388208389282227,),2
+("df404 = partsupp[['AVAILQTY','SUPPLYCOST']].agg('max', numeric_only=True) \n",)(True,),(0.012855052947998047,),2
+("df405 = partsupp[['PARTKEY','AVAILQTY']].groupby(by=['AVAILQTY']).agg('count') \n",)(True,),(0.013458728790283203,),2
+("df406 = partsupp[['SUPPLYCOST']].groupby(by=['SUPPLYCOST']).agg('count') \n",)(False,),(0.010565757751464844,),2
+("df407 = partsupp[['AVAILQTY','SUPPLYCOST']].agg('mean', numeric_only=True) \n",)(True,),(0.012309789657592773,),2
+("df408 = partsupp[['SUPPKEY','SUPPLYCOST','P_COMMENT']].groupby(by=['P_COMMENT']).agg('mean', numeric_only=True) \n",)(True,),(0.01042628288269043,),2
+("df409 = partsupp[['PARTKEY']].groupby(by=['PARTKEY']).agg('mean', numeric_only=True) \n",)(False,),(0.013378381729125977,),2
+("df410 = partsupp[['SUPPKEY','SUPPLYCOST','P_COMMENT']].groupby(by=['SUPPLYCOST']).agg('max', numeric_only=True) \n",)(True,),(0.013355731964111328,),2
+("df411 = partsupp[['SUPPKEY','AVAILQTY','SUPPLYCOST']].groupby(by=['AVAILQTY']).agg('mean', numeric_only=True) \n",)(True,),(0.006346225738525391,),2
+("df412 = partsupp[['PARTKEY','AVAILQTY']].groupby(by=['PARTKEY']).agg('min', numeric_only=True) \n",)(True,),(0.008322954177856445,),2
+("df413 = partsupp[['SUPPKEY','P_COMMENT']].groupby(by=['SUPPKEY']).agg('min', numeric_only=True) \n",)(False,),(0.009395122528076172,),2
+("df414 = partsupp[['PARTKEY','AVAILQTY','SUPPLYCOST']].groupby(by=['PARTKEY']).agg('count') \n",)(True,),(0.007008075714111328,),2
+("df415 = partsupp[['SUPPKEY','AVAILQTY','SUPPLYCOST']].groupby(by=['SUPPKEY']).agg('count') \n",)(True,),(0.012705802917480469,),2
+("df416 = partsupp[['PARTKEY','AVAILQTY','SUPPLYCOST']].groupby(by=['SUPPLYCOST']).agg('count') \n",)(True,),(0.01208353042602539,),2
+("df417 = partsupp[['PARTKEY','SUPPKEY','AVAILQTY','P_COMMENT']].groupby(by=['AVAILQTY']).agg('count') \n",)(True,),(0.012801647186279297,),2
+("df418 = partsupp[['PARTKEY','SUPPKEY']].groupby(by=['PARTKEY']).agg('count') \n",)(True,),(0.010639429092407227,),2
+("df419 = partsupp[['PARTKEY','SUPPKEY','P_COMMENT']].groupby(by=['SUPPKEY']).agg('count') \n",)(True,),(0.013437986373901367,),2
+("df420 = partsupp[['PARTKEY','SUPPKEY']].groupby(by=['PARTKEY']).agg('count') \n",)(True,),(0.011418342590332031,),2
+("df421 = partsupp[['SUPPKEY','AVAILQTY','SUPPLYCOST']].groupby(by=['SUPPKEY']).agg('min', numeric_only=True) \n",)(True,),(0.011384963989257812,),2
+("df422 = partsupp[['PARTKEY','SUPPKEY','AVAILQTY','P_COMMENT']].groupby(by=['SUPPKEY']).agg('max', numeric_only=True) \n",)(True,),(0.0072557926177978516,),2
+("df423 = partsupp[['PARTKEY','AVAILQTY','SUPPLYCOST']].groupby(by=['PARTKEY']).agg('count') \n",)(True,),(0.011394262313842773,),2
+("df424 = partsupp[['PARTKEY','SUPPLYCOST']].groupby(by=['SUPPLYCOST']).agg('min', numeric_only=True) \n",)(True,),(0.012940168380737305,),2
+("df425 = partsupp[['SUPPKEY']].groupby(by=['SUPPKEY']).agg('max', numeric_only=True) \n",)(False,),(0.011316537857055664,),2
+("df426 = partsupp[['SUPPLYCOST']].agg('count') \n",)(True,),(0.011454343795776367,),1
+("df427 = partsupp[['PARTKEY']].groupby(by=['PARTKEY']).agg('min', numeric_only=True) \n",)(False,),(0.00849151611328125,),2
+("df428 = partsupp[['SUPPKEY']].groupby(by=['SUPPKEY']).agg('max', numeric_only=True) \n",)(False,),(0.010099172592163086,),2
+("df429 = partsupp[['SUPPLYCOST']].groupby(by=['SUPPLYCOST']).agg('max', numeric_only=True) \n",)(False,),(0.009435653686523438,),2
+("df430 = partsupp[['SUPPLYCOST']].groupby(by=['SUPPLYCOST']).agg('max', numeric_only=True) \n",)(False,),(0.008474588394165039,),2
+("df431 = partsupp[['SUPPKEY']].groupby(by=['SUPPKEY']).agg('count') \n",)(False,),(0.012350797653198242,),2
+("df432 = partsupp[['SUPPLYCOST']].groupby(by=['SUPPLYCOST']).agg('max', numeric_only=True) \n",)(False,),(0.01063990592956543,),2
+("df433 = partsupp[['SUPPLYCOST']].groupby(by=['SUPPLYCOST']).agg('min', numeric_only=True) \n",)(False,),(0.010142326354980469,),2
+("df434 = partsupp[['PARTKEY']].groupby(by=['PARTKEY']).agg('max', numeric_only=True) \n",)(False,),(0.010808229446411133,),2
+("df435 = region[['R_NAME']].groupby(by=['R_NAME']).agg('count') \n",)(False,),(0.0135955810546875,),2
+("df436 = region[['R_COMMENT']].agg('count') \n",)(True,),(0.00978541374206543,),1
+("df437 = region[['REGIONKEY']].groupby(by=['REGIONKEY']).agg('mean', numeric_only=True) \n",)(False,),(0.011463403701782227,),1
+("df438 = region[region['REGIONKEY'] <= 3][['REGIONKEY','R_NAME','R_COMMENT']].agg('count') \n",)(True,),(0.02390432357788086,),3
+("df439 = region[['REGIONKEY','R_NAME','R_COMMENT']].groupby(by=['REGIONKEY']).agg('count') \n",)(True,),(0.009390115737915039,),1
+("df440 = region[region['REGIONKEY'] <= 2].groupby(by=['REGIONKEY']).agg('max', numeric_only=True) \n",)(False,),(0.017255783081054688,),1
+("df441 = region[region['REGIONKEY'] != 2].groupby(by=['R_NAME']).agg('min', numeric_only=True) \n",)(False,),(0.02082967758178711,),0
+("df442 = region[region['REGIONKEY'] < 3].groupby(by=['R_COMMENT']).agg('min', numeric_only=True) \n",)(True,),(0.019814491271972656,),2
+("df443 = region[['REGIONKEY','R_NAME','R_COMMENT']].agg('min', numeric_only=True) \n",)(True,),(0.007105112075805664,),1
+("df444 = region[region['REGIONKEY'] < 1].groupby(by=['R_COMMENT']).agg('mean', numeric_only=True) \n",)(False,),(0.01608419418334961,),0
+("df445 = region[(region['REGIONKEY'] <= (3)) & (region['REGIONKEY'] < (1))].groupby(by=['R_NAME']).agg('min', numeric_only=True) \n",)(False,),(0.017305374145507812,),0
+("df446 = region[region['REGIONKEY'] <= 4].groupby(by=['R_NAME']).agg('mean', numeric_only=True) \n",)(True,),(0.023924827575683594,),2
+("df447 = region[region['REGIONKEY'] >= 1].groupby(by=['R_NAME']).agg('count') \n",)(True,),(0.022401094436645508,),2
+("df448 = region[['REGIONKEY','R_NAME','R_COMMENT']].groupby(by=['R_COMMENT']).agg('mean', numeric_only=True) \n",)(True,),(0.011577844619750977,),2
+("df449 = region[(region['REGIONKEY'] == (3)) & (region['REGIONKEY'] == (3))].agg('mean', numeric_only=True) \n",)(True,),(0.03165316581726074,),1
+("df450 = region[(region['REGIONKEY'] > (3)) | (region['REGIONKEY'] > (0))].groupby(by=['R_COMMENT']).agg('mean', numeric_only=True) \n",)(True,),(0.021494388580322266,),2
+("df451 = region[['REGIONKEY','R_NAME','R_COMMENT']].groupby(by=['R_NAME']).agg('min', numeric_only=True) \n",)(True,),(0.005751848220825195,),2
+("df452 = region[region['REGIONKEY'] != 2].groupby(by=['R_COMMENT']).agg('count') \n",)(False,),(0.02087998390197754,),0
+("df453 = region[region['REGIONKEY'] == 3].groupby(by=['REGIONKEY']).agg('min', numeric_only=True) \n",)(False,),(0.023666858673095703,),0
+("df454 = region[region['REGIONKEY'] <= 4].groupby(by=['R_NAME']).agg('count') \n",)(True,),(0.02309107780456543,),2
+("df455 = region[region['REGIONKEY'] >= 2].groupby(by=['REGIONKEY']).agg('mean', numeric_only=True) \n",)(False,),(0.017434358596801758,),1
+("df456 = region[region['REGIONKEY'] == 3].groupby(by=['R_COMMENT']).agg('min', numeric_only=True) \n",)(False,),(0.013432979583740234,),0
+("df457 = region[region['REGIONKEY'] != 2].groupby(by=['R_COMMENT']).agg('min', numeric_only=True) \n",)(False,),(0.023430824279785156,),0
+("df458 = region[['REGIONKEY','R_NAME','R_COMMENT']].groupby(by=['REGIONKEY']).agg('min', numeric_only=True) \n",)(False,),(0.009908437728881836,),1
+("df459 = region[region['REGIONKEY'] == 0].agg('min', numeric_only=True) \n",)(True,),(0.013939380645751953,),1
+("df460 = region[['REGIONKEY','R_NAME','R_COMMENT']].groupby(by=['R_COMMENT']).agg('mean', numeric_only=True) \n",)(True,),(0.00941324234008789,),2
+("df461 = supplier[supplier['ACCTBAL'] <= 6754.252150272994].groupby(by=['S_NAME']).agg('max', numeric_only=True) \n",)(False,),(0.02511882781982422,),0
+("df462 = supplier[['SUPPKEY','S_NAME','ACCTBAL','S_COMMENT']][(supplier['ACCTBAL'] >= (1208.2456028756137)) & (supplier['NATIONKEY'] >= (8))] \n",)(True,),(0.02686285972595215,),1
+("df463 = supplier[supplier['NATIONKEY'] == 5].groupby(by=['S_NAME']).agg('max', numeric_only=True) \n",)(False,),(0.011504411697387695,),0
+("df464 = supplier[(supplier['ACCTBAL'] != (973.5819279030359)) & (supplier['SUPPKEY'] < (1350))].groupby(by=['NATIONKEY']).agg('mean', numeric_only=True) \n",)(True,),(0.02730870246887207,),1
+("df465 = supplier[(supplier['SUPPKEY'] <= (208)) | (supplier['ACCTBAL'] == (4633.043564355047)) | (supplier['ACCTBAL'] > (313.0090690658599)) | (supplier['NATIONKEY'] < (11))][['SUPPKEY','S_NAME','NATIONKEY']].agg('count') \n",)(True,),(0.05972909927368164,),3
+("df466 = supplier[['ADDRESS','NATIONKEY','ACCTBAL','S_COMMENT']].groupby(by=['ACCTBAL']).agg('max', numeric_only=True) \n",)(True,),(0.0103759765625,),2
+("df467 = supplier[supplier['ACCTBAL'] != 6299.545335044853].groupby(by=['S_NAME']).agg('count') \n",)(True,),(0.023201704025268555,),2
+("df468 = supplier[['ADDRESS','NATIONKEY','ACCTBAL','S_COMMENT']].groupby(by=['ADDRESS']).agg('count') \n",)(True,),(0.0052797794342041016,),2
+("df469 = supplier[(supplier['ACCTBAL'] > (313.0090690658599)) | (supplier['NATIONKEY'] <= (11))].groupby(by=['NATIONKEY']).agg('min', numeric_only=True) \n",)(True,),(0.02490711212158203,),2
+("df470 = supplier[['S_NAME','ADDRESS','PHONE','ACCTBAL','S_COMMENT']].groupby(by=['S_NAME']).agg('count') \n",)(True,),(0.010462284088134766,),2
+("df471 = supplier[supplier['NATIONKEY'] >= 2].groupby(by=['S_NAME']).agg('min', numeric_only=True) \n",)(True,),(0.020196199417114258,),2
+("df472 = supplier[['SUPPKEY','S_NAME','ACCTBAL','S_COMMENT']].groupby(by=['S_NAME']).agg('min', numeric_only=True) \n",)(True,),(0.013457059860229492,),2
+("df473 = supplier[(supplier['NATIONKEY'] <= (16)) | (supplier['SUPPKEY'] > (716))].groupby(by=['NATIONKEY']).agg('count') \n",)(True,),(0.026064157485961914,),2
+("df474 = supplier[(supplier['ACCTBAL'] >= (6010.586566984575)) & (supplier['NATIONKEY'] != (6)) | (supplier['NATIONKEY'] >= (15))][['SUPPKEY','S_NAME','NATIONKEY','ACCTBAL']].agg('count') \n",)(True,),(0.04864788055419922,),4
+("df475 = supplier[['SUPPKEY','S_NAME','ACCTBAL','S_COMMENT']].groupby(by=['ACCTBAL']).agg('mean', numeric_only=True) \n",)(True,),(0.006017446517944336,),2
+("df476 = supplier[['S_NAME','NATIONKEY','PHONE','S_COMMENT']].groupby(by=['NATIONKEY']).agg('max', numeric_only=True) \n",)(False,),(0.00499272346496582,),2
+("df477 = supplier[['SUPPKEY','S_NAME','ACCTBAL','S_COMMENT']].groupby(by=['ACCTBAL']).agg('max', numeric_only=True) \n",)(True,),(0.014228343963623047,),2
+("df478 = supplier[(supplier['SUPPKEY'] != (652)) & (supplier['NATIONKEY'] != (7))].groupby(by=['NATIONKEY']).agg('mean', numeric_only=True) \n",)(True,),(0.03151535987854004,),2
+("df479 = supplier[(supplier['NATIONKEY'] > (7)) | (supplier['ACCTBAL'] != (3615.607266409954))].groupby(by=['S_NAME']).agg('mean', numeric_only=True) \n",)(True,),(0.013556957244873047,),2
+("df480 = supplier[['SUPPKEY','S_NAME','ACCTBAL','S_COMMENT']][supplier['SUPPKEY'] > 451].agg('mean', numeric_only=True) \n",)(True,),(0.019998550415039062,),2
+("df481 = supplier[['ADDRESS','NATIONKEY','ACCTBAL','S_COMMENT']].groupby(by=['NATIONKEY']).agg('min', numeric_only=True) \n",)(True,),(0.005401611328125,),2
+("df482 = supplier[['S_NAME','ADDRESS','PHONE','ACCTBAL','S_COMMENT']].agg('count') \n",)(True,),(0.009541749954223633,),5
+("df483 = supplier[supplier['ACCTBAL'] > 7986.045667063567].groupby(by=['ACCTBAL']).agg('mean', numeric_only=True) \n",)(True,),(0.023975372314453125,),2
+("df484 = supplier[['ADDRESS','NATIONKEY','ACCTBAL','S_COMMENT']][(supplier['ACCTBAL'] != (973.5819279030359)) | (supplier['NATIONKEY'] <= (11)) | (supplier['NATIONKEY'] <= (7)) & (supplier['ACCTBAL'] == (6741.113970323976)) & (supplier['ACCTBAL'] != (973.5819279030359))].agg('max', numeric_only=True) \n",)(True,),(0.06960892677307129,),2
+("df485 = supplier[(supplier['SUPPKEY'] <= (1051)) & (supplier['NATIONKEY'] <= (2)) & (supplier['NATIONKEY'] < (12))].groupby(by=['S_NAME']).agg('mean', numeric_only=True) \n",)(False,),(0.027169466018676758,),0
+("df486 = supplier[(supplier['NATIONKEY'] >= (8)) | (supplier['ACCTBAL'] <= (9138.56085951196)) | (supplier['SUPPKEY'] != (68)) | (supplier['ACCTBAL'] != (6299.545335044853)) | (supplier['SUPPKEY'] <= (1357)) | (supplier['NATIONKEY'] < (11))][['S_NAME','NATIONKEY','ACCTBAL']] \n",)(True,),(0.07449865341186523,),2
+("df487 = supplier[(supplier['NATIONKEY'] == (14)) | (supplier['SUPPKEY'] != (652)) & (supplier['NATIONKEY'] >= (2))].groupby(by=['ACCTBAL']).agg('count') \n",)(True,),(0.04755139350891113,),2
+("df488 = supplier[['SUPPKEY','ADDRESS','PHONE','ACCTBAL']].agg('max', numeric_only=True) \n",)(True,),(0.008015632629394531,),2
+("df489 = supplier[['SUPPKEY','S_NAME','ACCTBAL','S_COMMENT']].groupby(by=['S_NAME']).agg('min', numeric_only=True) \n",)(True,),(0.011415958404541016,),2
+("df490 = supplier[['SUPPKEY','S_NAME','NATIONKEY','ACCTBAL']][supplier['SUPPKEY'] < 111] \n",)(False,),(0.022240400314331055,),0
+("df491 = supplier[['SUPPKEY','ADDRESS','PHONE','ACCTBAL']][(supplier['SUPPKEY'] >= (183)) | (supplier['ACCTBAL'] <= (6754.252150272994))].agg('mean', numeric_only=True) \n",)(True,),(0.04464364051818848,),2
+("df492 = supplier[(supplier['SUPPKEY'] >= (1228)) & (supplier['SUPPKEY'] != (68)) & (supplier['ACCTBAL'] >= (1208.2456028756137)) | (supplier['ACCTBAL'] > (707.337569270135))].groupby(by=['ACCTBAL']).agg('max', numeric_only=True) \n",)(True,),(0.050219058990478516,),2
+("df493 = supplier[['S_NAME','ADDRESS','PHONE','ACCTBAL','S_COMMENT']].groupby(by=['S_NAME']).agg('min', numeric_only=True) \n",)(True,),(0.004508018493652344,),2
+("df494 = supplier[(supplier['SUPPKEY'] < (1032)) & (supplier['SUPPKEY'] < (580)) | (supplier['SUPPKEY'] < (111)) | (supplier['SUPPKEY'] < (3))].groupby(by=['S_NAME']).agg('count') \n",)(False,),(0.04522252082824707,),0
+("df495 = supplier[(supplier['SUPPKEY'] > (1710)) | (supplier['ACCTBAL'] >= (9601.363887923608))].groupby(by=['ACCTBAL']).agg('max', numeric_only=True) \n",)(False,),(0.013463020324707031,),0
+("df496 = supplier[supplier['SUPPKEY'] > 137].groupby(by=['S_NAME']).agg('mean', numeric_only=True) \n",)(True,),(0.019952058792114258,),2
+("df497 = supplier[supplier['NATIONKEY'] >= 12].groupby(by=['S_NAME']).agg('count') \n",)(True,),(0.01363515853881836,),1
+("df498 = supplier[supplier['SUPPKEY'] <= 1350].agg('count') \n",)(True,),(0.016653776168823242,),7
+("df499 = supplier[['SUPPKEY','S_NAME','NATIONKEY','ACCTBAL']].groupby(by=['S_NAME']).agg('max', numeric_only=True) \n",)(True,),(0.007544755935668945,),2
+("df500 = supplier[['S_NAME','NATIONKEY','PHONE','S_COMMENT']].groupby(by=['S_NAME']).agg('min', numeric_only=True) \n",)(True,),(0.010164260864257812,),2
+("df501 = supplier[['ACCTBAL','S_COMMENT']].agg('min', numeric_only=True) \n",)(True,),(0.007016658782958984,),1
+("df502 = supplier[['SUPPKEY','S_NAME','NATIONKEY','S_COMMENT']].groupby(by=['S_NAME']).agg('count') \n",)(True,),(0.010429859161376953,),2
+("df503 = supplier[['S_NAME','NATIONKEY','S_COMMENT']].groupby(by=['S_NAME']).agg('count') \n",)(True,),(0.007375001907348633,),2
+("df504 = supplier[['SUPPKEY','S_NAME','ACCTBAL']].groupby(by=['S_NAME']).agg('mean', numeric_only=True) \n",)(True,),(0.009458780288696289,),2
+("df505 = supplier[['S_NAME','NATIONKEY','S_COMMENT']].agg('max', numeric_only=True) \n",)(True,),(0.00937342643737793,),1
+("df506 = supplier[['SUPPKEY','NATIONKEY','PHONE','S_COMMENT']].groupby(by=['S_COMMENT']).agg('min', numeric_only=True) \n",)(True,),(0.01571178436279297,),2
+("df507 = supplier[['SUPPKEY','S_NAME','ACCTBAL']].groupby(by=['ACCTBAL']).agg('min', numeric_only=True) \n",)(True,),(0.013590574264526367,),2
+("df508 = supplier[['S_NAME','NATIONKEY','S_COMMENT']].agg('min', numeric_only=True) \n",)(True,),(0.009598970413208008,),1
+("df509 = supplier[['SUPPKEY','S_NAME','ACCTBAL']].groupby(by=['S_NAME']).agg('count') \n",)(True,),(0.008713483810424805,),2
+("df510 = supplier[['SUPPKEY','S_NAME','ACCTBAL']].groupby(by=['ACCTBAL']).agg('mean', numeric_only=True) \n",)(True,),(0.010572433471679688,),2
+("df511 = supplier[['SUPPKEY','NATIONKEY','PHONE','S_COMMENT']].groupby(by=['NATIONKEY']).agg('mean', numeric_only=True) \n",)(True,),(0.009195804595947266,),2
+("df512 = supplier[(supplier['ACCTBAL'] > (3936.6951453486254)) | (supplier['ACCTBAL'] > (439.11245809696493))].groupby(by=['PHONE']).agg('min', numeric_only=True) \n",)(True,),(0.020400524139404297,),2
+("df513 = supplier[['NATIONKEY']].groupby(by=['NATIONKEY']).agg('min', numeric_only=True) \n",)(False,),(0.007009744644165039,),2
+("df514 = supplier[supplier['ACCTBAL'] != 7477.849416923882].groupby(by=['ACCTBAL']).agg('min', numeric_only=True) \n",)(True,),(0.01625847816467285,),2
+("df515 = supplier[(supplier['SUPPKEY'] <= (801)) | (supplier['ACCTBAL'] != (3144.072598684782)) & (supplier['SUPPKEY'] > (1299)) & (supplier['NATIONKEY'] == (19)) & (supplier['ACCTBAL'] <= (5050.548058338352)) & (supplier['SUPPKEY'] < (1819))][['SUPPKEY']] \n",)(False,),(0.06421065330505371,),0
+("df516 = supplier[['S_COMMENT']].agg('min', numeric_only=True) \n",)(False,),(0.006965160369873047,),0
+("df517 = supplier[supplier['NATIONKEY'] < 11][['SUPPKEY']] \n",)(True,),(0.02233266830444336,),1
+("df518 = supplier[(supplier['NATIONKEY'] >= (13)) & (supplier['SUPPKEY'] >= (763)) | (supplier['SUPPKEY'] < (747))].groupby(by=['S_NAME']).agg('max', numeric_only=True) \n",)(True,),(0.026592254638671875,),1
+("df519 = supplier[supplier['SUPPKEY'] < 1210].agg('min', numeric_only=True)[['NATIONKEY']] \n",)(True,),(0.022502660751342773,),1
+("df520 = supplier[(supplier['SUPPKEY'] <= (1888)) & (supplier['NATIONKEY'] <= (7)) & (supplier['NATIONKEY'] <= (7))].groupby(by=['S_COMMENT']).agg('max', numeric_only=True) \n",)(True,),(0.023427486419677734,),1
+("df521 = supplier[(supplier['ACCTBAL'] > (6183.754413426297)) | (supplier['ACCTBAL'] > (141.93283902748158)) | (supplier['NATIONKEY'] > (12))].groupby(by=['ADDRESS']).agg('min', numeric_only=True) \n",)(True,),(0.03778886795043945,),2
+("df522 = supplier[['S_NAME']].groupby(by=['S_NAME']).agg('count') \n",)(False,),(0.012671947479248047,),2
+("df523 = supplier[(supplier['SUPPKEY'] == (1140)) | (supplier['NATIONKEY'] < (14)) | (supplier['NATIONKEY'] < (16))].agg('min', numeric_only=True)[['SUPPKEY']] \n",)(True,),(0.0566408634185791,),1
+("df524 = supplier[(supplier['SUPPKEY'] < (1210)) & (supplier['NATIONKEY'] < (14))][['SUPPKEY']] \n",)(False,),(0.015447139739990234,),0
+("df525 = supplier[supplier['SUPPKEY'] == 562].groupby(by=['SUPPKEY']).agg('mean', numeric_only=True) \n",)(False,),(0.02304840087890625,),0
+("df526 = supplier[supplier['SUPPKEY'] > 1833].agg('max', numeric_only=True)[['SUPPKEY']] \n",)(True,),(0.022281646728515625,),1
+("df527 = supplier[['ADDRESS']].groupby(by=['ADDRESS']).agg('max', numeric_only=True) \n",)(False,),(0.008567571640014648,),2
+("df528 = supplier[['S_NAME']].groupby(by=['S_NAME']).agg('mean', numeric_only=True) \n",)(False,),(0.010551214218139648,),2
+("df529 = supplier[(supplier['ACCTBAL'] > (3936.6951453486254)) | (supplier['ACCTBAL'] > (439.11245809696493))].groupby(by=['S_NAME']).agg('mean', numeric_only=True) \n",)(True,),(0.03350400924682617,),2
+("df530 = supplier[supplier['SUPPKEY'] < 1210].groupby(by=['PHONE']).agg('count') \n",)(True,),(0.012859582901000977,),1
+("df531 = supplier[(supplier['NATIONKEY'] < (17)) & (supplier['ACCTBAL'] == (7026.727883422234))].groupby(by=['PHONE']).agg('count') \n",)(False,),(0.018925905227661133,),0
+("df532 = supplier[supplier['ACCTBAL'] <= 6218.91813425719].groupby(by=['PHONE']).agg('count') \n",)(False,),(0.018941879272460938,),0
+("df533 = supplier[['SUPPKEY']].groupby(by=['SUPPKEY']).agg('count') \n",)(False,),(0.008931398391723633,),2
+("df534 = supplier[['PHONE']].groupby(by=['PHONE']).agg('count') \n",)(False,),(0.009345531463623047,),2
+("df535 = supplier[['ADDRESS']].groupby(by=['ADDRESS']).agg('min', numeric_only=True) \n",)(False,),(0.01361536979675293,),2
+("df536 = supplier[(supplier['SUPPKEY'] > (1245)) | (supplier['SUPPKEY'] > (1917))].agg('count')[['PHONE']] \n",)(True,),(0.04189658164978027,),1
+("df537 = supplier[['ADDRESS']].agg('min', numeric_only=True)[(supplier['NATIONKEY'] <= (21)) & (supplier['SUPPKEY'] >= (580))] \n",)(False,),(0.022038936614990234,),0
+("df538 = supplier[(supplier['NATIONKEY'] <= (23)) | (supplier['SUPPKEY'] <= (1888)) & (supplier['SUPPKEY'] > (604))].groupby(by=['NATIONKEY']).agg('max', numeric_only=True) \n",)(True,),(0.03581738471984863,),2
+("df539 = supplier[['SUPPKEY']].groupby(by=['SUPPKEY']).agg('mean', numeric_only=True) \n",)(False,),(0.00899815559387207,),2
+("df540 = supplier[supplier['ACCTBAL'] >= 7851.760069834547].groupby(by=['S_NAME']).agg('max', numeric_only=True) \n",)(True,),(0.021528959274291992,),2
+("df541 = supplier[(supplier['NATIONKEY'] < (23)) & (supplier['NATIONKEY'] <= (7))].agg('mean', numeric_only=True)[['ACCTBAL']] \n",)(True,),(0.024200916290283203,),1
+("df542 = supplier[['SUPPKEY']].groupby(by=['SUPPKEY']).agg('count') \n",)(False,),(0.007366180419921875,),2
+("df543 = supplier[supplier['SUPPKEY'] < 1994].agg('mean', numeric_only=True) \n",)(True,),(0.018400907516479492,),3
+("df544 = supplier[(supplier['NATIONKEY'] > (12)) & (supplier['ACCTBAL'] > (-862.2226318342252)) & (supplier['ACCTBAL'] < (4408.83430831432))].agg('mean', numeric_only=True) \n",)(True,),(0.04277920722961426,),3
+("df545 = supplier[['PHONE']].groupby(by=['PHONE']).agg('max', numeric_only=True) \n",)(False,),(0.010297536849975586,),2
+("df546 = supplier[(supplier['NATIONKEY'] > (3)) & (supplier['NATIONKEY'] < (17))].groupby(by=['ADDRESS']).agg('mean', numeric_only=True) \n",)(True,),(0.023113250732421875,),2
+("df547 = supplier[supplier['SUPPKEY'] >= 1304].groupby(by=['SUPPKEY']).agg('count') \n",)(True,),(0.011311054229736328,),1
+("df548 = supplier[supplier['SUPPKEY'] > 1299].groupby(by=['S_COMMENT']).agg('mean', numeric_only=True) \n",)(True,),(0.012280941009521484,),1
+("df549 = supplier[(supplier['SUPPKEY'] >= (1520)) & (supplier['SUPPKEY'] < (1819)) & (supplier['ACCTBAL'] > (2709.3439670668445))].groupby(by=['NATIONKEY']).agg('count') \n",)(False,),(0.03410816192626953,),0
+("df550 = supplier[['PHONE']].groupby(by=['PHONE']).agg('count') \n",)(False,),(0.011606216430664062,),2
+("df551 = supplier[(supplier['SUPPKEY'] > (1833)) & (supplier['ACCTBAL'] == (9138.709523219939))].groupby(by=['S_COMMENT']).agg('mean', numeric_only=True) \n",)(False,),(0.021739721298217773,),0
+("df552 = supplier[['S_COMMENT']].groupby(by=['S_COMMENT']).agg('max', numeric_only=True) \n",)(False,),(0.007359504699707031,),2
+("df553 = supplier[(supplier['NATIONKEY'] > (19)) | (supplier['SUPPKEY'] == (681))].groupby(by=['S_COMMENT']).agg('mean', numeric_only=True) \n",)(False,),(0.034552812576293945,),0
+("df554 = supplier[supplier['SUPPKEY'] > 1299].groupby(by=['S_COMMENT']).agg('count') \n",)(True,),(0.01236414909362793,),1
+("df555 = supplier[['PHONE']].groupby(by=['PHONE']).agg('count') \n",)(False,),(0.00847625732421875,),2
+("df556 = supplier[['NATIONKEY']].agg('count') \n",)(True,),(0.007386207580566406,),1
+("df557 = supplier[(supplier['ACCTBAL'] <= (5050.548058338352)) | (supplier['ACCTBAL'] == (699.4627448237218)) | (supplier['NATIONKEY'] <= (23))].groupby(by=['SUPPKEY']).agg('min', numeric_only=True) \n",)(True,),(0.039804697036743164,),2
+("df558 = supplier[supplier['NATIONKEY'] == 3][['S_COMMENT']] \n",)(False,),(0.021512746810913086,),0
+("df559 = supplier[(supplier['SUPPKEY'] == (562)) | (supplier['NATIONKEY'] < (17)) | (supplier['NATIONKEY'] > (12)) & (supplier['SUPPKEY'] == (562))].groupby(by=['SUPPKEY']).agg('mean', numeric_only=True) \n",)(True,),(0.039612770080566406,),2
+("df560 = supplier[(supplier['NATIONKEY'] < (14)) & (supplier['ACCTBAL'] > (5496.249107275881))].groupby(by=['S_COMMENT']).agg('min', numeric_only=True) \n",)(True,),(0.032448530197143555,),1
+("df561 = supplier[['S_COMMENT']].groupby(by=['S_COMMENT']).agg('count') \n",)(False,),(0.011977910995483398,),2
+("df562 = supplier[['ADDRESS']].groupby(by=['ADDRESS']).agg('count') \n",)(False,),(0.012887001037597656,),2
+("df563 = supplier[['PHONE']].groupby(by=['PHONE']).agg('max', numeric_only=True) \n",)(False,),(0.01280832290649414,),2
+("df564 = supplier[['ADDRESS']][(supplier['ACCTBAL'] < (2024.0766148368507)) & (supplier['ACCTBAL'] >= (4253.509640331927))] \n",)(False,),(0.037368059158325195,),0
+("df565 = supplier[['SUPPKEY']].agg('max', numeric_only=True) \n",)(True,),(0.009635448455810547,),1
+("df566 = supplier[(supplier['NATIONKEY'] < (13)) & (supplier['SUPPKEY'] == (588)) & (supplier['NATIONKEY'] < (5)) | (supplier['SUPPKEY'] == (1351))].agg('count')[['PHONE']] \n",)(True,),(0.04197049140930176,),1
+("df567 = supplier[['S_NAME']].groupby(by=['S_NAME']).agg('min', numeric_only=True) \n",)(False,),(0.009610414505004883,),2
+("df568 = supplier[['SUPPKEY','S_NAME','ADDRESS','NATIONKEY','PHONE','S_COMMENT']].groupby(by=['NATIONKEY']).agg('max', numeric_only=True) \n",)(True,),(0.011684417724609375,),2
+("df569 = supplier[['SUPPKEY','S_NAME','ADDRESS','NATIONKEY','PHONE','S_COMMENT']].agg('max', numeric_only=True) \n",)(True,),(0.0077211856842041016,),2
+("df570 = supplier[['SUPPKEY','ADDRESS','NATIONKEY','PHONE','S_COMMENT']].groupby(by=['NATIONKEY']).agg('mean', numeric_only=True) \n",)(True,),(0.013181447982788086,),2
+("df571 = supplier[['SUPPKEY','S_NAME','ADDRESS','NATIONKEY','PHONE','S_COMMENT']].groupby(by=['NATIONKEY']).agg('mean', numeric_only=True) \n",)(True,),(0.013916730880737305,),2
+("df572 = supplier[['SUPPKEY','S_NAME','ADDRESS','NATIONKEY','ACCTBAL','S_COMMENT']].groupby(by=['NATIONKEY']).agg('mean', numeric_only=True) \n",)(True,),(0.009050846099853516,),2
+("df573 = supplier[['SUPPKEY','S_NAME','NATIONKEY','PHONE','ACCTBAL']].groupby(by=['PHONE']).agg('mean', numeric_only=True) \n",)(True,),(0.009644269943237305,),2
+("df574 = supplier[['S_NAME','ADDRESS','NATIONKEY','PHONE','ACCTBAL','S_COMMENT']].groupby(by=['ADDRESS']).agg('mean', numeric_only=True) \n",)(True,),(0.011494636535644531,),2
+("df575 = supplier[['S_NAME','ADDRESS','NATIONKEY','PHONE','ACCTBAL','S_COMMENT']].groupby(by=['NATIONKEY']).agg('min', numeric_only=True) \n",)(True,),(0.013428926467895508,),2
+("df576 = supplier[['S_NAME','ADDRESS','NATIONKEY','PHONE','ACCTBAL','S_COMMENT']].groupby(by=['S_NAME']).agg('min', numeric_only=True) \n",)(True,),(0.014670848846435547,),2
+("df577 = supplier[['SUPPKEY','ADDRESS','NATIONKEY','PHONE','S_COMMENT']].groupby(by=['NATIONKEY']).agg('mean', numeric_only=True) \n",)(True,),(0.008335351943969727,),2

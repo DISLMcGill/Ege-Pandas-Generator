@@ -1,0 +1,6 @@
+{
+    "query_types": ["selection", "projection", "group by", "aggregation", "merge"],  
+    "num_merges": 2,
+    "query_complexity": "medium",
+    "num_queries": 500
+}
