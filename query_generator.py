@@ -751,7 +751,7 @@ class pandas_query():
                 possible_selection_columns[col] = "float"
 
             elif pd.api.types.is_string_dtype(source_df[col]):
-                possible_selection_columns[col] = "string"
+                continue
 
         possible_condition_columns = {}
 
@@ -771,7 +771,7 @@ class pandas_query():
                     else:
                         op = random.choice([OP.gt, OP.ge, OP.lt, OP.le, OP.eq, OP.ne])
                     cur_condition = condition(key, op, cur_val)                                                    
-                                                                                          
+                                                                                        
                 elif possible_selection_columns[key] == "float":
                     min_val, max_val = data_ranges[self.df_name][key]
                     cur_val = round(random.uniform(min_val, max_val), 2)  # Assume 2 decimal places
@@ -785,11 +785,15 @@ class pandas_query():
                     else:
                         op = random.choice([OP.gt, OP.ge, OP.lt, OP.le])
 
-                    cur_condition = condition(key, op, cur_val) 
-                elif possible_selection_columns[key] == "string":
-                    cur_val = data_ranges[self.df_name][key] #starting char gives empty result set, use random a-z char instead
-                    cur_condition = condition(key, OP.startswith, cur_val)
+                    cur_condition = condition(key, op, cur_val)
 
+                #removed selection with startswith condition on strings because too restrictive
+                """
+                elif possible_selection_columns[key] == "string":
+                    cur_val = random.choice(string.ascii_letters)     #starting char gives empty result set, use random a-z char instead
+                    cur_condition = condition(key, OP.startswith, cur_val)
+                """
+                
                 possible_condition_columns[key].append(cur_condition)
 
         return possible_condition_columns
@@ -1292,6 +1296,18 @@ class pandas_query_pool():
         """
         random.shuffle(self.queries)
 
+    def ranges_overlap(self, range1, range2):
+        """
+        Check if two ranges overlap.
+        
+        :param range1: A tuple representing the range (min, max) of the first column.
+        :param range2: A tuple representing the range (min, max) of the second column.
+        :return: True if the ranges overlap, otherwise False.
+        """
+        min1, max1 = range1
+        min2, max2 = range2
+        return max(min1, min2) <= min(max1, max2)
+
     def check_merge_on(self, q1: pandas_query, q2: pandas_query):
         """
         Return a list of common columns between two queries for merging.
@@ -1306,7 +1322,15 @@ class pandas_query_pool():
         if len(cols) == 0 or len(cols) == min(len(q1.get_source().columns), len(q2.get_source().columns)):
             return None
 
-        return list(cols)
+        # Filter out columns with non-overlapping ranges
+        valid_cols = []
+        for col in cols:
+            range1 = data_ranges[q1.df_name].get(col, None)
+            range2 = data_ranges[q2.df_name].get(col, None)
+            if range1 and range2 and self.ranges_overlap(range1, range2): 
+                valid_cols.append(col)
+
+        return valid_cols if valid_cols else None
     
     def check_merge_left_right(self, q1: pandas_query, q2: pandas_query):
         """
@@ -1334,7 +1358,11 @@ class pandas_query_pool():
 
         for col in col2:
             if col in foreign_list:
-                return [foreign_list[col], col]
+                # Check if the ranges of the columns overlap
+                range1 = data_ranges[q1.df_name].get(foreign_list[col], None)
+                range2 = data_ranges[q2.df_name].get(col, None)
+                if range1 and range2 and self.ranges_overlap(range1, range2):
+                    return [foreign_list[col], col]
 
         return []
     
@@ -1488,9 +1516,8 @@ class pandas_query_pool():
             break
 
         return cur_queries
-    
-        
 
+    
 class TBL_source():
     '''
     The primary source that reads from the csv / accessible file, a wrapper of the pd.DataFrame class
@@ -1522,46 +1549,43 @@ class TBL_source():
         perform a random selection on the dataframe
         :return: an object of type selection
         '''
-        
         possible_selection_columns = self.source.columns.tolist()
+        possible_selection_columns = [col for col in possible_selection_columns if self.source[col].dtype in ['int64', 'float64']]
         if not possible_selection_columns:
             raise ValueError("No suitable numerical columns available for selection.")
         choice_col = random.choice(possible_selection_columns)
-
-        # Choose a random number within the range for the selected column
-        if self.source[choice_col].dtype.kind in 'if':  # Check if the column is float or int
-            min_val, max_val = data_ranges[self.name][choice_col]
-            if self.source[choice_col].dtype.kind == 'f':
-                num = round(random.uniform(min_val, max_val), 2) 
+        min_val, max_val = data_ranges[self.name][choice_col]
+        if self.source[choice_col].dtype.kind == 'f':
+            num = round(random.uniform(min_val, max_val), 2)
+        else:
+            num = random.randint(min_val, max_val)
+        if self.source[choice_col].dtype.kind == 'i':
+            if min_val == max_val:
+                op_choice = OP.eq
+            elif num == min_val:
+                op_choice = random.choice([OP.gt, OP.ge, OP.eq, OP.ne])
+            elif num == max_val:
+                op_choice = random.choice([OP.lt, OP.le, OP.eq, OP.ne])
             else:
-                num = random.randint(min_val, max_val)
-            if self.source[choice_col].dtype.kind == 'i':  # If it's an int
-                if min_val == max_val:
-                    op_choice = OP.eq
-                elif num == min_val:
-                    op_choice = random.choice([OP.gt, OP.ge, OP.eq, OP.ne])
-                elif num == max_val:
-                    op_choice = random.choice([OP.lt, OP.le, OP.eq, OP.ne])
-                else:
-                    op_choice = random.choice([OP.gt, OP.ge, OP.lt, OP.le, OP.eq, OP.ne])
-            else:  # For floats
-                if min_val == max_val:
-                    op_choice = OP.eq
-                elif num == min_val:
-                    op_choice = random.choice([OP.gt, OP.ge])
-                elif num == max_val:
-                    op_choice = random.choice([OP.lt, OP.le])
-                else:
-                    op_choice = random.choice([OP.gt, OP.ge, OP.lt, OP.le])
-        
-        elif self.source[choice_col].dtype == 'object' or self.source[choice_col].dtype == 'string':
-            startL = data_ranges[entity][choice_col]
-            num = random.choice(startL)  # starting char
-            op_choice = OP.startswith
+                op_choice = random.choice([OP.gt, OP.ge, OP.lt, OP.le, OP.eq, OP.ne])
+        else:
+            if min_val == max_val:
+                op_choice = OP.eq
+            elif num == min_val:
+                op_choice = random.choice([OP.gt, OP.ge])
+            elif num == max_val:
+                op_choice = random.choice([OP.lt, OP.le])
+            else:
+                op_choice = random.choice([OP.gt, OP.ge, OP.lt, OP.le])
 
-        cur_condition = condition(choice_col, op_choice, num) #don't need to check consistency since only a single condition
-
+        cur_condition = condition(choice_col, op_choice, num)    #don't need to check consistency since only one condition
         return selection(self.name, [cur_condition])
+        #removed selection with startswith condition on strings because too restrictive
+        """
+        elif self.source[choice_col].dtype == 'object' or self.source[choice_col].dtype == 'string':
+            num = random.choice(string.ascii_letters)  # starting char
+            op_choice = OP.startswith
+        """
 
     def get_a_projection(self):
 
@@ -1828,8 +1852,10 @@ if __name__ == '__main__':
         for prop, info in properties.items():
             if 'min' in info and 'max' in info:  # Check if min and max values are defined
                 ranges[prop] = (info['min'], info['max'])
+            """
             elif info['type'] == 'string':
                 ranges[prop] = (info.get('starting character'),)
+            """
         return ranges
 
     # Function to populate DataFrame with two rows of random data based on schema
@@ -2043,16 +2069,16 @@ if __name__ == '__main__':
     execute_unmerged_queries(dir=Export_Rout, filename="unmerged_query_execution_results.csv")
     execute_merged_queries(dir=Export_Rout, filename="merged_query_execution_results.csv")
 
-    #TODO: 1. make sure result set is non empty (adjust query complexity if necessary, execute output queries on TPC-H datasets in a separate file to check if there is an error with execute_unmerged(merged)_queries)
-    #TODO: if unable to execute one-line queries, try dividing output queries into multiple subqueries 
+    #TODO(done): 1. make sure result set is non empty (adjust query complexity if necessary, execute output queries on TPC-H datasets in a separate file to check if there is an error with execute_unmerged(merged)_queries)
+    #TODO(done): if unable to execute one-line queries, try dividing output queries into multiple subqueries 
     #TODO: 2. extend relational schema with date and enum type attributes with range constraints, generate queries with date and enum type conditions
-    #TODO: in relational schema, remove startswith range condition on strings 
-    #TODO: 3. review selection on strings to include pattern-matching (e.g. LIKE '%Montreal%') and startswith (e.g. LIKE 'A%)
+    #TODO(done): in relational schema, remove startswith range condition on strings 
+    #TODO(done): 3. review selection on strings to include pattern-matching (e.g. LIKE '%Montreal%') and startswith (e.g. LIKE 'A%)
     #TODO: review selection on dates to include range conditions (e.g. SHIPDATE between '1994-01-01' and '1994-12-31')
     #TODO: review selection on enums to include IN condition (e.g. ORDERPRIORITY IN ('1-URGENT', '2-HIGH'))
     #TODO: 4. if possible, make the input format for the relational schema more convenient (perhaps use PysimlpleGUI)
 
-    #non-empty result set
+    #non-empty result set (done)
     #TODO: for selections, no == or =! conditions on floats, only >, <, >=, <=
     #TODO: for selections, no > or >= max_value conditions and no < or <= min_value conditions on ints or floats
     #TODO: for selection conditions on floats, round to same number of decimal places as data ranges (e.g. round(random.uniform(min_val, max_val), 2))
