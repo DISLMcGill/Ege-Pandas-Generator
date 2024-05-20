@@ -1,0 +1,43 @@
+{
+    "entities": {
+        "customer": {
+            "properties": { "CUSTKEY": { "type": "int", "min": 1, "max": 100 }, "C_NAME": { "type": "string", "starting character": "a" }, "ADDRESS": { "type": "string", "starting character": "a" }, "NATIONKEY": { "type": "int", "min": 0, "max": 24 }, "PHONE": { "type": "string", "starting character": "a" }, "ACCTBAL": { "type": "float", "min": -917.25, "max": 9983.38 }, "MKTSEGMENT": { "type": "string", "starting character": "a" }, "C_COMMENT": { "type": "string", "starting character": "a" } },
+            "primary_key": "CUSTKEY",
+            "foreign_keys": { "NATIONKEY": "nation" }
+        },
+        "lineitem": {
+            "properties": { "ORDERKEY": { "type": "int", "min": 1, "max": 194 }, "PARTKEY": { "type": "int", "min": 450, "max": 198344 }, "SUPPKEY": { "type": "int", "min": 22, "max": 9983 }, "LINENUMBER": { "type": "int", "min": 1, "max": 7 }, "QUANTITY": { "type": "int", "min": 1, "max": 50 }, "EXTENDEDPRICE": { "type": "float", "min": 1606.52, "max": 88089.08 }, "DISCOUNT": { "type": "float", "min": 0.00, "max": 0.10 }, "TAX": { "type": "float", "min": 0.00, "max": 0.08 }, "RETURNFLAG": { "type": "string", "starting character": "a" }, "LINESTATUS": { "type": "string", "starting character": "a" }, "SHIPDATE": { "type": "date" }, "COMMITDATE": { "type": "date" }, "RECEIPTDATE": { "type": "date" }, "SHIPINSTRUCT": { "type": "string", "starting character": "a" }, "SHIPMODE": { "type": "string", "starting character": "a" }, "L_COMMENT": { "type": "string", "starting character": "a" } },
+            "primary_key": ["ORDERKEY", "PARTKEY", "SUPPKEY"],
+            "foreign_keys": { "ORDERKEY": "orders", "PARTKEY": "partsupp", "SUPPKEY": "partsupp" }
+        },
+
+        "nation": {
+            "properties": { "NATIONKEY": { "type": "int", "min": 0, "max": 24 }, "N_NAME": { "type": "string", "starting character": "a" }, "REGIONKEY": { "type": "int", "min": 0, "max": 4 }, "N_COMMENT": { "type": "string", "starting character": "a" } },
+            "primary_key": "NATIONKEY",
+            "foreign_keys": { "REGIONKEY": "region" }
+        },
+        "orders": {
+            "properties": { "ORDERKEY": { "type": "int", "min": 1, "max": 800 }, "CUSTKEY": { "type": "int", "min": 302, "max": 149641 }, "ORDERSTATUS": { "type": "string", "starting character": "a" }, "TOTALPRICE": { "type": "float", "min": 1156.67, "max": 355180.76 }, "ORDERDATE": { "type": "date" }, "ORDERPRIORITY": { "type": "string", "starting character": "a" }, "CLERK": { "type": "string", "starting character": "a" }, "SHIPPRIORITY": { "type": "int", "min": 0, "max": 0 }, "O_COMMENT": { "type": "string", "starting character": "a" } },
+            "primary_key": "ORDERKEY",
+            "foreign_keys": { "CUSTKEY": "customer" }
+        },
+        "part": {
+            "properties": { "PARTKEY": { "type": "int", "min": 1, "max": 200 }, "P_NAME": { "type": "string", "starting character": "a" }, "MFGR": { "type": "string", "starting character": "a" }, "BRAND": { "type": "string", "starting character": "a" }, "TYPE": { "type": "string", "starting character": "a" }, "SIZE": { "type": "int", "min": 1, "max": 50 }, "CONTAINER": { "type": "string", "starting character": "a" }, "RETAILPRICE": { "type": "float", "min": 901.00, "max": 1100.2 }, "PT_COMMENT": { "type": "string", "starting character": "a" } },
+            "primary_key": "PARTKEY"
+        },
+        "partsupp": {
+            "properties": { "PARTKEY": { "type": "int", "min": 1, "max": 50 }, "SUPPKEY": { "type": "int", "min": 2, "max": 7551 }, "AVAILQTY": { "type": "int", "min": 43, "max": 9988 }, "SUPPLYCOST": { "type": "float", "min": 14.78, "max": 996.12 }, "P_COMMENT": { "type": "string", "starting character": "a" } },
+            "primary_key": ["PARTKEY", "SUPPKEY"],
+            "foreign_keys": { "PARTKEY": "part", "SUPPKEY": "supplier" }
+        },
+        "region": {
+            "properties": { "REGIONKEY": { "type": "int", "min": 0, "max": 4 }, "R_NAME": { "type": "string", "starting character": "a" }, "R_COMMENT": { "type": "string", "starting character": "a" } },
+            "primary_key": "REGIONKEY"
+        },
+        "supplier": {
+            "properties": { "SUPPKEY": { "type": "int", "min": 1, "max": 200 }, "S_NAME": { "type": "string", "starting character": "a" }, "ADDRESS": { "type": "string", "starting character": "a" }, "NATIONKEY": { "type": "int", "min": 0, "max": 24 }, "PHONE": { "type": "string", "starting character": "a" }, "ACCTBAL": { "type": "float", "min": -966.20, "max": 9915.24 }, "S_COMMENT": { "type": "string", "starting character": "a" } },
+            "primary_key": "SUPPKEY",
+            "foreign_keys": { "NATIONKEY": "nation"}
+        }
+    }
+}

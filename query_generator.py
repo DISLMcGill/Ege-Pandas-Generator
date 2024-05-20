@@ -172,6 +172,31 @@ class condition():
         return condition(self.col, op, self.val)
         # self.op = op
 
+    def is_consistent_with(self, other: 'condition') -> bool:
+        """
+        Check if the current condition is logically consistent with another condition.
+        param other: The other condition to compare with.
+        return: True if the conditions are consistent, otherwise False.
+        """
+        if self.col != other.col:
+            return True  # Conditions on different columns are always consistent
+
+        if self.col == other.col:
+            # Check for logical consistency between the two conditions, avoid conditions like (x<3 and x>5)
+            if (self.op in [OP.le, OP.lt] and other.op in [OP.ge, OP.gt] and self.val <= other.val) or \
+               (self.op in [OP.ge, OP.gt] and other.op in [OP.le, OP.lt] and self.val >= other.val) or \
+               (self.op == OP.eq and other.op in [OP.lt,OP.le] and self.val >= other.val) or \
+                (self.op == OP.eq and other.op in [OP.gt,OP.ge] and self.val <= other.val) or \
+                (self.op in [OP.lt,OP.le] and other.op == OP.eq and self.val <= other.val) or \
+                (self.op in [OP.gt,OP.ge] and other.op == OP.eq and self.val >= other.val) or \
+               (self.op == OP.eq and other.op in [OP.ne] and self.val == other.val) or \
+               (self.op in [OP.ne] and other.op == OP.eq and self.val == other.val) or \
+               (self.op == OP.eq and other.op == OP.eq and self.val != other.val):
+                return False
+            
+        return True
+
+
     def __str__(self):
         return f"condition ({self.col} {self.op.value} {self.val} )"
 
@@ -276,6 +301,35 @@ class selection(operation):
         :return: The result of evaluating the selection.
         """
         return eval(self.to_str())
+    
+    def is_logically_consistent(self) -> bool:
+        """
+        Check if the conditions in the selection are logically consistent.
+        return: True if the conditions are consistent, otherwise False.
+        """
+        and_segments = []
+        current_segment = []
+        
+        #Separates the conditions based on | operators
+        for cond in self.conditions:
+            if isinstance(cond, OP_cond) and cond == OP_cond.OR:
+                if current_segment:
+                    and_segments.append(current_segment)
+                    current_segment = []
+            else:
+                current_segment.append(cond)
+        #Add the last segment
+        if current_segment:
+            and_segments.append(current_segment)
+        #Check for logical consistency within each segment
+        for segment in and_segments:
+            conditions_only = [c for c in segment if isinstance(c, condition)]
+            for i, cond1 in enumerate(conditions_only):
+                for j, cond2 in enumerate(conditions_only):
+                    if i != j and not cond1.is_consistent_with(cond2):
+                        return False
+                    
+        return True
 
 
 class merge(operation):
@@ -705,20 +759,35 @@ class pandas_query():
             possible_condition_columns[key] = []  # key: col name，value: condition object list
             for i in range(length):
                 if possible_selection_columns[key] == "int":
-                    min, max = data_ranges[self.df_name][key]  #data_ranges dict initialized in __main__, stores data ranges of each column for df_name
-                    cur_val = random.randint(min, max)
-                    OPs = [OP.gt, OP.ge, OP.le, OP.eq, OP.lt, OP.ne]
-
-                    cur_condition = condition(key, random.choice(OPs), cur_val)                                                    
+                    min_val, max_val = data_ranges[self.df_name][key]   #data_ranges dict initialized in __main__, stores data ranges of each column for df_name
+                    cur_val = random.randint(min_val, max_val)
+                    # Ensure no conditions are created with values out of range
+                    if min_val == max_val:
+                        op = OP.eq  
+                    elif cur_val == min_val:
+                        op = random.choice([OP.gt, OP.ge, OP.eq, OP.ne])
+                    elif cur_val == max_val:
+                        op = random.choice([OP.lt, OP.le, OP.eq, OP.ne])
+                    else:
+                        op = random.choice([OP.gt, OP.ge, OP.lt, OP.le, OP.eq, OP.ne])
+                    cur_condition = condition(key, op, cur_val)                                                    
                                                                                           
                 elif possible_selection_columns[key] == "float":
-                    min, max = data_ranges[self.df_name][key]
-                    cur_val = random.uniform(min, max)
-                    OPs = [OP.gt, OP.ge, OP.le, OP.eq, OP.lt, OP.ne]
+                    min_val, max_val = data_ranges[self.df_name][key]
+                    cur_val = round(random.uniform(min_val, max_val), 2)  # Assume 2 decimal places
+                    # Ensure no conditions are created with values out of range, no == or != operators for floats
+                    if min_val == max_val:
+                        op = OP.eq 
+                    elif cur_val == min_val:
+                        op = random.choice([OP.gt, OP.ge])
+                    elif cur_val == max_val:
+                        op = random.choice([OP.lt, OP.le])
+                    else:
+                        op = random.choice([OP.gt, OP.ge, OP.lt, OP.le])
 
-                    cur_condition = condition(key, random.choice(OPs), cur_val) 
+                    cur_condition = condition(key, op, cur_val) 
                 elif possible_selection_columns[key] == "string":
-                    cur_val = data_ranges[self.df_name][key] #starting char
+                    cur_val = data_ranges[self.df_name][key] #starting char gives empty result set, use random a-z char instead
                     cur_condition = condition(key, OP.startswith, cur_val)
 
                 possible_condition_columns[key].append(cur_condition)
@@ -796,22 +865,29 @@ class pandas_query():
                 possible_selection_operationsSrting = []
                 print("===== generating selection combinations =====")
                 for i in range(maxrange):
+                    while True:
+                        selection_length = random.randrange(1, len(possible_conditions_dict.keys()) + 2, 1) 
+                        cur_conditions = []
+                        cur_conditionsString = []
+                        for j in range(selection_length):
+                            cur_key = random.choice(list(possible_conditions_dict.keys()))  # key is col name
+                            cur_condition = random.choice(
+                                possible_conditions_dict[cur_key])  # cur_condition is list of conditions
+                            if cur_condition.op != OP.startswith: #int or float col
+                                cur_conditions.append(cur_condition)
+                                cur_conditions.append(random.choice([OP_cond.OR, OP_cond.AND]))
+                                
+                            else:
+                                cur_conditionsString.append(cur_condition)
+                                cur_conditionsString.append(random.choice([OP_cond.OR, OP_cond.AND]))
 
-                    selection_length = random.randrange(1, len(possible_conditions_dict.keys()) + 2, 1) 
-                    cur_conditions = []
-                    cur_conditionsString = []
-                    for j in range(selection_length):
-                        cur_key = random.choice(list(possible_conditions_dict.keys()))  # key is col name
-                        cur_condition = random.choice(
-                            possible_conditions_dict[cur_key])  # cur_condition is list of conditions
-                        if cur_condition.op != OP.startswith: #int col
-                            cur_conditions.append(cur_condition)
-                            cur_conditions.append(random.choice([OP_cond.OR, OP_cond.AND]))
+                        cur_conditions = cur_conditions[:-1]
+                        #check for logical consistency of cur_conditions
+                        new_selection = selection(self.df_name, cur_conditions)
+                        if new_selection.is_logically_consistent():
+                            break
                         else:
-                            cur_conditionsString.append(cur_condition)
-                            cur_conditionsString.append(random.choice([OP_cond.OR, OP_cond.AND]))
-
-                    cur_conditions = cur_conditions[:-1]
+                            continue
                     cur_conditionsString = cur_conditionsString[:-1]
                     possible_selection_operations.append(cur_conditions) #nested list [[<__main__.condition object at 0x1193dead0>, <OP_cond.OR: '|'>, <__main__.condition object at 0x1193df650>]]
                     possible_selection_operationsSrting.append(cur_conditionsString)
@@ -854,7 +930,7 @@ class pandas_query():
                 sampled_combo = [op for op in query_combo if not isinstance(op, group_by)]
                 sampled_combo = random.sample(sampled_combo, 1)
             elif query_complexity == 'medium':
-                sampled_combo = random.sample(query_combo, random.randint(2, 3))
+                sampled_combo = random.sample(query_combo, min(len(query_combo),random.randint(2, 3)))
                 # Ensure that each list with a group_by also contains an agg operation
                 if any(isinstance(op, group_by) for op in sampled_combo):
                     if not any(isinstance(op, agg) for op in sampled_combo):
@@ -879,7 +955,15 @@ class pandas_query():
                 sampled_combo = [op for op in sampled_combo if not isinstance(op, group_by) and not isinstance(op, agg)]
                 sampled_combo.append(group_by_op)
                 sampled_combo.append(agg_op)
-            
+
+            #Ensure selection comes before projection if both are present
+            if any(isinstance(op, selection) for op in sampled_combo) and any(isinstance(op, projection) for op in sampled_combo):
+                selection_op = next(op for op in sampled_combo if isinstance(op, selection))
+                projection_op = next(op for op in sampled_combo if isinstance(op, projection))
+                sampled_combo = [op for op in sampled_combo if not isinstance(op, selection) and not isinstance(op, projection)]
+                sampled_combo.append(selection_op)
+                sampled_combo.append(projection_op)
+
             new_generated_queries.append(sampled_combo)
 
         print("======= *** start iterating generated queries *** ======")
@@ -1069,9 +1153,16 @@ class pandas_query():
                     clocks[i] = 0
                     possible_new_ith_condition = new_cond[clocks[i]]
 
-                possible_cond.append(possible_new_ith_condition)
+                # Ensure only valid conditions for floats
+                if possible_new_ith_condition.op in [OP.eq, OP.ne] and possible_new_ith_condition.val == float:
+                    continue
 
-            new_conds.append(possible_cond)
+                possible_cond.append(possible_new_ith_condition)
+            #Only add logically consistent conditions
+            new_selection_op = selection(self.df_name, possible_cond)
+            if new_selection_op.is_logically_consistent():
+                new_conds.append(possible_cond)
+            
         random.shuffle(new_conds)
         return new_conds[:generate_num]
         
@@ -1431,6 +1522,7 @@ class TBL_source():
         perform a random selection on the dataframe
         :return: an object of type selection
         '''
+        
         possible_selection_columns = self.source.columns.tolist()
         if not possible_selection_columns:
             raise ValueError("No suitable numerical columns available for selection.")
@@ -1438,19 +1530,36 @@ class TBL_source():
 
         # Choose a random number within the range for the selected column
         if self.source[choice_col].dtype.kind in 'if':  # Check if the column is float or int
-            min_val, max_val = data_ranges[entity][choice_col]
-            num = random.uniform(min_val, max_val)
-            if self.source[choice_col].dtype.kind == 'i':  # If it's an int, round it
-                num = round(num)
-            OPs = [OP.gt, OP.ge, OP.le, OP.eq, OP.lt, OP.ne]
-            op_choice = random.choice(OPs)
+            min_val, max_val = data_ranges[self.name][choice_col]
+            if self.source[choice_col].dtype.kind == 'f':
+                num = round(random.uniform(min_val, max_val), 2) 
+            else:
+                num = random.randint(min_val, max_val)
+            if self.source[choice_col].dtype.kind == 'i':  # If it's an int
+                if min_val == max_val:
+                    op_choice = OP.eq
+                elif num == min_val:
+                    op_choice = random.choice([OP.gt, OP.ge, OP.eq, OP.ne])
+                elif num == max_val:
+                    op_choice = random.choice([OP.lt, OP.le, OP.eq, OP.ne])
+                else:
+                    op_choice = random.choice([OP.gt, OP.ge, OP.lt, OP.le, OP.eq, OP.ne])
+            else:  # For floats
+                if min_val == max_val:
+                    op_choice = OP.eq
+                elif num == min_val:
+                    op_choice = random.choice([OP.gt, OP.ge])
+                elif num == max_val:
+                    op_choice = random.choice([OP.lt, OP.le])
+                else:
+                    op_choice = random.choice([OP.gt, OP.ge, OP.lt, OP.le])
         
         elif self.source[choice_col].dtype == 'object' or self.source[choice_col].dtype == 'string':
             startL = data_ranges[entity][choice_col]
             num = random.choice(startL)  # starting char
             op_choice = OP.startswith
 
-        cur_condition = condition(choice_col, op_choice, num)
+        cur_condition = condition(choice_col, op_choice, num) #don't need to check consistency since only a single condition
 
         return selection(self.name, [cur_condition])
 
@@ -1513,35 +1622,40 @@ class TBL_source():
         param query_types: types of queries specified by the user
         :return: List[pandas_query]
         '''
-        queries = []
         
-        for _ in range(4):
-            q_gen_query = []
-            
-            if 'selection' in query_types:
-                q_gen_query.append(self.get_a_selection())
-            
-            if 'projection' in query_types:
-                q_gen_query.append(self.get_a_projection())
-            
-            #must have projection before group by (group by needs a complete df) and aggregation after
-            if 'group by' in query_types and 'projection' not in query_types:
-                q_gen_query.append(self.get_a_projection())   
-                q_gen_query.append(self.get_a_groupby())
-                q_gen_query.append(self.get_a_aggregation())
+        q_gen_query_1 = []
+        q_gen_query_2 = []
+        q_gen_query_3 = []
+        q_gen_query_4 = []
+        
+        if 'selection' in query_types:
+            q_gen_query_1.append(self.get_a_selection())
+            q_gen_query_2.append(self.get_a_selection())
+            q_gen_query_3.append(self.get_a_selection())
+            q_gen_query_4.append(self.get_a_selection())
+        
+        if 'projection' in query_types:
+            q_gen_query_2.append(self.get_a_projection())
+            q_gen_query_3.append(self.get_a_projection())
+            q_gen_query_4.append(self.get_a_projection())
+        
+        #must have projection before group by (group by needs a complete df) and aggregation after
+        if 'group by' in query_types and 'projection' not in query_types:
+            q_gen_query_3.append(self.get_a_projection())   
+            q_gen_query_3.append(self.get_a_groupby())
+            q_gen_query_3.append(self.get_a_aggregation())
+        
+        if 'aggregation' in query_types and 'group by' not in query_types:
+            q_gen_query_4.append(self.get_a_aggregation())
+        
+        q1 = pandas_query(q_gen_query=q_gen_query_1, source=self)
+        q2 = pandas_query(q_gen_query=q_gen_query_2, source=self)
+        q3 = pandas_query(q_gen_query=q_gen_query_3, source=self)
+        q4 = pandas_query(q_gen_query=q_gen_query_4, source=self)
 
-            #cannot have projection twice sincee it causes a keyerror
-            if 'group by' in query_types and 'projection' in query_types:
-                q_gen_query.append(self.get_a_groupby())
-                q_gen_query.append(self.get_a_aggregation())
-            
-            if 'aggregation' in query_types and 'group by' not in query_types:
-                q_gen_query.append(self.get_a_aggregation())
-            
-            queries.append(pandas_query(q_gen_query=q_gen_query, source=self))
+        queries = [q1,q2,q3,q4]
         
         return queries
-    
 
 # This is just testing for TPC-H from previous model
 def test_patients():
@@ -1792,19 +1906,56 @@ if __name__ == '__main__':
     pandas_queries_list.generate_possible_merge_operations(max_merge=num_merges, max_q=num_queries)
     pandas_queries_list.save_merged_examples(dir=Export_Rout, filename="merged_queries_auto_sf0000")
     
+    # Load TPC-H files into DataFrames
+    customer = pd.read_csv("./benchmarks/customer.csv")
+    lineitem = pd.read_csv("./benchmarks/lineitem.csv")
+    nation = pd.read_csv("./benchmarks/nation.csv")
+    orders = pd.read_csv("./benchmarks/orders.csv")
+    part = pd.read_csv("./benchmarks/part.csv")
+    partsupp = pd.read_csv("./benchmarks/partsupp.csv")
+    region = pd.read_csv("./benchmarks/region.csv")
+    supplier = pd.read_csv("./benchmarks/supplier.csv")
+    
+    """
+    #use .tbl files for query execution instead since .csv files contain small subset of data
+    customer = pd.read_csv("./benchmarks/customer.tbl", delimiter='|', header=None, engine='python')
+    customer.drop(customer.columns[-1], axis=1, inplace=True)
+    customer.columns = ['CUSTKEY', 'C_NAME', 'ADDRESS', 'NATIONKEY', 'PHONE', 'ACCTBAL', 'MKTSEGMENT', 'C_COMMENT']
+
+    lineitem = pd.read_csv("./benchmarks/lineitem.tbl", delimiter='|', header=None, engine='python')
+    lineitem.drop(lineitem.columns[-1], axis=1, inplace=True)
+    lineitem.columns = ['ORDERKEY', 'PARTKEY', 'SUPPKEY', 'LINENUMBER', 'QUANTITY', 'EXTENDEDPRICE', 'DISCOUNT', 'TAX', 'RETURNFLAG', 'LINESTATUS', 'SHIPDATE', 'COMMITDATE', 'RECEIPTDATE', 'SHIPINSTRUCT', 'SHIPMODE', 'L_COMMENT']
+
+    nation = pd.read_csv("./benchmarks/nation.tbl", delimiter='|', header=None, engine='python')
+    nation.drop(nation.columns[-1], axis=1, inplace=True)
+    nation.columns = ['NATIONKEY', 'N_NAME', 'REGIONKEY', 'N_COMMENT']
+
+    orders = pd.read_csv("./benchmarks/orders.tbl", delimiter='|', header=None, engine='python')
+    orders.drop(orders.columns[-1], axis=1, inplace=True)
+    orders.columns = ['ORDERKEY', 'CUSTKEY', 'ORDERSTATUS', 'TOTALPRICE', 'ORDERDATE', 'ORDERPRIORITY', 'CLERK', 'SHIPPRIORITY', 'O_COMMENT']
+
+    part = pd.read_csv("./benchmarks/part.tbl", delimiter='|', header=None, engine='python')
+    part.drop(part.columns[-1], axis=1, inplace=True)
+    part.columns = ['PARTKEY', 'P_NAME', 'MFGR', 'BRAND', 'TYPE', 'SIZE', 'CONTAINER', 'RETAILPRICE', 'PT_COMMENT']
+
+    partsupp = pd.read_csv("./benchmarks/partsupp.tbl", delimiter='|', header=None, engine='python')
+    partsupp.drop(partsupp.columns[-1], axis=1, inplace=True)
+    partsupp.columns = ['PARTKEY', 'SUPPKEY', 'AVAILQTY', 'SUPPLYCOST', 'P_COMMENT']
+
+    region = pd.read_csv("./benchmarks/region.tbl", delimiter='|', header=None, engine='python')
+    region.drop(region.columns[-1], axis=1, inplace=True)
+    region.columns = ['REGIONKEY', 'R_NAME', 'R_COMMENT']
+
+    supplier = pd.read_csv("./benchmarks/supplier.tbl", delimiter='|', header=None, engine='python')
+    supplier.drop(supplier.columns[-1], axis=1, inplace=True)
+    supplier.columns = ['SUPPKEY', 'S_NAME', 'ADDRESS', 'NATIONKEY', 'PHONE', 'ACCTBAL', 'S_COMMENT']
+    """
+    
     def execute_unmerged_queries(dir, filename):
         """execute unmerged queries in unmerged_queries_auto_sf0000.txt on the 
         datasets in benchmarks folder (customer.csv, lineitem.csv, etc.)
-        
-        customer = pd.read_csv("./benchmarks/customer.csv")
-        lineitem = pd.read_csv("./benchmarks/lineitem.csv")
-        nation = pd.read_csv("./benchmarks/nation.csv")
-        orders = pd.read_csv("./benchmarks/orders.csv")
-        part = pd.read_csv("./benchmarks/part.csv")
-        partsupp = pd.read_csv("./benchmarks/partsupp.csv")
-        region = pd.read_csv("./benchmarks/region.csv")
-        supplier = pd.read_csv("./benchmarks/supplier.csv")
         """
+        
         # Read the unmerged queries file
         with open("results/unmerged_queries_auto_sf0000.txt", 'r') as file:
             unmerged_queries = file.readlines()
@@ -1822,16 +1973,9 @@ if __name__ == '__main__':
         # Iterate over each unmerged queries and execute the query on the appropriate dataset
         for query in unmerged_queries:
             query_string = query.split('=', 1)[1].strip()
-            print(query_string)
-            local_dict = {
-                'dataframes': dataframes,
-                'data_ranges': data_ranges,
-                'foreign_keys': foreign_keys,
-                'tbl_sources': tbl_sources         #tbl_source = wrapper class for df with its foreign keys
-            }
 
             start = time.time()
-            result = pd.eval(query_string, local_dict=local_dict)
+            result = pd.eval(query_string)
             end = time.time()
 
             print(result)
@@ -1873,16 +2017,9 @@ if __name__ == '__main__':
         # Iterate over each merged queries and execute the query on the appropriate dataset
         for query in merged_queries:
             query_string = query.split('=', 1)[1].strip()
-            print(query_string)
-            local_dict = {
-                'dataframes': dataframes,
-                'data_ranges': data_ranges,
-                'foreign_keys': foreign_keys,
-                'tbl_sources': tbl_sources         #tbl_source = wrapper class for df with its foreign keys
-            }
 
             start = time.time()
-            result = pd.eval(query_string, local_dict=local_dict)
+            result = pd.eval(query_string)
             end = time.time()
 
             print(result)
@@ -1914,8 +2051,9 @@ if __name__ == '__main__':
     #TODO: review selection on dates to include range conditions (e.g. SHIPDATE between '1994-01-01' and '1994-12-31')
     #TODO: review selection on enums to include IN condition (e.g. ORDERPRIORITY IN ('1-URGENT', '2-HIGH'))
     #TODO: 4. if possible, make the input format for the relational schema more convenient (perhaps use PysimlpleGUI)
-    #Q: should I push my changes to a separate repository or to another branch?
 
-    #to get more queries with non-empty result set, modify gen_base_queries to generate base queries with selections and projections only
-    #possibly generate different base queries depending on the query complexity (e.g. simple, medium, complex)
+    #non-empty result set
+    #TODO: for selections, no == or =! conditions on floats, only >, <, >=, <=
+    #TODO: for selections, no > or >= max_value conditions and no < or <= min_value conditions on ints or floats
+    #TODO: for selection conditions on floats, round to same number of decimal places as data ranges (e.g. round(random.uniform(min_val, max_val), 2))
         

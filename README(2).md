@@ -17,7 +17,8 @@ Python file would contain a script that loads data and executes generated querie
 ## Quick Start
 ### Prerequisites
 - Python 3.6+
-- `pip install -r requirements.txt`
+- Run the query generator with the following command:
+- `python query_generator.py --schema data_structure.json --params query_parameters.json`
 
 ### Generating Queries
 1. **Generate Sample Queries:**
