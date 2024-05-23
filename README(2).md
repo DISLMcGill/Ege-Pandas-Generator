@@ -122,7 +122,7 @@ May 23rd meeting:
 	-for selection conditions on floats, round to 2 decimal places
 	-do not generate merge queries on columns with different data ranges (add ranges_overlap method to pandas_query_pool and call it when checking merge columns)
 	-66/1500 for unmerged, 49/500 for merged queries with empty result set
-	-in relational schema, changed startswith condition on strings to include a list of possible starting characters or substrings
+	-in relational schema, changed starting character range condition on strings to include a list of possible starting characters or substrings
 
 -extend relational schema with date and enum type attributes with range constraints
 -generate queries with date and enum type conditions:
