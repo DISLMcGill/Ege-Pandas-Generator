@@ -1,0 +1,111 @@
+{
+    "entities": {
+        "customer": {
+            "properties": {
+                "CUSTKEY": {
+                    "type": "int",
+                    "min": 1,
+                    "max": 100
+                },
+                "C_NAME": {
+                    "type": "string",
+                    "starting character": [
+                        "C"
+                    ]
+                },
+                "ADDRESS": {
+                    "type": "string",
+                    "starting character": [
+                        "I",
+                        "H",
+                        "X",
+                        "s",
+                        "9",
+                        "n",
+                        "z",
+                        "K",
+                        "T",
+                        "u",
+                        "Q",
+                        "O",
+                        "7",
+                        "o",
+                        "M",
+                        "c",
+                        "i",
+                        "3",
+                        "8",
+                        "L",
+                        "g"
+                    ]
+                },
+                "NATIONKEY": {
+                    "type": "int",
+                    "min": 0,
+                    "max": 23
+                },
+                "PHONE": {
+                    "type": "string",
+                    "starting character": [
+                        "1",
+                        "2",
+                        "3",
+                        "25-",
+                        "13-",
+                        "27-",
+                        "18-",
+                        "22-"
+                    ]
+                },
+                "ACCTBAL": {
+                    "type": ""
+                },
+                "MKTSEGMENT": {
+                    "type": "enum",
+                    "values": [
+                        "BUILDING",
+                        "AUTOMOBILE",
+                        "MACHINERY",
+                        "HOUSEHOLD",
+                        "FURNITURE"
+                    ]
+                },
+                "C_COMMENT": {
+                    "type": "string",
+                    "starting character": [
+                        "i",
+                        " ",
+                        "s",
+                        "l",
+                        "r",
+                        "c",
+                        "t",
+                        "e",
+                        "o",
+                        "n",
+                        "a",
+                        "p",
+                        "h",
+                        "u",
+                        "k",
+                        "g",
+                        "y"
+                    ]
+                }
+            },
+            "primary_key": "CUSTKEY",
+            "foreign_keys": {
+                "NATIONKEY": "nation"
+            }
+        },
+        "nation": {
+            "properties": { "NATIONKEY": { "type": "int", "min": 0, "max": 24 }, "N_NAME": { "type": "string", "starting character": ["I", "A", "C", "E", "J", "M", "R", "U", "B", "F", "G", "K", "P", "S", "V"] }, "REGIONKEY": { "type": "int", "min": 0, "max": 4 }, "N_COMMENT": { "type": "string", "starting character": [" ", "y", "e", "r", "s", "a", "v", "l", "n", "o", "i", "p", "c", "u", "t", "h"] } },
+            "primary_key": "NATIONKEY",
+            "foreign_keys": { "REGIONKEY": "region" }
+        },
+        "region": {
+            "properties": { "REGIONKEY": { "type": "int", "min": 0, "max": 4 }, "R_NAME": { "type": "string", "starting character": ["A", "E", "M", "AFR", "AME", "ASI"] }, "R_COMMENT": { "type": "string", "starting character": ["l", "h", "g", "u"] } },
+            "primary_key": "REGIONKEY"
+        }
+    }
+}

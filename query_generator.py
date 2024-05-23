@@ -140,6 +140,7 @@ class OP(Enum):
     eq = "=="
     ne = "!="
     startswith = ".str.startswith"
+    in_op = "in"
 
 
 class OP_cond(Enum):
@@ -191,7 +192,9 @@ class condition():
                 (self.op in [OP.gt,OP.ge] and other.op == OP.eq and self.val >= other.val) or \
                (self.op == OP.eq and other.op in [OP.ne] and self.val == other.val) or \
                (self.op in [OP.ne] and other.op == OP.eq and self.val == other.val) or \
-               (self.op == OP.eq and other.op == OP.eq and self.val != other.val):
+               (self.op == OP.eq and other.op == OP.eq and self.val != other.val) or \
+                (self.op == OP.startswith and other.op == OP.startswith and self.val != other.val) or \
+                 (self.op == OP.in_op and other.op == OP.in_op and self.val != other.val):
                 return False
             
         return True
@@ -252,13 +255,23 @@ class selection(operation):
         if len(self.conditions) == 1:
             cond = self.conditions[0]
             if df2.__eq__("F"):
-                if cond.op.value != OP.startswith.value:
-                    cur_condition = f"{self.df_name}['{cond.col}'] {cond.op.value} {cond.val}"
+                if cond.op.value != OP.startswith.value and cond.op.value != OP.in_op.value:
+                    if isinstance(cond.val, str) and cond.val.count('-') == 2:  # Check if value is a date string
+                        cur_condition = f"{self.df_name}['{cond.col}'] {cond.op.value} '{cond.val}'"
+                    else:
+                        cur_condition = f"{self.df_name}['{cond.col}'] {cond.op.value} {cond.val}"
+                elif cond.op.value == OP.in_op.value:
+                    cur_condition = f"{self.df_name}['{cond.col}'].isin({cond.val})"
                 else:
                     cur_condition = f"{self.df_name}['{cond.col}']{cond.op.value}('{cond.val}')"
             else:
-                if cond.op.value != OP.startswith.value:
-                    cur_condition = f"df{df2}['{cond.col}'] {cond.op.value} {cond.val}"
+                if cond.op.value != OP.startswith.value and cond.op.value != OP.in_op.value:
+                    if isinstance(cond.val, str) and cond.val.count('-') == 2:  # Check if value is a date string
+                        cur_condition = f"{self.df_name}['{cond.col}'] {cond.op.value} '{cond.val}'"
+                    else:
+                        cur_condition = f"{self.df_name}['{cond.col}'] {cond.op.value} {cond.val}"
+                elif cond.op.value == OP.in_op.value:
+                    cur_condition = f"{df2}['{cond.col}'].isin({cond.val})"
                 else:
                     cur_condition = f"df{df2}['{cond.col}']{cond.op.value}('{cond.val}')"
 
@@ -272,13 +285,23 @@ class selection(operation):
                 cur_condition += " " + cond.value + " "
             else:
                 if df2.__eq__("F"):
-                    if cond.op.value != OP.startswith.value:
-                        cur_condition += f"({self.df_name}['{cond.col}'] {cond.op.value} ({cond.val}))"
+                    if cond.op.value != OP.startswith.value and cond.op.value != OP.in_op.value:
+                        if isinstance(cond.val, str) and cond.val.count('-') == 2:  # Check if value is a date string
+                            cur_condition = f"{self.df_name}['{cond.col}'] {cond.op.value} '{cond.val}'"
+                        else:
+                            cur_condition = f"{self.df_name}['{cond.col}'] {cond.op.value} {cond.val}"
+                    elif cond.op.value == OP.in_op.value:
+                        cur_condition += f"({self.df_name}['{cond.col}'].isin({cond.val}))"
                     else:
                         cur_condition += f"({self.df_name}['{cond.col}']{cond.op.value}('{cond.val}'))"
                 else:
-                    if cond.op.value != OP.startswith.value:
-                        cur_condition += f"(df{df2}['{cond.col}'] {cond.op.value} ({cond.val}))"
+                    if cond.op.value != OP.startswith.value and cond.op.value != OP.in_op.value:
+                        if isinstance(cond.val, str) and cond.val.count('-') == 2:  # Check if value is a date string
+                            cur_condition = f"{self.df_name}['{cond.col}'] {cond.op.value} '{cond.val}'"
+                        else:
+                            cur_condition = f"{self.df_name}['{cond.col}'] {cond.op.value} {cond.val}"
+                    elif cond.op.value == OP.in_op.value:
+                        cur_condition += f"(df{df2}['{cond.col}'].isin({cond.val}))"
                     else:
                         cur_condition += f"(df{df2}['{cond.col}']{cond.op.value}('{cond.val}'))"
 
@@ -749,9 +772,18 @@ class pandas_query():
                 possible_selection_columns[col] = "int"
             elif pd.api.types.is_float_dtype(source_df[col]):
                 possible_selection_columns[col] = "float"
-
-            elif pd.api.types.is_string_dtype(source_df[col]):
-                continue
+            elif pd.api.types.is_string_dtype(source_df[col]) and col in data_ranges[self.df_name] and not isinstance(data_ranges[self.df_name][col], list):
+                # Check if the string column contains dates
+                sample_value = source_df[col].iloc[0]
+                try:
+                    pd.to_datetime(sample_value, format='%Y-%m-%d')
+                    possible_selection_columns[col] = "date"
+                except ValueError:
+                    possible_selection_columns[col] = "string"
+            #enum values are stored as lists in data_ranges
+            elif col in data_ranges[self.df_name] and isinstance(data_ranges[self.df_name][col], list):
+                possible_selection_columns[col] = "enum"
+            
 
         possible_condition_columns = {}
 
@@ -787,12 +819,34 @@ class pandas_query():
 
                     cur_condition = condition(key, op, cur_val)
 
-                #removed selection with startswith condition on strings because too restrictive
-                """
                 elif possible_selection_columns[key] == "string":
-                    cur_val = random.choice(string.ascii_letters)     #starting char gives empty result set, use random a-z char instead
+                    cur_val = random.choice(data_ranges[self.df_name][key][0]) #starting char
                     cur_condition = condition(key, OP.startswith, cur_val)
-                """
+
+                elif possible_selection_columns[key] == "date":
+                    min_val, max_val = data_ranges[self.df_name][key]
+                    min_date = pd.to_datetime(min_val, format='%Y-%m-%d')
+                    max_date = pd.to_datetime(max_val, format='%Y-%m-%d')
+                    cur_val = pd.to_datetime(random.choice(pd.date_range(min_date, max_date))).strftime('%Y-%m-%d')
+                    if min_val == max_val:
+                        op = OP.eq
+                    elif cur_val == min_val:
+                        op = random.choice([OP.gt, OP.ge])
+                    elif cur_val == max_val:
+                        op = random.choice([OP.lt, OP.le])
+                    else:
+                        op = random.choice([OP.gt, OP.ge, OP.lt, OP.le])
+                    cur_condition = condition(key, op, cur_val)
+
+                elif possible_selection_columns[key] == "enum":
+                    if random.choice([True, False]):  # Randomly choose between == and IN condition
+                        cur_val = f"'{random.choice(data_ranges[self.df_name][key])}'"
+                        op = random.choice([OP.eq, OP.ne])
+                        cur_condition = condition(key, op, cur_val)
+                    else:
+                        num_in_values = random.randint(2, len(data_ranges[self.df_name][key]))
+                        in_values = [val for val in random.sample(data_ranges[self.df_name][key], num_in_values)]
+                        cur_condition = condition(key, OP.in_op, in_values)
                 
                 possible_condition_columns[key].append(cur_condition)
 
@@ -873,26 +927,39 @@ class pandas_query():
                         selection_length = random.randrange(1, len(possible_conditions_dict.keys()) + 2, 1) 
                         cur_conditions = []
                         cur_conditionsString = []
+                        and_count = 0  # count the number of & operators
                         for j in range(selection_length):
                             cur_key = random.choice(list(possible_conditions_dict.keys()))  # key is col name
                             cur_condition = random.choice(
                                 possible_conditions_dict[cur_key])  # cur_condition is list of conditions
-                            if cur_condition.op != OP.startswith: #int or float col
+                            
+                            if cur_condition.op != OP.startswith:  # int or float col
                                 cur_conditions.append(cur_condition)
-                                cur_conditions.append(random.choice([OP_cond.OR, OP_cond.AND]))
-                                
+                                if and_count < 2:
+                                    cur_conditions.append(random.choice([OP_cond.OR, OP_cond.AND]))
+                                    if cur_conditions[-1] == OP_cond.AND:
+                                        and_count += 1
+                                else:
+                                    cur_conditions.append(OP_cond.OR)
                             else:
                                 cur_conditionsString.append(cur_condition)
-                                cur_conditionsString.append(random.choice([OP_cond.OR, OP_cond.AND]))
+                                if and_count < 2:
+                                    cur_conditionsString.append(random.choice([OP_cond.OR, OP_cond.AND]))
+                                    if cur_conditionsString[-1] == OP_cond.AND:
+                                        and_count += 1
+                                else:
+                                    cur_conditionsString.append(OP_cond.OR)
 
                         cur_conditions = cur_conditions[:-1]
+                        cur_conditionsString = cur_conditionsString[:-1]
                         #check for logical consistency of cur_conditions
                         new_selection = selection(self.df_name, cur_conditions)
-                        if new_selection.is_logically_consistent():
+                        new_selection_string = selection(self.df_name, cur_conditionsString)
+                        if new_selection.is_logically_consistent() and new_selection_string.is_logically_consistent():
                             break
                         else:
                             continue
-                    cur_conditionsString = cur_conditionsString[:-1]
+
                     possible_selection_operations.append(cur_conditions) #nested list [[<__main__.condition object at 0x1193dead0>, <OP_cond.OR: '|'>, <__main__.condition object at 0x1193df650>]]
                     possible_selection_operationsSrting.append(cur_conditionsString)
                 
@@ -1147,6 +1214,12 @@ class pandas_query():
             for i, new_cond in enumerate(possible_new_conditions):
 
                 if isinstance(new_cond, OP_cond):
+                    #Limit number of & operators to 2 in each seleciton
+                    if new_cond == OP_cond.AND:
+                        if and_count >= 2:
+                            continue
+                        else:
+                            and_count += 1
                     cur = random.choice([OP_cond.OR, OP_cond.AND])
                     possible_cond.append(cur)
                     continue
@@ -1327,8 +1400,12 @@ class pandas_query_pool():
         for col in cols:
             range1 = data_ranges[q1.df_name].get(col, None)
             range2 = data_ranges[q2.df_name].get(col, None)
-            if range1 and range2 and self.ranges_overlap(range1, range2): 
-                valid_cols.append(col)
+            if range1 and range2:
+                # Check if column types are int or float
+                if pd.api.types.is_integer_dtype(q1.get_source()[col]) or pd.api.types.is_float_dtype(q1.get_source()[col]):
+                    if pd.api.types.is_integer_dtype(q2.get_source()[col]) or pd.api.types.is_float_dtype(q2.get_source()[col]):
+                        if self.ranges_overlap(range1, range2):
+                            valid_cols.append(col)
 
         return valid_cols if valid_cols else None
     
@@ -1358,11 +1435,14 @@ class pandas_query_pool():
 
         for col in col2:
             if col in foreign_list:
-                # Check if the ranges of the columns overlap
                 range1 = data_ranges[q1.df_name].get(foreign_list[col], None)
                 range2 = data_ranges[q2.df_name].get(col, None)
-                if range1 and range2 and self.ranges_overlap(range1, range2):
-                    return [foreign_list[col], col]
+                if range1 and range2:
+                    # Check if column types are int or float
+                    if pd.api.types.is_integer_dtype(q1.get_source()[foreign_list[col]]) or pd.api.types.is_float_dtype(q1.get_source()[foreign_list[col]]):
+                        if pd.api.types.is_integer_dtype(q2.get_source()[col]) or pd.api.types.is_float_dtype(q2.get_source()[col]):
+                            if self.ranges_overlap(range1, range2):
+                                return [foreign_list[col], col]
 
         return []
     
@@ -1550,15 +1630,16 @@ class TBL_source():
         :return: an object of type selection
         '''
         possible_selection_columns = self.source.columns.tolist()
-        possible_selection_columns = [col for col in possible_selection_columns if self.source[col].dtype in ['int64', 'float64']]
         if not possible_selection_columns:
             raise ValueError("No suitable numerical columns available for selection.")
         choice_col = random.choice(possible_selection_columns)
-        min_val, max_val = data_ranges[self.name][choice_col]
-        if self.source[choice_col].dtype.kind == 'f':
-            num = round(random.uniform(min_val, max_val), 2)
-        else:
-            num = random.randint(min_val, max_val)
+
+        if self.source[choice_col].dtype.kind in 'if':  # Check if the column is float or int
+            min_val, max_val = data_ranges[entity][choice_col]
+            num = random.uniform(min_val, max_val)
+            if self.source[choice_col].dtype.kind == 'i':  # If it's an int, round it
+                num = round(num)
+        
         if self.source[choice_col].dtype.kind == 'i':
             if min_val == max_val:
                 op_choice = OP.eq
@@ -1568,7 +1649,8 @@ class TBL_source():
                 op_choice = random.choice([OP.lt, OP.le, OP.eq, OP.ne])
             else:
                 op_choice = random.choice([OP.gt, OP.ge, OP.lt, OP.le, OP.eq, OP.ne])
-        else:
+
+        elif self.source[choice_col].dtype.kind == 'f':
             if min_val == max_val:
                 op_choice = OP.eq
             elif num == min_val:
@@ -1577,15 +1659,43 @@ class TBL_source():
                 op_choice = random.choice([OP.lt, OP.le])
             else:
                 op_choice = random.choice([OP.gt, OP.ge, OP.lt, OP.le])
+        
+        elif (self.source[choice_col].dtype == 'object' or self.source[choice_col].dtype == 'string') and not isinstance(data_ranges[self.name][choice_col], list):
+             # Check if the string column contains dates
+            sample_value = self.source[choice_col].iloc[0]
+            try:
+                pd.to_datetime(sample_value, format='%Y-%m-%d')
+                min_val, max_val = data_ranges[self.name][choice_col]
+                min_date = pd.to_datetime(min_val, format='%Y-%m-%d')
+                max_date = pd.to_datetime(max_val, format='%Y-%m-%d')
+                num = pd.to_datetime(random.choice(pd.date_range(min_date, max_date))).strftime('%Y-%m-%d')
+                if min_date == max_date:
+                    op_choice = OP.eq
+                elif num == min_date:
+                    op_choice = random.choice([OP.gt, OP.ge])
+                elif num == max_date:
+                    op_choice = random.choice([OP.lt, OP.le])
+                else:
+                    op_choice = random.choice([OP.gt, OP.ge, OP.lt, OP.le])
+            except ValueError:
+                startL = data_ranges[self.name][choice_col][0]
+                num = random.choice(startL)  # starting char
+                op_choice = OP.startswith
 
+        #enum values are stored in lists in data ranges
+        elif (self.source[choice_col].dtype == 'object' or self.source[choice_col].dtype == 'string') and isinstance(data_ranges[self.name][choice_col], list):
+            if random.choice([True, False]):
+                num = f"'{random.choice(data_ranges[self.name][choice_col])}'"
+                op_choice = random.choice([OP.eq, OP.ne])
+            else:
+                num_in_values = random.randint(2, len(data_ranges[self.name][choice_col]))
+                in_values = [val for val in random.sample(data_ranges[self.name][choice_col], num_in_values)]
+                op_choice = OP.in_op
+                num = in_values
+        
         cur_condition = condition(choice_col, op_choice, num)    #don't need to check consistency since only one condition
         return selection(self.name, [cur_condition])
-        #removed selection with startswith condition on strings because too restrictive
-        """
-        elif self.source[choice_col].dtype == 'object' or self.source[choice_col].dtype == 'string':
-            num = random.choice(string.ascii_letters)  # starting char
-            op_choice = OP.startswith
-        """
+        
 
     def get_a_projection(self):
 
@@ -1668,6 +1778,12 @@ class TBL_source():
             q_gen_query_3.append(self.get_a_projection())   
             q_gen_query_3.append(self.get_a_groupby())
             q_gen_query_3.append(self.get_a_aggregation())
+            q_gen_query_4.append(self.get_a_aggregation())
+        
+        if 'group by' in query_types and 'projection' in query_types:
+            q_gen_query_3.append(self.get_a_groupby())
+            q_gen_query_3.append(self.get_a_aggregation())
+            q_gen_query_4.append(self.get_a_aggregation())
         
         if 'aggregation' in query_types and 'group by' not in query_types:
             q_gen_query_4.append(self.get_a_aggregation())
@@ -1852,10 +1968,10 @@ if __name__ == '__main__':
         for prop, info in properties.items():
             if 'min' in info and 'max' in info:  # Check if min and max values are defined
                 ranges[prop] = (info['min'], info['max'])
-            """
             elif info['type'] == 'string':
                 ranges[prop] = (info.get('starting character'),)
-            """
+            elif info['type'] == 'enum':
+                ranges[prop] = (info['values'])
         return ranges
 
     # Function to populate DataFrame with two rows of random data based on schema
@@ -1870,6 +1986,12 @@ if __name__ == '__main__':
                     row[column] = round(random.uniform(properties['min'], properties['max']), 2)
                 elif properties['type'] == 'string':
                     row[column] = ''.join(random.choices(string.ascii_letters, k=10))
+                elif properties['type'] == 'enum':
+                    row[column] = random.choice(properties['values'])
+                elif properties['type'] == 'date':
+                    min_date = pd.to_datetime(properties['min'])
+                    max_date = pd.to_datetime(properties['max'])
+                    row[column] = pd.to_datetime(random.choice(pd.date_range(min_date, max_date))).strftime('%Y-%m-%d')
             rows.append(row)
         return pd.DataFrame(rows)
 
@@ -2071,15 +2193,17 @@ if __name__ == '__main__':
 
     #TODO(done): 1. make sure result set is non empty (adjust query complexity if necessary, execute output queries on TPC-H datasets in a separate file to check if there is an error with execute_unmerged(merged)_queries)
     #TODO(done): if unable to execute one-line queries, try dividing output queries into multiple subqueries 
-    #TODO: 2. extend relational schema with date and enum type attributes with range constraints, generate queries with date and enum type conditions
-    #TODO(done): in relational schema, remove startswith range condition on strings 
-    #TODO(done): 3. review selection on strings to include pattern-matching (e.g. LIKE '%Montreal%') and startswith (e.g. LIKE 'A%)
-    #TODO: review selection on dates to include range conditions (e.g. SHIPDATE between '1994-01-01' and '1994-12-31')
-    #TODO: review selection on enums to include IN condition (e.g. ORDERPRIORITY IN ('1-URGENT', '2-HIGH'))
+    #TODO(done): 2. extend relational schema with date and enum type attributes with range constraints
+    #TODO(done): in relational schema, change startswith range condition on strings to include a list of characters or substrings
+    #TODO(done): check first 30 invalid queries 
+    #TODO(done): 3. add startswith selection condition on strings (either one character or substring)
+    #TODO: review selection on dates to include range conditions (e.g. SHIPDATE between '1994-01-01' and '1994-12-31'): >, <, >=, <= (no == or !=)
+    #TODO: review selection on enums to include IN condition (e.g. ORDERPRIORITY IN ('1-URGENT', '2-HIGH')): ==, !=, IN
     #TODO: 4. if possible, make the input format for the relational schema more convenient (perhaps use PysimlpleGUI)
 
     #non-empty result set (done)
     #TODO: for selections, no == or =! conditions on floats, only >, <, >=, <=
     #TODO: for selections, no > or >= max_value conditions and no < or <= min_value conditions on ints or floats
     #TODO: for selection conditions on floats, round to same number of decimal places as data ranges (e.g. round(random.uniform(min_val, max_val), 2))
+    
         
