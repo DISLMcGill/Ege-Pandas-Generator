@@ -133,3 +133,5 @@ May 23rd meeting:
 	-large variation in number of False merged queries
 -if possible, make the input format for the relational schema more convenient (perhaps use PySimpleGUI)
 
+-TODO: in the execution metrics, include query complexity and # of each type of operation
+

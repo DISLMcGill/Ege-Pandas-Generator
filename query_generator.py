@@ -1362,6 +1362,103 @@ class pandas_query_pool():
         print(f" ##### Successfully write the unmerged queries into file {dir}/{filename}.txt #####")
         f.close()
 
+    def save_unmerged_examples_multiline(self, dir, filename):
+        try:
+            f = open(f"{dir}/{filename}.txt", "a")
+        except:
+            filepath = f"{dir}/{filename}.txt"
+            os.makedirs(os.path.dirname(filepath), exist_ok=True)
+            f = open(f"{dir}/{filename}.txt", "a")
+
+        count = 0
+
+        for q in self.un_merged_queries:
+            strs = q.query_string #"PLAYER[PLAYER['National_name'] .str.startswith('K')][['National_name','Name','General_position']].agg('count')"
+            try:
+                p = eval(q.query_string)
+            except Exception:
+                print("%%%%%%%%%%% An Unexpected Exception has occured %%%%%%%%%%%%%%%%")
+                
+            for i in range(len(q.pre_gen_query)):
+
+                if i == 0:
+                    s1 = q.pre_gen_query[i].to_str()
+                    if not s1.startswith('['):
+                        f.write(f"df{count} = {s1} \n")
+                    else:
+                        # Assume it's a projection and prepend the DataFrame name
+                        df_name = q.query_string.split('[')[0].strip()
+                        f.write(f"df{count} = {df_name}{s1} \n")
+                    print(f"df{count} = {s1} \n")
+                    count += 1
+                    
+                else:
+                    if isinstance(q.pre_gen_query[i], selection):
+                        s2 = q.pre_gen_query[i].to_str(str(count - 1))
+                    else:
+                        s2 = q.pre_gen_query[i].to_str()
+                    f.write(f'df{count} = df{count - 1}' + s2 + '\n')  # q.pre_gen[i].to_str(count-1)
+                    print(f'df{count} = df{count - 1}' + s2)
+                    count += 1
+
+            f.write("Next \n")
+
+        print(f" ##### Successfully write the unmerged queries into file {dir}/{filename}.txt #####")
+        print("finish")
+        f.close()
+
+
+    def save_merged_examples_multiline(self, dir, filename):
+        count = 0
+        try:
+            f = open(f"{dir}/{filename}.txt", "a")
+        except:
+            filepath = f"{dir}/{filename}.txt"
+            os.makedirs(os.path.dirname(filepath), exist_ok=True)
+            f = open(f"{dir}/{filename}.txt", "a")
+        res = {}
+        q = []
+
+        def unravel(query: pandas_query):
+            wstrs = query.pre_gen_query
+            numOP = len(wstrs)
+            step = 0
+            try:
+                p = eval(wstrs)
+            except Exception:
+                #f.write("Next \n")
+                pass
+
+            for s in query.pre_gen_query:
+                strs = s.to_str()
+                if isinstance(s, merge):
+                    counter = self.count - 1
+
+                    # b = max(unravel(other))
+                    unravel(s.queries)
+
+                    f.write(f"df{self.count} = df{counter}.merge(df{self.count - 1}, left_on={s.left_on}, right_on={s.right_on}) \n")
+                    self.count += 1
+                    continue
+
+                if s.leading:
+                    s1 = s.to_str()
+                    f.write(f"df{self.count} = {s1} \n")  # strs
+                else:
+                    if isinstance(s, selection):
+                        s2 = s.to_str(str(self.count - 1))
+                    else:
+                        s2 = s.to_str()
+                    f.write(f'df{self.count} = df{self.count - 1}' + s2 + '\n')
+                step += 1
+                self.count += 1
+
+        for m in self.result_queries:
+            count = unravel(m)
+            f.write("Next \n")
+
+        print(f" ##### Successfully write the merged queries into file {dir}/{filename}.txt #####")
+
     
     def shuffle_queries(self):
         """
@@ -1954,6 +2051,7 @@ if __name__ == '__main__':
     num_merges = params.get('num_merges', 2)
     query_complexity = params.get('query_complexity', 'medium')
     num_queries = params.get('num_queries', 1000)
+    multi_line = params.get('multi_line', False) == "True"
 
     # Initialize dictionaries to store DataFrames and their respective meta information
     dataframes = {}
@@ -2048,11 +2146,17 @@ if __name__ == '__main__':
     #create pandas_query_pool object with list of unmerged queries and generate merge operations on them
     pandas_queries_list = pandas_query_pool(res)
     pandas_queries_list.shuffle_queries()
-    pandas_queries_list.save_unmerged_examples(dir=Export_Rout, filename="unmerged_queries_auto_sf0000")
+    if multi_line:
+        pandas_queries_list.save_unmerged_examples_multiline(dir=Export_Rout, filename="unmerged_queries_auto_sf0000")
+    else:
+        pandas_queries_list.save_unmerged_examples(dir=Export_Rout, filename="unmerged_queries_auto_sf0000")
     # can't be merged if data schema is too simple (too few columns), generates 1000 merged queries with 3 merges each by default
     # Some of the merged queries are invalid (outputs “Exception occurred” and not saved in merged_queries.txt)    
     pandas_queries_list.generate_possible_merge_operations(max_merge=num_merges, max_q=num_queries)
-    pandas_queries_list.save_merged_examples(dir=Export_Rout, filename="merged_queries_auto_sf0000")
+    if multi_line:
+        pandas_queries_list.save_merged_examples_multiline(dir=Export_Rout, filename="merged_queries_auto_sf0000")
+    else:
+        pandas_queries_list.save_merged_examples(dir=Export_Rout, filename="merged_queries_auto_sf0000")
     
     # Load TPC-H files into DataFrames
     customer = pd.read_csv("./benchmarks/customer.csv")
@@ -2143,8 +2247,190 @@ if __name__ == '__main__':
 
         f.close()
         file.close()
-            
+
+    """
+    def execute_unmerged_queries_multiline(dir, filename):
+        execute unmerged queries in unmerged_queries_auto_sf0000.txt on the 
+        datasets in benchmarks folder (customer.csv, lineitem.csv, etc.)
         
+        
+        # Read the unmerged queries file
+        with open("results/unmerged_queries_auto_sf0000.txt", 'r') as file:
+            unmerged_queries = file.readlines()
+
+        #store the query, whether or not it is valid, execution time, and cardinality of the result set in a text file
+        try:
+            f = open(f"{dir}/{filename}.txt", "a")
+        except:
+            filepath = f"{dir}/{filename}.txt"
+            os.makedirs(os.path.dirname(filepath), exist_ok=True)
+            f = open(f"{dir}/{filename}.txt", "a")
+
+        f.write("Query, Valid, Execution Time, Cardinality \n")
+        
+        # Iterate over each unmerged queries and execute the query on the appropriate dataset
+        for query in unmerged_queries:
+            if query != "Next \n":
+                query_string = query.split('=', 1)[1].strip()
+            else:
+                continue
+
+            start = time.time()
+            result = pd.eval(query_string)
+            end = time.time()
+
+            print(result)
+            f.write(f"{query,}")
+
+            #query is valid if result set is non empty
+            if (result.empty): {
+                f.write(f"{False,},")
+            }
+            else: {
+                f.write(f"{True,},")
+            }
+                
+            #write query execution time and cardinality of the result set
+            f.write(f"{end-start,},")
+            f.write(f"{len(result)}\n")
+
+        f.close()
+        file.close()
+    """
+
+    def execute_unmerged_queries_multiline(dir, filename):
+        """Execute unmerged queries in unmerged_queries_auto_sf0000.txt on the 
+        datasets in benchmarks folder (customer.csv, lineitem.csv, etc.)
+        """
+
+        # Read the unmerged queries file
+        with open("results/unmerged_queries_auto_sf0000.txt", 'r') as file:
+            unmerged_queries = file.readlines()
+
+        # Store the query, whether or not it is valid, execution time, and cardinality of the result set in a text file
+        try:
+            f = open(f"{dir}/{filename}.txt", "a")
+        except:
+            filepath = f"{dir}/{filename}.txt"
+            os.makedirs(os.path.dirname(filepath), exist_ok=True)
+            f = open(f"{dir}/{filename}.txt", "a")
+
+        f.write("Query, Valid, Execution Time, Cardinality \n")
+
+        # Collect and execute each unmerged query block
+        current_query_block = []
+        for query in unmerged_queries:
+            if query.strip() != "Next":
+                current_query_block.append(query.strip())
+            else:
+                if current_query_block:
+                    # Combine the current query block into a single query string
+                    combined_query = ""
+                    last_df_name = ""
+                    skip_next = False
+                    for i, subquery in enumerate(current_query_block):
+                        if skip_next:
+                            skip_next = False
+                            continue
+                            
+                        if "=" in subquery:
+                            df_name, subquery_body = subquery.split('=', 1)
+                            df_name = df_name.strip()
+                            subquery_body = subquery_body.strip()
+
+                            if "groupby" in subquery_body:
+                                combined_query += f"\n{df_name} = {subquery_body}\n"
+                                last_df_name = df_name
+                                if i + 1 < len(current_query_block) and "agg" in current_query_block[i + 1]:
+                                    agg_query = current_query_block[i + 1]
+                                    agg_df_name, agg_body = agg_query.split('=', 1)
+                                    combined_query += f"{agg_df_name.strip()} = {agg_body.strip()}"
+                                    last_df_name = agg_df_name.strip()
+                                    skip_next = True
+                            else:
+                                if i == 0:
+                                    combined_query = f"{df_name} = {subquery_body}"
+                                else:
+                                    combined_query += f"\n{df_name} = {subquery_body.replace('df'+str(i-1), last_df_name)}"
+                                last_df_name = df_name
+
+                    try:
+                        start = time.time()
+                        exec(combined_query, globals())
+                        result = eval(last_df_name)
+                        end = time.time()
+
+                        print(result)
+                        f.write(f"{combined_query}, ")
+
+                        # Query is valid if the result set is non-empty
+                        if result.empty:
+                            f.write(f"{False}, ")
+                        else:
+                            f.write(f"{True}, ")
+
+                        # Write query execution time and cardinality of the result set
+                        f.write(f"{end - start}, ")
+                        f.write(f"{len(result)}\n")
+                    except Exception as e:
+                        print(f"Error executing query block: {e}")
+                        f.write(f"{combined_query}, {False}, 0, 0\n")
+                    
+                    # Reset for the next query block
+                    current_query_block = []
+
+        # Handle any remaining query block (if the file does not end with "Next")
+        if current_query_block:
+            combined_query = ""
+            last_df_name = ""
+            skip_next = False
+            for i, subquery in enumerate(current_query_block):
+                if skip_next:
+                    skip_next = False
+                    continue
+                    
+                if "=" in subquery:
+                    df_name, subquery_body = subquery.split('=', 1)
+                    df_name = df_name.strip()
+                    subquery_body = subquery_body.strip()
+
+                    if "groupby" in subquery_body:
+                        # Ensure the groupby and agg operation are treated as one
+                        if i + 1 < len(current_query_block) and "agg" in current_query_block[i + 1]:
+                            subquery_body += "\n" + current_query_block[i + 1].strip()
+                            skip_next = True  # Skip the next part since it's already included
+
+                    if i == 0:
+                        combined_query = f"{df_name} = {subquery_body}"
+                    else:
+                        combined_query += f"\n{df_name} = {subquery_body.replace('df'+str(i-1), last_df_name)}"
+                    last_df_name = df_name
+
+            try:
+                start = time.time()
+                exec(combined_query, globals())
+                result = eval(last_df_name)
+                end = time.time()
+
+                print(result)
+                f.write(f"{combined_query}, ")
+
+                if result.empty:
+                    f.write(f"{False}, ")
+                else:
+                    f.write(f"{True}, ")
+
+                f.write(f"{end - start}, ")
+                f.write(f"{len(result)}\n")
+            except Exception as e:
+                print(f"Error executing query block: {e}")
+                f.write(f"{combined_query}, {False}, 0, 0\n")
+
+        f.close()
+        file.close()
+
+
+
     def execute_merged_queries(dir, filename):
         """execute merged queries in merged_queries_auto_sf0000.txt on the 
         datasets in benchmarks folder (customer.csv, lineitem.csv, etc.)"""
@@ -2188,8 +2474,58 @@ if __name__ == '__main__':
         f.close()
         file.close()
 
-    execute_unmerged_queries(dir=Export_Rout, filename="unmerged_query_execution_results.csv")
-    execute_merged_queries(dir=Export_Rout, filename="merged_query_execution_results.csv")
+    def execute_merged_queries_multiline(dir, filename):
+        """execute merged queries in merged_queries_auto_sf0000.txt on the 
+        datasets in benchmarks folder (customer.csv, lineitem.csv, etc.)"""
+        # Read the merged queries file
+        with open("results/merged_queries_auto_sf0000.txt", 'r') as file:
+            merged_queries = file.readlines()
+
+        #store the query, whether or not it is valid, execution time, and cardinality of the result set in a text file
+        try:
+            f = open(f"{dir}/{filename}.txt", "a")
+        except:
+            filepath = f"{dir}/{filename}.txt"
+            os.makedirs(os.path.dirname(filepath), exist_ok=True)
+            f = open(f"{dir}/{filename}.txt", "a")
+
+        f.write("Query, Valid, Execution Time, Cardinality \n")
+        
+        # Iterate over each merged queries and execute the query on the appropriate dataset
+        for query in merged_queries:
+            if query != "Next \n":
+                query_string = query.split('=', 1)[1].strip()
+            else:
+                continue
+
+            start = time.time()
+            result = pd.eval(query_string)
+            end = time.time()
+
+            print(result)
+            f.write(f"{query,}")
+
+            #query is valid if result set is non empty
+            if (result.empty): {
+                f.write(f"{False,},")
+            }
+            else: {
+                f.write(f"{True,},")
+            }
+                
+            #write query execution time and cardinality of the result set
+            f.write(f"{end-start,},")
+            f.write(f"{len(result)}\n")
+
+        f.close()
+        file.close()
+
+    if multi_line:
+        execute_unmerged_queries_multiline(dir=Export_Rout, filename="unmerged_query_execution_results.csv")
+        execute_merged_queries_multiline(dir=Export_Rout, filename="merged_query_execution_results.csv")
+    else:
+        execute_unmerged_queries(dir=Export_Rout, filename="unmerged_query_execution_results.csv")
+        execute_merged_queries(dir=Export_Rout, filename="merged_query_execution_results.csv")
 
     #TODO(done): 1. make sure result set is non empty (adjust query complexity if necessary, execute output queries on TPC-H datasets in a separate file to check if there is an error with execute_unmerged(merged)_queries)
     #TODO(done): if unable to execute one-line queries, try dividing output queries into multiple subqueries 
@@ -2206,4 +2542,10 @@ if __name__ == '__main__':
     #TODO: for selections, no > or >= max_value conditions and no < or <= min_value conditions on ints or floats
     #TODO: for selection conditions on floats, round to same number of decimal places as data ranges (e.g. round(random.uniform(min_val, max_val), 2))
     
-        
+    #after meeting may 23th:
+    #TODO: 1. for merged query output, add a user defined parameter to determine whether we want one liner queries or multiple subqueries
+    #TODO: for merged queries, fix Next delimeter to correctly separate the subqueries
+    #TODO: for merged queries, if you have say num_merges up to 3 merges, make sure some output queries have 3 merges even in the first 100 queries
+    #TODO: 2. include a tutorial of how to use the query generator, example relational schema, example query parameters file and an example program for query execution with TPC-H datasets
+    #TODO: 3. in the execution metrics, include query complexity and # of each type of operation
+
