@@ -1,3 +1,5 @@
+from collections import defaultdict
+import math
 import time
 import random
 import pandas as pd
@@ -287,9 +289,9 @@ class selection(operation):
                 if df2.__eq__("F"):
                     if cond.op.value != OP.startswith.value and cond.op.value != OP.in_op.value:
                         if isinstance(cond.val, str) and cond.val.count('-') == 2:  # Check if value is a date string
-                            cur_condition = f"{self.df_name}['{cond.col}'] {cond.op.value} '{cond.val}'"
+                            cur_condition = f"({self.df_name}['{cond.col}'] {cond.op.value} '{cond.val}')"
                         else:
-                            cur_condition = f"{self.df_name}['{cond.col}'] {cond.op.value} {cond.val}"
+                            cur_condition = f"({self.df_name}['{cond.col}'] {cond.op.value} {cond.val})"
                     elif cond.op.value == OP.in_op.value:
                         cur_condition += f"({self.df_name}['{cond.col}'].isin({cond.val}))"
                     else:
@@ -297,9 +299,9 @@ class selection(operation):
                 else:
                     if cond.op.value != OP.startswith.value and cond.op.value != OP.in_op.value:
                         if isinstance(cond.val, str) and cond.val.count('-') == 2:  # Check if value is a date string
-                            cur_condition = f"{self.df_name}['{cond.col}'] {cond.op.value} '{cond.val}'"
+                            cur_condition = f"({self.df_name}['{cond.col}'] {cond.op.value} '{cond.val}')"
                         else:
-                            cur_condition = f"{self.df_name}['{cond.col}'] {cond.op.value} {cond.val}"
+                            cur_condition = f"({self.df_name}['{cond.col}'] {cond.op.value} {cond.val})"
                     elif cond.op.value == OP.in_op.value:
                         cur_condition += f"(df{df2}['{cond.col}'].isin({cond.val}))"
                     else:
@@ -1458,7 +1460,7 @@ class pandas_query_pool():
             f.write("Next \n")
 
         print(f" ##### Successfully write the merged queries into file {dir}/{filename}.txt #####")
-
+        f.close()
     
     def shuffle_queries(self):
         """
@@ -1543,8 +1545,12 @@ class pandas_query_pool():
 
         return []
     
+    #TODO: function currently merges all unmerged queries in cur_queries first and only once there are no more unmerged queries, it uses the merged queries that it generated
+    #TODO: this function should be modified to merge queries in a more balanced way (first use all unmerged queries to generate new queries with one or two merges, shuffle the queries in cur_queries, then merge them)
+    
     def generate_possible_merge_operations(self, max_merge=3, max_q=1000):
-        """Generate possible merge operations between existing queries.
+        """
+        Generate possible merge operations between existing queries.
 
         Args:
             max_merge (int): Maximum number of merges.
@@ -1553,18 +1559,19 @@ class pandas_query_pool():
         Returns:
             list: List of queries, including newly generated ones.
         """
-        cur_queries = self.queries[:]     
+        cur_queries = self.queries[:]
+        merged_queries = []     
         random.shuffle(cur_queries)       #shuffled copy of initial self.queries
-        k = 0                             #counter for number of merge ops
+        # k = 0                             #counter for number of merge ops
         res_hash = {}                     #dictionary to prevent duplicate merges
         q_generated = 0                   #counter for number of queries generated
-        while True:
-            if k >= max_merge:  # 3 merges at top
-                break
+        
+        # First Phase: Generate queries with one and two merges
+        for k in range(max_merge-1):
             for i in tqdm(range(len(cur_queries) - 1)):        #loops through indices of cur_queries
                 for j in range(i + 1, len(cur_queries)):       #loops through indices greater than i to avoid self-joining
 
-                    if q_generated > max_q:
+                    if q_generated >= 4000:
                         break
 
                     if str(i) + "+" + str(j) not in res_hash:  # skip if it's already merged index pair (i,j)
@@ -1627,13 +1634,13 @@ class pandas_query_pool():
                             #add succesful merges to cur_queries and self.result_queries
                             if new_query.num_merges <= max_merge:  # Check if number of merges exceeds max_merge
                                 cur_queries.append(new_query)
-
+                                merged_queries.append(new_query)
                                 q_generated += 1
 
                                 if q_generated % 1000 == 0:
                                     print(f"**** {q_generated} queries have generated ****")
 
-                                self.result_queries.append(new_query)
+                                #self.result_queries.append(new_query)
                                 #store query indices in res_hash to avoid duplicates
                                 res_hash[f"{str(i)}+{str(j)}"] = 0
 
@@ -1680,7 +1687,8 @@ class pandas_query_pool():
 
                                 if new_query.num_merges <= max_merge:  # Check if number of merges exceeds max_merge
                                     cur_queries.append(new_query)
-                                    self.result_queries.append(new_query)
+                                    merged_queries.append(new_query)
+                                    #self.result_queries.append(new_query)
                                     res_hash[f"{str(i)}+{str(j)}"] = 0
 
                                     q_generated += 1
@@ -1688,12 +1696,115 @@ class pandas_query_pool():
                                     if q_generated % 1000 == 0:
                                         print(f"**** {q_generated} queries have generated ****")
 
-            k += 1
+            
+        
+        # Second Phase: Focus on generating queries with three merges
+        for k in range(max_merge, max_merge + 1):
+            unmerged_queries = [q for q in cur_queries if q.num_merges == 0]
+            doubly_merged_queries = [q for q in cur_queries if q.num_merges == max_merge-1]
+            if not doubly_merged_queries:
+                sys.exit("No doubly merged queries found. Exiting...")
+            for i in tqdm(range(len(unmerged_queries) - 1)):
+                for j in range(i + 1, len(doubly_merged_queries)):
+                    if q_generated >= 5000:
+                        break
 
-            break
+                    if str(i) + "+" + str(j) not in res_hash:
+                        q1 = unmerged_queries[i]
+                        q2 = doubly_merged_queries[j]
+                        if q1.get_source().equals(q2.get_source()) and (not self.self_join):
+                            continue
 
+                        merge_differenet_keys = self.check_merge_left_right(q1, q2)
+                        if len(merge_differenet_keys) > 0:
+                            operations = list(q1.pre_gen_query)[:]
+                            operations.append(merge(df_name=q1.df_name, queries=q2, left_on=merge_differenet_keys[0],
+                                                    right_on=merge_differenet_keys[1]))
+                            strs = "".join([op.to_str() for op in operations])
+                            try:
+                                t = eval(strs)
+                            except Exception:
+                                continue
+
+                            try:
+                                res_df = q1.get_target().merge(q2.get_target(), left_on=merge_differenet_keys[0],
+                                                            right_on=merge_differenet_keys[1])
+                                columns = list(t.columns)
+                                if random.random() > 0.5 and len(columns):
+                                    num = random.randint(max(len(columns) - 2, 3), len(columns))
+                                    operations.append(projection(q1.df_name, random.sample(columns, num)))
+                            except Exception:
+                                if self.verbose:
+                                    print("Exception occurred")
+                                continue
+
+                            if self.verbose:
+                                print("++++++++++ add the result query to template +++++++++++++")
+
+                            new_query = pandas_query(operations, q1.get_TBL_source(), verbose=False)
+                            new_query.target = res_df
+                            new_query.num_merges = max(q1.num_merges, q2.num_merges) + 1
+
+                            if new_query.num_merges == max_merge:  # Focus on generating queries with three merges
+                                cur_queries.append(new_query)
+                                merged_queries.append(new_query)
+                                q_generated += 1
+
+                                if q_generated % 1000 == 0:
+                                    print(f"**** {q_generated} queries have generated ****")
+
+                                res_hash[f"{str(i)}+{str(j)}"] = 0
+                        else:
+                            cols = self.check_merge_on(q1, q2)
+                            if cols and max(q1.num_merges, q2.num_merges) == 2 and self.self_join:
+                                operations = list(q1.pre_gen_query)[:]
+                                operations.append(merge(df_name=q1.df_name, queries=q2, on=cols))
+                                strs = "".join([op.to_str() for op in operations])
+                                try:
+                                    t = eval(strs)
+                                    if t.shape[0] == 0:
+                                        continue
+                                except Exception:
+                                    continue
+
+                                try:
+                                    res_df = q1.get_target().merge(q2.get_target(), on=cols)
+                                except Exception:
+                                    if self.verbose:
+                                        print("Exception occurred")
+                                    continue
+
+                                if self.verbose:
+                                    print("++++++++++ add the result query to template +++++++++++++")
+
+                                new_query = pandas_query(operations, q1.get_TBL_source(), verbose=False)
+                                new_query.target = res_df
+                                new_query.num_merges = max(q1.num_merges, q2.num_merges) + 1
+
+                                if new_query.num_merges == max_merge:
+                                    cur_queries.append(new_query)
+                                    merged_queries.append(new_query)
+                                    res_hash[f"{str(i)}+{str(j)}"] = 0
+
+                                    q_generated += 1
+
+                                    if q_generated % 1000 == 0:
+                                        print(f"**** {q_generated} queries have generated ****")
+
+        #Sample queries from merged_queries with equal weighting for number of merges
+        categorized_queries = defaultdict(list)
+        for query in merged_queries:
+            categorized_queries[query.num_merges].append(query)
+
+        # Sample equally from each category
+        sampled_queries = []
+        for num_merges in range(1, max_merge + 1):
+            sample_size = max_q // 3
+            sampled_queries.extend(random.sample(categorized_queries[num_merges], min(len(categorized_queries[num_merges]), sample_size)))
+
+        self.result_queries.extend(sampled_queries)
         return cur_queries
-
+    
     
 class TBL_source():
     '''
@@ -2033,6 +2144,7 @@ if __name__ == '__main__':
     import argparse
     import pandas as pd
     import string
+    import re
 
     parser = argparse.ArgumentParser(description='Query Generator CLI')
     parser.add_argument('--schema', type=str, required=True, help='Path to the relational schema JSON file')
@@ -2167,41 +2279,7 @@ if __name__ == '__main__':
     partsupp = pd.read_csv("./benchmarks/partsupp.csv")
     region = pd.read_csv("./benchmarks/region.csv")
     supplier = pd.read_csv("./benchmarks/supplier.csv")
-    
-    """
-    #use .tbl files for query execution instead since .csv files contain small subset of data
-    customer = pd.read_csv("./benchmarks/customer.tbl", delimiter='|', header=None, engine='python')
-    customer.drop(customer.columns[-1], axis=1, inplace=True)
-    customer.columns = ['CUSTKEY', 'C_NAME', 'ADDRESS', 'NATIONKEY', 'PHONE', 'ACCTBAL', 'MKTSEGMENT', 'C_COMMENT']
 
-    lineitem = pd.read_csv("./benchmarks/lineitem.tbl", delimiter='|', header=None, engine='python')
-    lineitem.drop(lineitem.columns[-1], axis=1, inplace=True)
-    lineitem.columns = ['ORDERKEY', 'PARTKEY', 'SUPPKEY', 'LINENUMBER', 'QUANTITY', 'EXTENDEDPRICE', 'DISCOUNT', 'TAX', 'RETURNFLAG', 'LINESTATUS', 'SHIPDATE', 'COMMITDATE', 'RECEIPTDATE', 'SHIPINSTRUCT', 'SHIPMODE', 'L_COMMENT']
-
-    nation = pd.read_csv("./benchmarks/nation.tbl", delimiter='|', header=None, engine='python')
-    nation.drop(nation.columns[-1], axis=1, inplace=True)
-    nation.columns = ['NATIONKEY', 'N_NAME', 'REGIONKEY', 'N_COMMENT']
-
-    orders = pd.read_csv("./benchmarks/orders.tbl", delimiter='|', header=None, engine='python')
-    orders.drop(orders.columns[-1], axis=1, inplace=True)
-    orders.columns = ['ORDERKEY', 'CUSTKEY', 'ORDERSTATUS', 'TOTALPRICE', 'ORDERDATE', 'ORDERPRIORITY', 'CLERK', 'SHIPPRIORITY', 'O_COMMENT']
-
-    part = pd.read_csv("./benchmarks/part.tbl", delimiter='|', header=None, engine='python')
-    part.drop(part.columns[-1], axis=1, inplace=True)
-    part.columns = ['PARTKEY', 'P_NAME', 'MFGR', 'BRAND', 'TYPE', 'SIZE', 'CONTAINER', 'RETAILPRICE', 'PT_COMMENT']
-
-    partsupp = pd.read_csv("./benchmarks/partsupp.tbl", delimiter='|', header=None, engine='python')
-    partsupp.drop(partsupp.columns[-1], axis=1, inplace=True)
-    partsupp.columns = ['PARTKEY', 'SUPPKEY', 'AVAILQTY', 'SUPPLYCOST', 'P_COMMENT']
-
-    region = pd.read_csv("./benchmarks/region.tbl", delimiter='|', header=None, engine='python')
-    region.drop(region.columns[-1], axis=1, inplace=True)
-    region.columns = ['REGIONKEY', 'R_NAME', 'R_COMMENT']
-
-    supplier = pd.read_csv("./benchmarks/supplier.tbl", delimiter='|', header=None, engine='python')
-    supplier.drop(supplier.columns[-1], axis=1, inplace=True)
-    supplier.columns = ['SUPPKEY', 'S_NAME', 'ADDRESS', 'NATIONKEY', 'PHONE', 'ACCTBAL', 'S_COMMENT']
-    """
     
     def execute_unmerged_queries(dir, filename):
         """execute unmerged queries in unmerged_queries_auto_sf0000.txt on the 
@@ -2220,8 +2298,13 @@ if __name__ == '__main__':
             os.makedirs(os.path.dirname(filepath), exist_ok=True)
             f = open(f"{dir}/{filename}.txt", "a")
 
-        f.write("Query, Valid, Execution Time, Cardinality \n")
-        
+        f.write("Query, Valid, Execution Time, Cardinality, Complexity, Selections, Projections, Group by, Aggregations \n")
+
+        # Regular expressions to match selections and projections
+        # count selections with multiple conditions as one selection
+        selection_pattern = re.compile(r'\b\w+\[(?!\[)([^\[\]]|\[(?!\[)|\](?!\]))+\](?!\])')
+        projection_pattern = re.compile(r'\[\[.*?\]\]')
+            
         # Iterate over each unmerged queries and execute the query on the appropriate dataset
         for query in unmerged_queries:
             query_string = query.split('=', 1)[1].strip()
@@ -2243,60 +2326,29 @@ if __name__ == '__main__':
                 
             #write query execution time and cardinality of the result set
             f.write(f"{end-start,},")
-            f.write(f"{len(result)}\n")
+            f.write(f"{len(result)},")
+
+            #write query complexity and number of each type of operation
+            f.write(f"{query_complexity},")
+
+            # Count the number of merges, group by, and aggregations
+            num_merges = query_string.count("merge")
+            num_groupby = query_string.count("groupby")
+            num_agg = query_string.count("agg")
+
+            # Count selections and projections using regular expressions
+            num_selections = len(selection_pattern.findall(query_string))
+            num_projections = len(projection_pattern.findall(query_string))
+
+            # Write counts of operations
+            f.write(f"{num_selections},")
+            f.write(f"{num_projections},")
+            f.write(f"{num_merges},")
+            f.write(f"{num_groupby},")
+            f.write(f"{num_agg}\n")
 
         f.close()
-        file.close()
 
-    """
-    def execute_unmerged_queries_multiline(dir, filename):
-        execute unmerged queries in unmerged_queries_auto_sf0000.txt on the 
-        datasets in benchmarks folder (customer.csv, lineitem.csv, etc.)
-        
-        
-        # Read the unmerged queries file
-        with open("results/unmerged_queries_auto_sf0000.txt", 'r') as file:
-            unmerged_queries = file.readlines()
-
-        #store the query, whether or not it is valid, execution time, and cardinality of the result set in a text file
-        try:
-            f = open(f"{dir}/{filename}.txt", "a")
-        except:
-            filepath = f"{dir}/{filename}.txt"
-            os.makedirs(os.path.dirname(filepath), exist_ok=True)
-            f = open(f"{dir}/{filename}.txt", "a")
-
-        f.write("Query, Valid, Execution Time, Cardinality \n")
-        
-        # Iterate over each unmerged queries and execute the query on the appropriate dataset
-        for query in unmerged_queries:
-            if query != "Next \n":
-                query_string = query.split('=', 1)[1].strip()
-            else:
-                continue
-
-            start = time.time()
-            result = pd.eval(query_string)
-            end = time.time()
-
-            print(result)
-            f.write(f"{query,}")
-
-            #query is valid if result set is non empty
-            if (result.empty): {
-                f.write(f"{False,},")
-            }
-            else: {
-                f.write(f"{True,},")
-            }
-                
-            #write query execution time and cardinality of the result set
-            f.write(f"{end-start,},")
-            f.write(f"{len(result)}\n")
-
-        f.close()
-        file.close()
-    """
 
     def execute_unmerged_queries_multiline(dir, filename):
         """Execute unmerged queries in unmerged_queries_auto_sf0000.txt on the 
@@ -2315,7 +2367,11 @@ if __name__ == '__main__':
             os.makedirs(os.path.dirname(filepath), exist_ok=True)
             f = open(f"{dir}/{filename}.txt", "a")
 
-        f.write("Query, Valid, Execution Time, Cardinality \n")
+        f.write("Query, Valid, Execution Time, Cardinality, Complexity, Selections, Projections, Group by, Aggregations \n")
+
+        # Regular expressions to match selections and projections
+        selection_pattern = re.compile(r'\b\w+\[(?!\[)([^\[\]]|\[(?!\[)|\](?!\]))+\](?!\])')
+        projection_pattern = re.compile(r'\[\[.*?\]\]')
 
         # Collect and execute each unmerged query block
         current_query_block = []
@@ -2351,7 +2407,7 @@ if __name__ == '__main__':
                                 if i == 0:
                                     combined_query = f"{df_name} = {subquery_body}"
                                 else:
-                                    combined_query += f"\n{df_name} = {subquery_body.replace('df'+str(i-1), last_df_name)}"
+                                    combined_query += f"\n{df_name} = {subquery_body}"
                                 last_df_name = df_name
 
                     try:
@@ -2371,65 +2427,37 @@ if __name__ == '__main__':
 
                         # Write query execution time and cardinality of the result set
                         f.write(f"{end - start}, ")
-                        f.write(f"{len(result)}\n")
+                        f.write(f"{len(result)},")
+
+                        #write query complexity and number of each type of operation
+                        f.write(f"{query_complexity},")
+
+                        # Count the number of merges, group by, and aggregations
+                        num_merges = combined_query.count("merge")
+                        num_groupby = combined_query.count("groupby")
+                        num_agg = combined_query.count("agg")
+
+                        # Count selections and projections using regular expressions
+                        num_selections = len(selection_pattern.findall(combined_query))
+                        num_projections = len(projection_pattern.findall(combined_query))
+
+                        # Write counts of operations
+                        f.write(f"{num_selections},")
+                        f.write(f"{num_projections},")
+                        f.write(f"{num_merges},")
+                        f.write(f"{num_groupby},")
+                        f.write(f"{num_agg}\n")
+
                     except Exception as e:
                         print(f"Error executing query block: {e}")
                         f.write(f"{combined_query}, {False}, 0, 0\n")
                     
                     # Reset for the next query block
                     current_query_block = []
-
-        # Handle any remaining query block (if the file does not end with "Next")
-        if current_query_block:
-            combined_query = ""
-            last_df_name = ""
-            skip_next = False
-            for i, subquery in enumerate(current_query_block):
-                if skip_next:
-                    skip_next = False
-                    continue
-                    
-                if "=" in subquery:
-                    df_name, subquery_body = subquery.split('=', 1)
-                    df_name = df_name.strip()
-                    subquery_body = subquery_body.strip()
-
-                    if "groupby" in subquery_body:
-                        # Ensure the groupby and agg operation are treated as one
-                        if i + 1 < len(current_query_block) and "agg" in current_query_block[i + 1]:
-                            subquery_body += "\n" + current_query_block[i + 1].strip()
-                            skip_next = True  # Skip the next part since it's already included
-
-                    if i == 0:
-                        combined_query = f"{df_name} = {subquery_body}"
-                    else:
-                        combined_query += f"\n{df_name} = {subquery_body.replace('df'+str(i-1), last_df_name)}"
-                    last_df_name = df_name
-
-            try:
-                start = time.time()
-                exec(combined_query, globals())
-                result = eval(last_df_name)
-                end = time.time()
-
-                print(result)
-                f.write(f"{combined_query}, ")
-
-                if result.empty:
-                    f.write(f"{False}, ")
-                else:
-                    f.write(f"{True}, ")
-
-                f.write(f"{end - start}, ")
-                f.write(f"{len(result)}\n")
-            except Exception as e:
-                print(f"Error executing query block: {e}")
-                f.write(f"{combined_query}, {False}, 0, 0\n")
-
+        
         f.close()
         file.close()
-
-
+        
 
     def execute_merged_queries(dir, filename):
         """execute merged queries in merged_queries_auto_sf0000.txt on the 
@@ -2446,7 +2474,11 @@ if __name__ == '__main__':
             os.makedirs(os.path.dirname(filepath), exist_ok=True)
             f = open(f"{dir}/{filename}.txt", "a")
 
-        f.write("Query, Valid, Execution Time, Cardinality \n")
+        f.write("Query, Valid, Execution Time, Cardinality, Complexity, Selections, Projections, Group by, Aggregations \n")
+
+        # Regular expressions to match selections and projections
+        selection_pattern = re.compile(r'\b\w+\[(?!\[)([^\[\]]|\[(?!\[)|\](?!\]))+\](?!\])')
+        projection_pattern = re.compile(r'\[\[.*?\]\]')
         
         # Iterate over each merged queries and execute the query on the appropriate dataset
         for query in merged_queries:
@@ -2469,7 +2501,26 @@ if __name__ == '__main__':
                 
             #write query execution time and cardinality of the result set
             f.write(f"{end-start,},")
-            f.write(f"{len(result)}\n")
+            f.write(f"{len(result)},")
+            
+            #write query complexity and number of each type of operation
+            f.write(f"{query_complexity},")
+
+            # Count the number of merges, group by, and aggregations
+            num_merges = query_string.count("merge")
+            num_groupby = query_string.count("groupby")
+            num_agg = query_string.count("agg")
+
+            # Count selections and projections using regular expressions
+            num_selections = len(selection_pattern.findall(query_string))
+            num_projections = len(projection_pattern.findall(query_string))
+
+            # Write counts of operations
+            f.write(f"{num_selections},")
+            f.write(f"{num_projections},")
+            f.write(f"{num_merges},")
+            f.write(f"{num_groupby},")
+            f.write(f"{num_agg}\n")
 
         f.close()
         file.close()
@@ -2481,7 +2532,7 @@ if __name__ == '__main__':
         with open("results/merged_queries_auto_sf0000.txt", 'r') as file:
             merged_queries = file.readlines()
 
-        #store the query, whether or not it is valid, execution time, and cardinality of the result set in a text file
+        # Store the query, whether or not it is valid, execution time, and cardinality of the result set in a text file
         try:
             f = open(f"{dir}/{filename}.txt", "a")
         except:
@@ -2489,34 +2540,98 @@ if __name__ == '__main__':
             os.makedirs(os.path.dirname(filepath), exist_ok=True)
             f = open(f"{dir}/{filename}.txt", "a")
 
-        f.write("Query, Valid, Execution Time, Cardinality \n")
-        
-        # Iterate over each merged queries and execute the query on the appropriate dataset
+        f.write("Query, Valid, Execution Time, Cardinality, Complexity, Selections, Projections, Group by, Aggregations \n")
+
+        # Regular expressions to match selections and projections
+        selection_pattern = re.compile(r'\b\w+\[(?!\[)([^\[\]]|\[(?!\[)|\](?!\]))+\](?!\])')
+        projection_pattern = re.compile(r'\[\[.*?\]\]')
+
+        # Collect and execute each unmerged query block
+        current_query_block = []
         for query in merged_queries:
-            if query != "Next \n":
-                query_string = query.split('=', 1)[1].strip()
+            if query.strip() != "Next":
+                current_query_block.append(query.strip())
             else:
-                continue
+                if current_query_block:
+                    # Combine the current query block into a single query string
+                    combined_query = ""
+                    last_df_name = ""
+                    skip_next = False
+                    for i, subquery in enumerate(current_query_block):
+                        if skip_next:
+                            skip_next = False
+                            continue
+                            
+                        if "=" in subquery:
+                            df_name, subquery_body = subquery.split('=', 1)
+                            df_name = df_name.strip()
+                            subquery_body = subquery_body.strip()
 
-            start = time.time()
-            result = pd.eval(query_string)
-            end = time.time()
+                            # Ensure column names in merge are quoted
+                            if "merge" in subquery_body:
+                                subquery_body = subquery_body.replace("left_on=", "left_on='").replace(", right_on=", "', right_on='").replace(")", "')")
 
-            print(result)
-            f.write(f"{query,}")
+                            if "groupby" in subquery_body:
+                                combined_query += f"\n{df_name} = {subquery_body}\n"
+                                last_df_name = df_name
+                                if i + 1 < len(current_query_block) and "agg" in current_query_block[i + 1]:
+                                    agg_query = current_query_block[i + 1]
+                                    agg_df_name, agg_body = agg_query.split('=', 1)
+                                    combined_query += f"{agg_df_name.strip()} = {agg_body.strip()}"
+                                    last_df_name = agg_df_name.strip()
+                                    skip_next = True
+                            else:
+                                if i == 0:
+                                    combined_query = f"{df_name} = {subquery_body}"
+                                else:
+                                    combined_query += f"\n{df_name} = {subquery_body}"
+                                last_df_name = df_name
 
-            #query is valid if result set is non empty
-            if (result.empty): {
-                f.write(f"{False,},")
-            }
-            else: {
-                f.write(f"{True,},")
-            }
-                
-            #write query execution time and cardinality of the result set
-            f.write(f"{end-start,},")
-            f.write(f"{len(result)}\n")
+                    try:
+                        start = time.time()
+                        exec(combined_query, globals())
+                        result = eval(last_df_name)
+                        end = time.time()
 
+                        print(result)
+                        f.write(f"{combined_query}, ")
+
+                        # Query is valid if the result set is non-empty
+                        if result.empty:
+                            f.write(f"{False}, ")
+                        else:
+                            f.write(f"{True}, ")
+
+                        # Write query execution time and cardinality of the result set
+                        f.write(f"{end - start}, ")
+                        f.write(f"{len(result)},")
+
+                        #write query complexity and number of each type of operation
+                        f.write(f"{query_complexity},")
+
+                        # Count the number of merges, group by, and aggregations
+                        num_merges = combined_query.count("merge")
+                        num_groupby = combined_query.count("groupby")
+                        num_agg = combined_query.count("agg")
+
+                        # Count selections and projections using regular expressions
+                        num_selections = len(selection_pattern.findall(combined_query))
+                        num_projections = len(projection_pattern.findall(combined_query))
+
+                        # Write counts of operations
+                        f.write(f"{num_selections},")
+                        f.write(f"{num_projections},")
+                        f.write(f"{num_merges},")
+                        f.write(f"{num_groupby},")
+                        f.write(f"{num_agg}\n")
+
+                    except Exception as e:
+                        print(f"Error executing query block: {e}")
+                        f.write(f"{combined_query}, {False}, 0, 0\n")
+                    
+                    # Reset for the next query block
+                    current_query_block = []
+        
         f.close()
         file.close()
 
@@ -2548,4 +2663,5 @@ if __name__ == '__main__':
     #TODO: for merged queries, if you have say num_merges up to 3 merges, make sure some output queries have 3 merges even in the first 100 queries
     #TODO: 2. include a tutorial of how to use the query generator, example relational schema, example query parameters file and an example program for query execution with TPC-H datasets
     #TODO: 3. in the execution metrics, include query complexity and # of each type of operation
+    #TODO: most queries with three merges are invalid (empty result set)
 
