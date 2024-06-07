@@ -20,12 +20,15 @@ This query generator is designed to help users generate synthetic queries for tr
 
 ### How to use
 - Create a JSON file storing the relational schema of the datasets with information about entities, their attributes, data types and ranges for each attribute, primary keys and foreign keys
+- In the relational schema, do not include duplicate column names accross tables unless the column is a foreign key 
+
 - Create another JSON file to store the following query generation parameters: 
     - query_types: List of operations supported by the generated queries, accepts one or more operations from ["selection", "projection", "merge", "group by", "aggregation"]
     - num_merges: Maximum number of merges in the generated queries, accepts an integer from 0 to 5
     - query_complexity: Number of operations in each unmerged query, accepts either "simple" (1 operation), "medium" (2-3 operations) or "complex" (4 operations)
     - num_queries: Number of merged queries to generate, accepts an integer from 1 to 10000
     - multi_line: Output format for the merged and unmerged queries. If set to "True", each output query is divided into multiple subqueries with one subquery on each line and the main queries are separated by a "Next" delimeter. If set to "False", the queries are output each on one line.
+    
 - Run the query generator with the following command: `python query_generator.py --schema data_structure.json --params query_parameters.json`
 - Replace data_structure.json and query_parameters.json with the actual file names for the relational schema and the query parameters
 

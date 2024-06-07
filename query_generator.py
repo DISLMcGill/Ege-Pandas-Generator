@@ -259,23 +259,23 @@ class selection(operation):
             if df2.__eq__("F"):
                 if cond.op.value != OP.startswith.value and cond.op.value != OP.in_op.value:
                     if isinstance(cond.val, str) and cond.val.count('-') == 2:  # Check if value is a date string
-                        cur_condition = f"{self.df_name}['{cond.col}'] {cond.op.value} '{cond.val}'"
+                        cur_condition = f"({self.df_name}['{cond.col}'] {cond.op.value} '{cond.val}')"
                     else:
-                        cur_condition = f"{self.df_name}['{cond.col}'] {cond.op.value} {cond.val}"
+                        cur_condition = f"({self.df_name}['{cond.col}'] {cond.op.value} {cond.val})"
                 elif cond.op.value == OP.in_op.value:
-                    cur_condition = f"{self.df_name}['{cond.col}'].isin({cond.val})"
+                    cur_condition = f"({self.df_name}['{cond.col}'].isin({cond.val}))"
                 else:
-                    cur_condition = f"{self.df_name}['{cond.col}']{cond.op.value}('{cond.val}')"
+                    cur_condition = f"({self.df_name}['{cond.col}']{cond.op.value}('{cond.val}'))"
             else:
                 if cond.op.value != OP.startswith.value and cond.op.value != OP.in_op.value:
                     if isinstance(cond.val, str) and cond.val.count('-') == 2:  # Check if value is a date string
-                        cur_condition = f"{self.df_name}['{cond.col}'] {cond.op.value} '{cond.val}'"
+                        cur_condition = f"({self.df_name}['{cond.col}'] {cond.op.value} '{cond.val}')"
                     else:
-                        cur_condition = f"{self.df_name}['{cond.col}'] {cond.op.value} {cond.val}"
+                        cur_condition = f"({self.df_name}['{cond.col}'] {cond.op.value} {cond.val})"
                 elif cond.op.value == OP.in_op.value:
-                    cur_condition = f"{df2}['{cond.col}'].isin({cond.val})"
+                    cur_condition = f"({df2}['{cond.col}'].isin({cond.val}))"
                 else:
-                    cur_condition = f"df{df2}['{cond.col}']{cond.op.value}('{cond.val}')"
+                    cur_condition = f"(df{df2}['{cond.col}']{cond.op.value}('{cond.val}'))"
 
             res_str = res_str + "[" + cur_condition + "]"
             return res_str
@@ -679,6 +679,9 @@ class pandas_query():
         self.merged = False
         self.target = self.execute_query(self.pre_gen_query)  # target is the df after operation
 
+        self.source_tables = [self.get_TBL_source()]       # Initialize list of source tables for merged queries
+        self.source_dataframes = [self.get_source()]       # Initialize list of source dataframes for merged queries
+
     def can_do_merge(self):      #you can always do merge and groupby on df?
         """
         Placeholder for logic to determine if merging is possible.
@@ -877,6 +880,23 @@ class pandas_query():
         :return: A copy of the source DataFrame.
         """
         return self._source_.source.copy()
+    
+        
+    def get_source_tables(self):
+        """    
+        Get the source tables of a merged query.
+
+        :return: The list of source tables.
+        """
+        return self.source_tables
+    
+    def get_source_dataframes(self):
+        """    
+        Get the source dataframes of a merged query.
+
+        :return: The list of source dataframes.
+        """
+        return self.source_dataframes
 
     def setup_query(self, list_op: List[operation]) -> List[operation]:
         """
@@ -979,7 +999,10 @@ class pandas_query():
                 for ops in new_operations:
                     possible_new_operations.append(operation.new_projection(ops))
 
+            generated_queries.append(possible_new_operations)
+            print("===== possible operations generated =====")
 
+        """
             elif isinstance(operation, agg):
                 possible_dicts = self.generate_possible_agg_combinations(operation)
 
@@ -994,6 +1017,7 @@ class pandas_query():
             generated_queries.append(possible_new_operations)
             print("===== possible operations generated =====")
 
+        
         new_generated_queries = []
 
         # Generate combinations ensuring they meet the complexity requirement (number of operations per unmerged query)
@@ -1036,9 +1060,12 @@ class pandas_query():
                 sampled_combo = [op for op in sampled_combo if not isinstance(op, selection) and not isinstance(op, projection)]
                 sampled_combo.append(selection_op)
                 sampled_combo.append(projection_op)
-
+        
             new_generated_queries.append(sampled_combo)
-
+        """
+        new_generated_queries = []
+        new_generated_queries = itertools.product(*generated_queries)  # op1.1*op2.3*op3.2
+        
         print("======= *** start iterating generated queries *** ======")
         l = [item for item in new_generated_queries]
 
@@ -1420,8 +1447,9 @@ class pandas_query_pool():
             f = open(f"{dir}/{filename}.txt", "a")
         res = {}
         q = []
+        exception_count = [0]
 
-        def unravel(query: pandas_query):
+        def unravel(query: pandas_query, exception_count):
             wstrs = query.pre_gen_query
             numOP = len(wstrs)
             step = 0
@@ -1429,7 +1457,8 @@ class pandas_query_pool():
                 p = eval(wstrs)
             except Exception:
                 #f.write("Next \n")
-                pass
+                exception_count[0] += 1
+                # pass
 
             for s in query.pre_gen_query:
                 strs = s.to_str()
@@ -1437,7 +1466,7 @@ class pandas_query_pool():
                     counter = self.count - 1
 
                     # b = max(unravel(other))
-                    unravel(s.queries)
+                    unravel(s.queries, exception_count)
 
                     f.write(f"df{self.count} = df{counter}.merge(df{self.count - 1}, left_on={s.left_on}, right_on={s.right_on}) \n")
                     self.count += 1
@@ -1456,11 +1485,12 @@ class pandas_query_pool():
                 self.count += 1
 
         for m in self.result_queries:
-            count = unravel(m)
+            count = unravel(m, exception_count)
             f.write("Next \n")
 
         print(f" ##### Successfully write the merged queries into file {dir}/{filename}.txt #####")
         f.close()
+        #sys.exit(f"Exception count: {exception_count}")
     
     def shuffle_queries(self):
         """
@@ -1548,78 +1578,101 @@ class pandas_query_pool():
     #TODO: function currently merges all unmerged queries in cur_queries first and only once there are no more unmerged queries, it uses the merged queries that it generated
     #TODO: this function should be modified to merge queries in a more balanced way (first use all unmerged queries to generate new queries with one or two merges, shuffle the queries in cur_queries, then merge them)
     
-    def generate_possible_merge_operations(self, max_merge=3, max_q=1000):
-        """
-        Generate possible merge operations between existing queries.
-
-        Args:
-            max_merge (int): Maximum number of merges.
-            max_q (int): Maximum number of queries to generate.
-
-        Returns:
-            list: List of queries, including newly generated ones.
-        """
+    def generate_possible_merge_operations(self, query_types, max_merge=3, max_q=5000):
         cur_queries = self.queries[:]
-        merged_queries = []     
-        random.shuffle(cur_queries)       #shuffled copy of initial self.queries
-        # k = 0                             #counter for number of merge ops
-        res_hash = {}                     #dictionary to prevent duplicate merges
-        q_generated = 0                   #counter for number of queries generated
-        
-        # First Phase: Generate queries with one and two merges
-        for k in range(max_merge-1):
-            for i in tqdm(range(len(cur_queries) - 1)):        #loops through indices of cur_queries
-                for j in range(i + 1, len(cur_queries)):       #loops through indices greater than i to avoid self-joining
+        random.shuffle(cur_queries)
 
-                    if q_generated >= 4000:
+        categorized_queries = defaultdict(list)
+        categorized_queries[0] = self.un_merged_queries[:]
+        random.shuffle(categorized_queries[0])
+
+        #add max_q/(max_merge+1) unmerged queries to the result
+        unmerged_queries = random.sample(self.un_merged_queries, max_q // (max_merge+1))
+        self.result_queries.extend(unmerged_queries)
+
+        k = 0                    #counter for number of merges
+        res_hash = {}
+        q_generated = 0
+        while True:
+            if k >= max_merge:
+                break
+
+            for i in tqdm(range(len(categorized_queries[0]) - 1)):
+                for j in range(i + 1, len(categorized_queries[k])):
+
+                    if q_generated >= (k+1)*(max_q // (max_merge+1)):
                         break
 
-                    if str(i) + "+" + str(j) not in res_hash:  # skip if it's already merged index pair (i,j)
+                    if str(i) + "+" + str(j) not in res_hash:
 
-                        q1 = cur_queries[i]
-                        q2 = cur_queries[j]
-                        #skips if source dfs are the same and self-joins not allowed
-                        if q1.get_source().equals(q2.get_source()) and (not self.self_join):
+                        #randomly select queries to ensure a more equal distribution of source tables
+                        q1_index = random.randint(0, len(categorized_queries[0]) - 1)
+                        #ensure that q1 and q2 are different
+                        while True:                                                 
+                            q2_index = random.randint(0, len(categorized_queries[k]) - 1)
+                            if q1_index != q2_index:
+                                break
+                        q1 = categorized_queries[0][q1_index]            #first query (unmerged)
+                        q2 = categorized_queries[k][q2_index]            #second query (merged with k merges)
+
+                        # print(f"q1 df name = {q1}")
+                        # print(f"q2 df_name = {q2}")
+
+                        if any(q2_source.equals(q1.get_source()) for q2_source in q2.get_source_dataframes()) and (not self.self_join):
                             # print("#### queries with same source detected, skipping to the next queries ####")
                             continue
 
-                        merge_differenet_keys = self.check_merge_left_right(q1,q2)  # return list of possible cols for merge operations
+                        merge_differenet_keys = self.check_merge_left_right(q1, q2)
 
                         if len(merge_differenet_keys) > 0:
                             if self.verbose:
                                 print(f"keys to merge = {merge_differenet_keys}")
                             operations = list(q1.pre_gen_query)[:]
-                            #create merge operations and append it to query
+
                             operations.append(merge(df_name=q1.df_name, queries=q2, left_on=merge_differenet_keys[0],
-                                                    right_on=merge_differenet_keys[
-                                                        1]))  # append merge, then（q1, merge(q2))
+                                                    right_on=merge_differenet_keys[1]))
+
+
 
                             strs = ""
 
                             for op in operations:
+                                # print("cur op = " + str(op))
                                 strs += op.to_str()
+
+                                # print("cur op to str = " + op.to_str())
+                            # print(f"strs here = {strs}")
 
                             if self.verbose:
                                 print(f"strs here = {strs}")
                             try:
                                 t = eval(strs)
-
+                                if t.shape[0] == 0:
+                                    if self.verbose:
+                                        print("no rows exist with the above selection")
+                                    continue
                             except Exception:
                                 continue
                             else:
                                 if self.verbose:
                                     print("successfully generated query")
-                            #attempt merge operation if eval succesful
                             try:
                                 res_df = q1.get_target().merge(q2.get_target(), left_on=merge_differenet_keys[0],
                                                                right_on=merge_differenet_keys[1])
 
+
+
                                 columns = list(t.columns)
                                 rand = random.random()
+
+                                #Add a projection operation to the merged query
                                 if rand > 0.5 and len(columns):
                                     num = random.randint(max(len(columns) - 2, 3), len(columns))
-                                    operations.append(projection(q1.df_name, random.sample(columns, num)))
-
+                                    sample_columns = random.sample(columns, num)
+                                    operations.append(projection(q1.df_name, sample_columns))
+                                    res_df.columns = sample_columns
+                                
+                                
                             except Exception:
                                 if self.verbose:
                                     print("Exception occurred")
@@ -1631,42 +1684,77 @@ class pandas_query_pool():
                             new_query.target = res_df
                             new_query.num_merges = max(q1.num_merges, q2.num_merges) + 1
 
-                            #add succesful merges to cur_queries and self.result_queries
-                            if new_query.num_merges <= max_merge:  # Check if number of merges exceeds max_merge
+                            # Add the source tables of q2 to the new query
+                            new_query.source_tables.extend(q2.get_source_tables())
+                            new_query.source_dataframes.extend(q2.get_source_dataframes())
+
+                            #Append the query with groupby and agg to result queries, and the query without groupby and agg to categorized_queries
+                            if new_query.num_merges == k+1:  
                                 cur_queries.append(new_query)
-                                merged_queries.append(new_query)
-                                q_generated += 1
+                                categorized_queries[k+1].append(new_query)
+                                res_hash[f"{str(i)}+{str(j)}"] = 0
+
+                                # Create a copy of operations for the query with groupby and agg
+                                operations_with_groupby_agg = operations[:]
+                                
+                                # Add group_by and agg operations only if columns are available
+                                if random.random() > 0.5 and 'group by' in query_types and 'aggregation' in query_types:
+                                    target_columns = list(new_query.get_target().columns)
+                                    group_by_column = random.choice(target_columns)
+                                    
+                                    # Check which table the groupby column belongs to
+                                    for table in new_query.get_source_tables():
+                                        if group_by_column in table.source.columns:
+                                            df_name = table.name
+                                            break
+
+                                    stats = ["min", "max", "count", "mean"]
+                                    operations_with_groupby_agg.append(group_by(df_name, group_by_column))
+                                    operations_with_groupby_agg.append(agg(df_name, random.choice(stats)))
+
+                                    new_query_with_groupby_agg = pandas_query(operations_with_groupby_agg, q1.get_TBL_source(), verbose=False)
+                                    new_query_with_groupby_agg.target = res_df
+                                    new_query_with_groupby_agg.num_merges = new_query.num_merges
+                                    new_query_with_groupby_agg.source_tables.extend(q2.get_source_tables())
+
+                                    self.result_queries.append(new_query_with_groupby_agg)
+                                    q_generated += 1
+
+                                else:
+                                    q_generated += 1
+                                    self.result_queries.append(new_query)
+                                                           
 
                                 if q_generated % 1000 == 0:
                                     print(f"**** {q_generated} queries have generated ****")
 
-                                #self.result_queries.append(new_query)
-                                #store query indices in res_hash to avoid duplicates
-                                res_hash[f"{str(i)}+{str(j)}"] = 0
 
-                        #if no foreign key relationship detected
                         else:
                             ###################################################
-                            #use check_merge_on to identify common columns
-                            cols = self.check_merge_on(q1, q2) 
-                            #if suitable cols are found, merge using those cols and repeat steps in prev if statement
+                            cols = self.check_merge_on(q1, q2)
+
                             if cols and max(q1.num_merges, q2.num_merges) < max_merge and self.self_join:
                                 # print(cols)
                                 operations = list(q1.pre_gen_query)[:]
+
                                 operations.append(merge(df_name=q1.df_name, queries=q2, on=cols))
 
                                 strs = ""
 
                                 for op in operations:
+                                    # print("cur op = " + str(op))
                                     strs += op.to_str()
 
+                                    # print("cur op to str = " + op.to_str())
                                 if self.verbose:
                                     print(f"strs here = {strs}")
                                 t = eval(strs)
+                                
                                 if t.shape[0] == 0:
                                     if self.verbose:
                                         print("no rows exist with the above selection")
                                     continue
+                                    
                                 else:
                                     if self.verbose:
                                         print("successfully generated query")
@@ -1685,10 +1773,13 @@ class pandas_query_pool():
                                 new_query.target = res_df
                                 new_query.num_merges = max(q1.num_merges, q2.num_merges) + 1
 
-                                if new_query.num_merges <= max_merge:  # Check if number of merges exceeds max_merge
+                                # Add the source tables of q2 to the new query
+                                new_query.source_tables.extend(q2.get_source_tables())
+
+                                if new_query.num_merges == k+1:  # Check if number of merges exceeds max_merge
                                     cur_queries.append(new_query)
-                                    merged_queries.append(new_query)
-                                    #self.result_queries.append(new_query)
+                                    categorized_queries[k+1].append(new_query)
+                                    self.result_queries.append(new_query)
                                     res_hash[f"{str(i)}+{str(j)}"] = 0
 
                                     q_generated += 1
@@ -1696,115 +1787,9 @@ class pandas_query_pool():
                                     if q_generated % 1000 == 0:
                                         print(f"**** {q_generated} queries have generated ****")
 
-            
-        
-        # Second Phase: Focus on generating queries with three merges
-        for k in range(max_merge, max_merge + 1):
-            unmerged_queries = [q for q in cur_queries if q.num_merges == 0]
-            doubly_merged_queries = [q for q in cur_queries if q.num_merges == max_merge-1]
-            if not doubly_merged_queries:
-                sys.exit("No doubly merged queries found. Exiting...")
-            for i in tqdm(range(len(unmerged_queries) - 1)):
-                for j in range(i + 1, len(doubly_merged_queries)):
-                    if q_generated >= 5000:
-                        break
+            k += 1
 
-                    if str(i) + "+" + str(j) not in res_hash:
-                        q1 = unmerged_queries[i]
-                        q2 = doubly_merged_queries[j]
-                        if q1.get_source().equals(q2.get_source()) and (not self.self_join):
-                            continue
-
-                        merge_differenet_keys = self.check_merge_left_right(q1, q2)
-                        if len(merge_differenet_keys) > 0:
-                            operations = list(q1.pre_gen_query)[:]
-                            operations.append(merge(df_name=q1.df_name, queries=q2, left_on=merge_differenet_keys[0],
-                                                    right_on=merge_differenet_keys[1]))
-                            strs = "".join([op.to_str() for op in operations])
-                            try:
-                                t = eval(strs)
-                            except Exception:
-                                continue
-
-                            try:
-                                res_df = q1.get_target().merge(q2.get_target(), left_on=merge_differenet_keys[0],
-                                                            right_on=merge_differenet_keys[1])
-                                columns = list(t.columns)
-                                if random.random() > 0.5 and len(columns):
-                                    num = random.randint(max(len(columns) - 2, 3), len(columns))
-                                    operations.append(projection(q1.df_name, random.sample(columns, num)))
-                            except Exception:
-                                if self.verbose:
-                                    print("Exception occurred")
-                                continue
-
-                            if self.verbose:
-                                print("++++++++++ add the result query to template +++++++++++++")
-
-                            new_query = pandas_query(operations, q1.get_TBL_source(), verbose=False)
-                            new_query.target = res_df
-                            new_query.num_merges = max(q1.num_merges, q2.num_merges) + 1
-
-                            if new_query.num_merges == max_merge:  # Focus on generating queries with three merges
-                                cur_queries.append(new_query)
-                                merged_queries.append(new_query)
-                                q_generated += 1
-
-                                if q_generated % 1000 == 0:
-                                    print(f"**** {q_generated} queries have generated ****")
-
-                                res_hash[f"{str(i)}+{str(j)}"] = 0
-                        else:
-                            cols = self.check_merge_on(q1, q2)
-                            if cols and max(q1.num_merges, q2.num_merges) == 2 and self.self_join:
-                                operations = list(q1.pre_gen_query)[:]
-                                operations.append(merge(df_name=q1.df_name, queries=q2, on=cols))
-                                strs = "".join([op.to_str() for op in operations])
-                                try:
-                                    t = eval(strs)
-                                    if t.shape[0] == 0:
-                                        continue
-                                except Exception:
-                                    continue
-
-                                try:
-                                    res_df = q1.get_target().merge(q2.get_target(), on=cols)
-                                except Exception:
-                                    if self.verbose:
-                                        print("Exception occurred")
-                                    continue
-
-                                if self.verbose:
-                                    print("++++++++++ add the result query to template +++++++++++++")
-
-                                new_query = pandas_query(operations, q1.get_TBL_source(), verbose=False)
-                                new_query.target = res_df
-                                new_query.num_merges = max(q1.num_merges, q2.num_merges) + 1
-
-                                if new_query.num_merges == max_merge:
-                                    cur_queries.append(new_query)
-                                    merged_queries.append(new_query)
-                                    res_hash[f"{str(i)}+{str(j)}"] = 0
-
-                                    q_generated += 1
-
-                                    if q_generated % 1000 == 0:
-                                        print(f"**** {q_generated} queries have generated ****")
-
-        #Sample queries from merged_queries with equal weighting for number of merges
-        categorized_queries = defaultdict(list)
-        for query in merged_queries:
-            categorized_queries[query.num_merges].append(query)
-
-        # Sample equally from each category
-        sampled_queries = []
-        for num_merges in range(1, max_merge + 1):
-            sample_size = max_q // 3
-            sampled_queries.extend(random.sample(categorized_queries[num_merges], min(len(categorized_queries[num_merges]), sample_size)))
-
-        self.result_queries.extend(sampled_queries)
         return cur_queries
-    
     
 class TBL_source():
     '''
@@ -2185,7 +2170,7 @@ if __name__ == '__main__':
         return ranges
 
     # Function to populate DataFrame with two rows of random data based on schema
-    def create_dataframe(entity_schema, num_rows=2):
+    def create_dataframe(entity_schema, num_rows=100):
         rows = []
         for _ in range(num_rows):
             row = {}
@@ -2214,7 +2199,7 @@ if __name__ == '__main__':
         }
         
         # dynamic create variable names to reference df with globals()[entity]
-        globals()[entity] = create_dataframe(entity_schema, num_rows=2)
+        globals()[entity] = create_dataframe(entity_schema, num_rows=200)
         dataframes[entity] = globals()[entity]
 
         # tbl_source for each dataframe
@@ -2264,7 +2249,7 @@ if __name__ == '__main__':
         pandas_queries_list.save_unmerged_examples(dir=Export_Rout, filename="unmerged_queries_auto_sf0000")
     # can't be merged if data schema is too simple (too few columns), generates 1000 merged queries with 3 merges each by default
     # Some of the merged queries are invalid (outputs “Exception occurred” and not saved in merged_queries.txt)    
-    pandas_queries_list.generate_possible_merge_operations(max_merge=num_merges, max_q=num_queries)
+    pandas_queries_list.generate_possible_merge_operations(query_types, max_merge=num_merges, max_q=num_queries)
     if multi_line:
         pandas_queries_list.save_merged_examples_multiline(dir=Export_Rout, filename="merged_queries_auto_sf0000")
     else:
@@ -2302,7 +2287,7 @@ if __name__ == '__main__':
 
         # Regular expressions to match selections and projections
         # count selections with multiple conditions as one selection
-        selection_pattern = re.compile(r'\b\w+\[(?!\[)([^\[\]]|\[(?!\[)|\](?!\]))+\](?!\])')
+        selection_pattern = re.compile(r'\b\w+\[\((.*?)\)\]')
         projection_pattern = re.compile(r'\[\[.*?\]\]')
             
         # Iterate over each unmerged queries and execute the query on the appropriate dataset
@@ -2370,7 +2355,7 @@ if __name__ == '__main__':
         f.write("Query, Valid, Execution Time, Cardinality, Complexity, Selections, Projections, Group by, Aggregations \n")
 
         # Regular expressions to match selections and projections
-        selection_pattern = re.compile(r'\b\w+\[(?!\[)([^\[\]]|\[(?!\[)|\](?!\]))+\](?!\])')
+        selection_pattern = re.compile(r'\b\w+\[\((.*?)\)\]')
         projection_pattern = re.compile(r'\[\[.*?\]\]')
 
         # Collect and execute each unmerged query block
@@ -2477,7 +2462,7 @@ if __name__ == '__main__':
         f.write("Query, Valid, Execution Time, Cardinality, Complexity, Selections, Projections, Group by, Aggregations \n")
 
         # Regular expressions to match selections and projections
-        selection_pattern = re.compile(r'\b\w+\[(?!\[)([^\[\]]|\[(?!\[)|\](?!\]))+\](?!\])')
+        selection_pattern = re.compile(r'\b\w+\[\((.*?)\)\]')
         projection_pattern = re.compile(r'\[\[.*?\]\]')
         
         # Iterate over each merged queries and execute the query on the appropriate dataset
@@ -2543,7 +2528,7 @@ if __name__ == '__main__':
         f.write("Query, Valid, Execution Time, Cardinality, Complexity, Selections, Projections, Group by, Aggregations \n")
 
         # Regular expressions to match selections and projections
-        selection_pattern = re.compile(r'\b\w+\[(?!\[)([^\[\]]|\[(?!\[)|\](?!\]))+\](?!\])')
+        selection_pattern = re.compile(r'\b\w+\[\((.*?)\)\]')
         projection_pattern = re.compile(r'\[\[.*?\]\]')
 
         # Collect and execute each unmerged query block
@@ -2665,3 +2650,18 @@ if __name__ == '__main__':
     #TODO: 3. in the execution metrics, include query complexity and # of each type of operation
     #TODO: most queries with three merges are invalid (empty result set)
 
+    #after meeting June 3rd:
+    #TODO(done): 1. change generate_possible_merge_operations such that it generates only the required number of queries (e.g. 100 queries with 0-3 merges, 25% for each number of merges)
+    #TODO: 2. put groupby and aggregation after merge, not before
+    #TODO: 3. put the merged and unmerged queries into one file (unmerged queries first, then merged queries with increasing # of merges)
+
+    #increased num_rows in create_dataframe function for less restrictive query generation in generate_possible_merge_operations
+
+    #after meeting June 10th:
+    #TODO: 1. fix bug with generate_possible_merge_operations (sometimes only generates queries with 1 merge, sometimes with up to 3 merges, also groupby on a column that is not in the resulting df - e.g. 'PHONE' instead of 'PHONE_x)
+    #TODO: 2. add parameters to specify number of each type of operations to generate (number of selection conditions, projection or not, number of merges, groupby or not, aggregation or not))
+    #TODO: if num selection = 3, then generate equal number of queries with 0-3 selection conditions. if projection, generate 50% with projection, if groupby then generate 50% groupby and agg, if agg then generate 50% with agg
+    #TODO: 3. after query execution, check result sets to see why we are getting empty result sets
+    #TODO: 4. start writing report if time permits
+
+    #Q: should we check for duplicate column names in the relational schema?

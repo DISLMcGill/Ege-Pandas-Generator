@@ -1,7 +1,11 @@
 {
-    "query_types": ["selection", "projection", "merge"],  
+    "query_types": ["selection", "projection", "merge", "group by", "aggregation"],
+    "num_selections": 2,
+    "projections": "True",
     "num_merges": 3,
+    "group by": "True",
+    "aggregations": "True",
     "query_complexity": "medium",
-    "num_queries": 500,
+    "num_queries": 1000,
     "multi_line": "True"
 }
