@@ -20,14 +20,18 @@ This query generator is designed to help users generate synthetic queries for tr
 
 ### How to use
 - Create a JSON file storing the relational schema of the datasets with information about entities, their attributes, data types and ranges for each attribute, primary keys and foreign keys
-- In the relational schema, do not include duplicate column names accross tables unless the column is a foreign key 
+- In the relational schema, do not include duplicate column names accross tables. For example, if you have customer and supplier entities with a PHONE attribute, rename the attributes to C_PHONE and S_PHONE
 
 - Create another JSON file to store the following query generation parameters: 
-    - query_types: List of operations supported by the generated queries, accepts one or more operations from ["selection", "projection", "merge", "group by", "aggregation"]
-    - num_merges: Maximum number of merges in the generated queries, accepts an integer from 0 to 5
-    - query_complexity: Number of operations in each unmerged query, accepts either "simple" (1 operation), "medium" (2-3 operations) or "complex" (4 operations)
-    - num_queries: Number of merged queries to generate, accepts an integer from 1 to 10000
+    - num_selection: Maximum number of selection conditions per table, an integer from 0 to 3
+    - projection: Whether to include projections, True or False
+    - group by: Whether to include group by operations, True or False
+    - aggregation: Whether to include aggregation operations, True or False
+    - num_merges: Maximum number of merges in the generated queries, an integer from 0 to 5
+    - num_queries: Number of queries to generate, accepts an integer from 1 to 5000
     - multi_line: Output format for the merged and unmerged queries. If set to "True", each output query is divided into multiple subqueries with one subquery on each line and the main queries are separated by a "Next" delimeter. If set to "False", the queries are output each on one line.
+    - At least one of projections or selections must be included to be able to generate queries. 
+    - If group by is set to True, then aggregation must also be set to True, since a groupby operation without an aggregation does not return a dataframe. 
     
 - Run the query generator with the following command: `python query_generator.py --schema data_structure.json --params query_parameters.json`
 - Replace data_structure.json and query_parameters.json with the actual file names for the relational schema and the query parameters
@@ -38,55 +42,58 @@ This query generator is designed to help users generate synthetic queries for tr
 {
     "entities": {
         "customer": {
-            "properties": { "CUSTKEY": { "type": "int", "min": 1, "max": 100 }, "C_NAME": { "type": "string", "starting character": ["C"] }, "ADDRESS": { "type": "string", "starting character": ["I", "H", "X", "s", "9", "n", "z", "K", "T", "u", "Q", "O", "7", "o", "M", "c", "i", "3", "8", "L", "g", "4", "m", "S", "E", "x", "6", "P", "Y", "J", "j", "q", "a", "e", "b", "0", ",", "B", "F", "R", "r", "p", "D", "l", "U", "h", "w", "d", "v", "f"] }, "NATIONKEY": { "type": "int", "min": 0, "max": 23 }, "PHONE": { "type": "string", "starting character": ["1", "2", "3", "25-", "13-", "27-", "18-", "22-"] }, "ACCTBAL": { "type": "float", "min": -917.25, "max": 9983.38 }, "MKTSEGMENT": { "type": "enum", "values": ["BUILDING", "AUTOMOBILE", "MACHINERY", "HOUSEHOLD", "FURNITURE"] }, "C_COMMENT": { "type": "string", "starting character": ["i", " ", "s", "l", "r", "c", "t", "e", "o", "n", "a", "p", "h", "u", "k", "g", "y", ".", ",", "d", "f", "q", "w"] } },
-            "primary_key": "CUSTKEY",
-            "foreign_keys": { "NATIONKEY": "nation" }
+            "properties": { "C_CUSTKEY": { "type": "int", "min": 1, "max": 100 }, "C_NAME": { "type": "string", "starting character": ["C"] }, "C_ADDRESS": { "type": "string", "starting character": ["I", "H", "X", "s", "9", "n", "z", "K", "T", "u", "Q", "O", "7", "o", "M", "c", "i", "3", "8", "L", "g", "4", "m", "S", "E", "x", "6", "P", "Y", "J", "j", "q", "a", "e", "b", "0", ",", "B", "F", "R", "r", "p", "D", "l", "U", "h", "w", "d", "v", "f"] }, "C_NATIONKEY": { "type": "int", "min": 0, "max": 23 }, "C_PHONE": { "type": "string", "starting character": ["1", "2", "3", "25-", "13-", "27-", "18-", "22-"] }, "C_ACCTBAL": { "type": "float", "min": -917.25, "max": 9983.38 }, "MKTSEGMENT": { "type": "enum", "values": ["BUILDING", "AUTOMOBILE", "MACHINERY", "HOUSEHOLD", "FURNITURE"] }, "C_COMMENT": { "type": "string", "starting character": ["i", " ", "s", "l", "r", "c", "t", "e", "o", "n", "a", "p", "h", "u", "k", "g", "y", ".", ",", "d", "f", "q", "w"] } },
+            "primary_key": "C_CUSTKEY",
+            "foreign_keys": { "C_NATIONKEY": ["N_NATIONKEY","nation"] }
         },
         "lineitem": {
-            "properties": { "ORDERKEY": { "type": "int", "min": 1, "max": 194 }, "PARTKEY": { "type": "int", "min": 450, "max": 198344 }, "SUPPKEY": { "type": "int", "min": 22, "max": 9983 }, "LINENUMBER": { "type": "int", "min": 1, "max": 7 }, "QUANTITY": { "type": "int", "min": 1, "max": 50 }, "EXTENDEDPRICE": { "type": "float", "min": 1606.52, "max": 88089.08 }, "DISCOUNT": { "type": "float", "min": 0.00, "max": 0.10 }, "TAX": { "type": "float", "min": 0.00, "max": 0.08 }, "RETURNFLAG": { "type": "enum", "values": ["N", "R", "A"] }, "LINESTATUS": { "type": "enum", "values": ["O", "F"] }, "SHIPDATE": { "type": "date", "min": "1992-04-27", "max": "1998-10-30"  }, "COMMITDATE": { "type": "date", "min": "1992-05-15", "max": "1998-10-16" }, "RECEIPTDATE": { "type": "date", "min": "1992-05-02", "max": "1998-11-06" }, "SHIPINSTRUCT": { "type": "enum", "values": ["DELIVER IN PERSON", "TAKE BACK RETURN", "NONE", "COLLECT COD"] }, "SHIPMODE": { "type": "enum", "values": ["TRUCK", "MAIL", "REG AIR", "AIR", "FOB", "RAIL", "SHIP"] }, "L_COMMENT": { "type": "string", "starting character": [" ", "e", "s", "l", "t", "a", "n", "u", "y", "c", "i", ".", "r", "g", "p", "f", "o", "h", "q", "k", "j", ",", "b", "v", "-", "d", "ly ", " ca", " re", "s. ", "lit"] } },
-            "primary_key": ["ORDERKEY", "PARTKEY", "SUPPKEY"],
-            "foreign_keys": { "ORDERKEY": "orders", "PARTKEY": "partsupp", "SUPPKEY": "partsupp" }
+            "properties": { "L_ORDERKEY": { "type": "int", "min": 1, "max": 194 }, "L_PARTKEY": { "type": "int", "min": 450, "max": 198344 }, "L_SUPPKEY": { "type": "int", "min": 22, "max": 9983 }, "LINENUMBER": { "type": "int", "min": 1, "max": 7 }, "QUANTITY": { "type": "int", "min": 1, "max": 50 }, "EXTENDEDPRICE": { "type": "float", "min": 1606.52, "max": 88089.08 }, "DISCOUNT": { "type": "float", "min": 0.00, "max": 0.10 }, "TAX": { "type": "float", "min": 0.00, "max": 0.08 }, "RETURNFLAG": { "type": "enum", "values": ["N", "R", "A"] }, "LINESTATUS": { "type": "enum", "values": ["O", "F"] }, "SHIPDATE": { "type": "date", "min": "1992-04-27", "max": "1998-10-30"  }, "COMMITDATE": { "type": "date", "min": "1992-05-15", "max": "1998-10-16" }, "RECEIPTDATE": { "type": "date", "min": "1992-05-02", "max": "1998-11-06" }, "SHIPINSTRUCT": { "type": "enum", "values": ["DELIVER IN PERSON", "TAKE BACK RETURN", "NONE", "COLLECT COD"] }, "SHIPMODE": { "type": "enum", "values": ["TRUCK", "MAIL", "REG AIR", "AIR", "FOB", "RAIL", "SHIP"] }, "L_COMMENT": { "type": "string", "starting character": [" ", "e", "s", "l", "t", "a", "n", "u", "y", "c", "i", ".", "r", "g", "p", "f", "o", "h", "q", "k", "j", ",", "b", "v", "-", "d", "ly ", " ca", " re", "s. ", "lit"] } },
+            "primary_key": ["L_ORDERKEY", "L_PARTKEY", "L_SUPPKEY"],
+            "foreign_keys": { "L_ORDERKEY": ["O_ORDERKEY","orders"], "L_PARTKEY": ["PS_PARTKEY","partsupp"], "L_SUPPKEY": ["PS_SUPPKEY","partsupp"] }
         },
 
         "nation": {
-            "properties": { "NATIONKEY": { "type": "int", "min": 0, "max": 24 }, "N_NAME": { "type": "string", "starting character": ["I", "A", "C", "E", "J", "M", "R", "U", "B", "F", "G", "K", "P", "S", "V"] }, "REGIONKEY": { "type": "int", "min": 0, "max": 4 }, "N_COMMENT": { "type": "string", "starting character": [" ", "y", "e", "r", "s", "a", "v", "l", "n", "o", "i", "p", "c", "u", "t", "h"] } },
-            "primary_key": "NATIONKEY",
-            "foreign_keys": { "REGIONKEY": "region" }
+            "properties": { "N_NATIONKEY": { "type": "int", "min": 0, "max": 24 }, "N_NAME": { "type": "string", "starting character": ["I", "A", "C", "E", "J", "M", "R", "U", "B", "F", "G", "K", "P", "S", "V"] }, "N_REGIONKEY": { "type": "int", "min": 0, "max": 4 }, "N_COMMENT": { "type": "string", "starting character": [" ", "y", "e", "r", "s", "a", "v", "l", "n", "o", "i", "p", "c", "u", "t", "h"] } },
+            "primary_key": "N_NATIONKEY",
+            "foreign_keys": { "N_REGIONKEY": ["R_REGIONKEY","region"] }
         },
         "orders": {
-            "properties": { "ORDERKEY": { "type": "int", "min": 1, "max": 800 }, "CUSTKEY": { "type": "int", "min": 302, "max": 149641 }, "ORDERSTATUS": { "type": "enum", "values": ["O", "F", "P"] }, "TOTALPRICE": { "type": "float", "min": 1156.67, "max": 355180.76 }, "ORDERDATE": { "type": "date", "min": "1992-01-13", "max": "1998-07-21" }, "ORDERPRIORITY": { "type": "enum", "values": ["1-URGENT", "2-HIGH", "3-MEDIUM", "4-NOT SPECIFIED", "5-LOW"] }, "CLERK": { "type": "string", "starting character": ["C"] }, "SHIPPRIORITY": { "type": "int", "min": 0, "max": 0 }, "O_COMMENT": { "type": "string", "starting character" : [" ", "l", "e", "t", "s", "a", "i", "o", "n", "g", "u", "h", "c", "d", "r", "k", "y", "q", "b", ".", "f", "x", "z", "w", ",", "-", "j", "ly ", " re", "the", "egu", "uri"] } },
-            "primary_key": "ORDERKEY",
-            "foreign_keys": { "CUSTKEY": "customer" }
+            "properties": { "O_ORDERKEY": { "type": "int", "min": 1, "max": 800 }, "O_CUSTKEY": { "type": "int", "min": 302, "max": 149641 }, "ORDERSTATUS": { "type": "enum", "values": ["O", "F", "P"] }, "TOTALPRICE": { "type": "float", "min": 1156.67, "max": 355180.76 }, "ORDERDATE": { "type": "date", "min": "1992-01-13", "max": "1998-07-21" }, "ORDERPRIORITY": { "type": "enum", "values": ["1-URGENT", "2-HIGH", "3-MEDIUM", "4-NOT SPECIFIED", "5-LOW"] }, "CLERK": { "type": "string", "starting character": ["C"] }, "SHIPPRIORITY": { "type": "int", "min": 0, "max": 0 }, "O_COMMENT": { "type": "string", "starting character" : [" ", "l", "e", "t", "s", "a", "i", "o", "n", "g", "u", "h", "c", "d", "r", "k", "y", "q", "b", ".", "f", "x", "z", "w", ",", "-", "j", "ly ", " re", "the", "egu", "uri"] } },
+            "primary_key": "O_ORDERKEY",
+            "foreign_keys": { "O_CUSTKEY": ["C_CUSTKEY","customer"] }
         },
         "part": {
-            "properties": { "PARTKEY": { "type": "int", "min": 1, "max": 200 }, "P_NAME": { "type": "string", "starting character": ["b", "s", "l", "c", "m", "p", "g", "t", "a", "d", "h", "f", "i", "w", "n", "r", "o", "k", "v", "y", "cor", "bis", "blu", "lin", "lem"] }, "MFGR": { "type": "enum", "values": ["Manufacturer#1", "Manufacturer#2", "Manufacturer#3", "Manufacturer#4", "Manufacturer#5"] }, "BRAND": { "type": "enum", "values": ["Brand#13", "Brand#42", "Brand#34", "Brand#32", "Brand#24", "Brand#11", "Brand#44", "Brand#43", "Brand#54", "Brand#25", "Brand#33", "Brand#55", "Brand#15", "Brand#23", "Brand#12", "Brand#35", "Brand#52", "Brand#14", "Brand#53", "Brand#22", "Brand#45", "Brand#21", "Brand#41", "Brand#51", "Brand#31"] }, "TYPE": { "type": "string", "starting character": ["S", "M", "E", "P", "L", "STA", "SMA"] }, "SIZE": { "type": "int", "min": 1, "max": 49 }, "CONTAINER": { "type": "string", "starting character": ["JUMBO", "LG", "WRAP", "MED", "SM"] }, "RETAILPRICE": { "type": "float", "min": 901.00, "max": 1100.2 }, "PT_COMMENT": { "type": "string", "starting character": [" ", "e", "l", "s", "u", "i", "n", "o", "t", "a", "c", "p", "r", "k", "y", "h", "f", "m", "d", "b", "x", "!", "g", "w", "q", "ly ", "the", "kag", "ss ", " fi"] } },
-            "primary_key": "PARTKEY"
+            "properties": { "P_PARTKEY": { "type": "int", "min": 1, "max": 200 }, "P_NAME": { "type": "string", "starting character": ["b", "s", "l", "c", "m", "p", "g", "t", "a", "d", "h", "f", "i", "w", "n", "r", "o", "k", "v", "y", "cor", "bis", "blu", "lin", "lem"] }, "MFGR": { "type": "enum", "values": ["Manufacturer#1", "Manufacturer#2", "Manufacturer#3", "Manufacturer#4", "Manufacturer#5"] }, "BRAND": { "type": "enum", "values": ["Brand#13", "Brand#42", "Brand#34", "Brand#32", "Brand#24", "Brand#11", "Brand#44", "Brand#43", "Brand#54", "Brand#25", "Brand#33", "Brand#55", "Brand#15", "Brand#23", "Brand#12", "Brand#35", "Brand#52", "Brand#14", "Brand#53", "Brand#22", "Brand#45", "Brand#21", "Brand#41", "Brand#51", "Brand#31"] }, "TYPE": { "type": "string", "starting character": ["S", "M", "E", "P", "L", "STA", "SMA"] }, "SIZE": { "type": "int", "min": 1, "max": 49 }, "CONTAINER": { "type": "string", "starting character": ["JUMBO", "LG", "WRAP", "MED", "SM"] }, "RETAILPRICE": { "type": "float", "min": 901.00, "max": 1100.2 }, "PT_COMMENT": { "type": "string", "starting character": [" ", "e", "l", "s", "u", "i", "n", "o", "t", "a", "c", "p", "r", "k", "y", "h", "f", "m", "d", "b", "x", "!", "g", "w", "q", "ly ", "the", "kag", "ss ", " fi"] } },
+            "primary_key": "P_PARTKEY"
         },
         "partsupp": {
-            "properties": { "PARTKEY": { "type": "int", "min": 1, "max": 50 }, "SUPPKEY": { "type": "int", "min": 2, "max": 7551 }, "AVAILQTY": { "type": "int", "min": 43, "max": 9988 }, "SUPPLYCOST": { "type": "float", "min": 14.78, "max": 996.12 }, "P_COMMENT": { "type": "string", "starting character": [" ", "s", "l", "e", "r", "a", "t", "n", "i", "o", "u", "p", "b", "h", "y", "f", "g", "c", ",", "v", ".", "d", "x", "j", "k", "q", ";", "bli", "ly ", "are", " th", "the"] } },
-            "primary_key": ["PARTKEY", "SUPPKEY"],
-            "foreign_keys": { "PARTKEY": "part", "SUPPKEY": "supplier" }
+            "properties": { "PS_PARTKEY": { "type": "int", "min": 1, "max": 50 }, "PS_SUPPKEY": { "type": "int", "min": 2, "max": 7551 }, "AVAILQTY": { "type": "int", "min": 43, "max": 9988 }, "SUPPLYCOST": { "type": "float", "min": 14.78, "max": 996.12 }, "P_COMMENT": { "type": "string", "starting character": [" ", "s", "l", "e", "r", "a", "t", "n", "i", "o", "u", "p", "b", "h", "y", "f", "g", "c", ",", "v", ".", "d", "x", "j", "k", "q", ";", "bli", "ly ", "are", " th", "the"] } },
+            "primary_key": ["PS_PARTKEY", "PS_SUPPKEY"],
+            "foreign_keys": { "PS_PARTKEY": ["P_PARTKEY","part"], "PS_SUPPKEY": ["S_SUPPKEY","supplier"] }
         },
         "region": {
-            "properties": { "REGIONKEY": { "type": "int", "min": 0, "max": 4 }, "R_NAME": { "type": "string", "starting character": ["A", "E", "M", "AFR", "AME", "ASI"] }, "R_COMMENT": { "type": "string", "starting character": ["l", "h", "g", "u"] } },
-            "primary_key": "REGIONKEY"
+            "properties": { "R_REGIONKEY": { "type": "int", "min": 0, "max": 4 }, "R_NAME": { "type": "string", "starting character": ["A", "E", "M", "AFR", "AME", "ASI"] }, "R_COMMENT": { "type": "string", "starting character": ["l", "h", "g", "u"] } },
+            "primary_key": "R_REGIONKEY"
         },
         "supplier": {
-            "properties": { "SUPPKEY": { "type": "int", "min": 1, "max": 200 }, "S_NAME": { "type": "string", "starting character": ["S"] }, "ADDRESS": { "type": "string", "starting character": ["N", "e", "f", "J", "o", "c", "b", "u", "p", "8", "q", "S", "Y", "i", "C", "g", "m", "L", "r", "W", "O", "7", "T", " ", "B", "G", "s", "9", "1", "H", "R", "y", "x", "Z", "z", "k", "j", "w", "I", "n", "M", "4", "5", "V", "F", "a", "l", "Q", "0", "U", "D", "h", "v", "2", "X", ",", "t", "E", "P", "6", "3", "d", "K"] }, "NATIONKEY": { "type": "int", "min": 0, "max": 24 }, "PHONE": { "type": "string", "starting character": ["1", "2", "3", "28-", "32-", "26-", "14-", "17-"] }, "ACCTBAL": { "type": "float", "min": -966.20, "max": 9915.24 }, "S_COMMENT": { "type": "string", "starting character": ["e", " ", "s", "a", "i", "r", "l", "u", "y", "n", "t", "c", "g", "h", "o", "d", "f", "x", "b", "k", ",", ".", "w", "!", "j", "v", "q", "the", "es ", " sl", "bli", "al "]  } },
-            "primary_key": "SUPPKEY",
-            "foreign_keys": { "NATIONKEY": "nation"}
+            "properties": { "S_SUPPKEY": { "type": "int", "min": 1, "max": 200 }, "S_NAME": { "type": "string", "starting character": ["S"] }, "S_ADDRESS": { "type": "string", "starting character": ["N", "e", "f", "J", "o", "c", "b", "u", "p", "8", "q", "S", "Y", "i", "C", "g", "m", "L", "r", "W", "O", "7", "T", " ", "B", "G", "s", "9", "1", "H", "R", "y", "x", "Z", "z", "k", "j", "w", "I", "n", "M", "4", "5", "V", "F", "a", "l", "Q", "0", "U", "D", "h", "v", "2", "X", ",", "t", "E", "P", "6", "3", "d", "K"] }, "S_NATIONKEY": { "type": "int", "min": 0, "max": 24 }, "S_PHONE": { "type": "string", "starting character": ["1", "2", "3", "28-", "32-", "26-", "14-", "17-"] }, "S_ACCTBAL": { "type": "float", "min": -966.20, "max": 9915.24 }, "S_COMMENT": { "type": "string", "starting character": ["e", " ", "s", "a", "i", "r", "l", "u", "y", "n", "t", "c", "g", "h", "o", "d", "f", "x", "b", "k", ",", ".", "w", "!", "j", "v", "q", "the", "es ", " sl", "bli", "al "]  } },
+            "primary_key": "S_SUPPKEY",
+            "foreign_keys": { "S_NATIONKEY": ["N_NATIONKEY","nation"]}
         }
     }
 }
 
 ### Example query parameters file
 {
-    "query_types": ["selection", "projection", "merge"],  
+    "num_selections": 0,
+    "projection": "True",
     "num_merges": 3,
-    "query_complexity": "medium",
-    "num_queries": 500,
+    "group by": "True",
+    "aggregation": "True",
+    "num_queries": 1000,
     "multi_line": "True"
 }
+
 
 ### Example program for query generation and execution on TPC-H datasets
 if __name__ == '__main__':
@@ -94,6 +101,7 @@ if __name__ == '__main__':
     import argparse
     import pandas as pd
     import string
+    import re
 
     parser = argparse.ArgumentParser(description='Query Generator CLI')
     parser.add_argument('--schema', type=str, required=True, help='Path to the relational schema JSON file')
@@ -105,15 +113,12 @@ if __name__ == '__main__':
 
     with open(args.params, 'r') as pf:
         params = json.load(pf)
-    #If group by is selected, then also select aggregation
-    query_types = params.get('query_types', ['selection', 'projection', 'merge', 'group by', 'aggregation'])
-    if 'group by' in query_types and 'aggregation' not in query_types:
-        query_types.append('aggregation')    
+         
+    # Extract parameters   
     num_merges = params.get('num_merges', 2)
-    query_complexity = params.get('query_complexity', 'medium')
     num_queries = params.get('num_queries', 1000)
     multi_line = params.get('multi_line', False) == "True"
-
+    
     # Initialize dictionaries to store DataFrames and their respective meta information
     dataframes = {}
     data_ranges = {}
@@ -133,18 +138,29 @@ if __name__ == '__main__':
                 ranges[prop] = (info['values'])
         return ranges
 
-    # Function to populate DataFrame with two rows of random data based on schema
-    def create_dataframe(entity_schema, num_rows=2):
+    # Function to populate DataFrame with rows of random data based on schema
+    def create_dataframe(entity_schema, num_rows=100, primary_key_unique=True):
         rows = []
-        for _ in range(num_rows):
+        # If the primary key is unique, then num_rows for that dataframe = min(properties['max'] - properties['min'] + 1, 200)
+        if primary_key_unique:
+            num_rows = min(entity_schema['properties'][entity_schema['primary_key']]['max'] - entity_schema['properties'][entity_schema['primary_key']]['min'] + 1, 200)
+
+        for i in range(num_rows):
             row = {}
             for column, properties in entity_schema['properties'].items():
                 if properties['type'] == 'int':
-                    row[column] = random.randint(properties['min'], properties['max'])
+                    #Generate unique values for primary key
+                    if primary_key_unique and column == entity_schema['primary_key'] and num_rows == (properties['max'] - properties['min'] + 1):
+                        row[column] = i + properties['min']
+                    else:
+                        row[column] = random.randint(properties['min'], properties['max'])
                 elif properties['type'] == 'float':  # For 'number', assuming float
                     row[column] = round(random.uniform(properties['min'], properties['max']), 2)
                 elif properties['type'] == 'string':
-                    row[column] = ''.join(random.choices(string.ascii_letters, k=10))
+                    # Ensure the string starts with one of the starting characters
+                    starting_char = random.choice(properties['starting character'])
+                    random_string = ''.join(random.choices(string.ascii_letters, k=9))  # Generate 9 random characters
+                    row[column] = starting_char + random_string
                 elif properties['type'] == 'enum':
                     row[column] = random.choice(properties['values'])
                 elif properties['type'] == 'date':
@@ -163,7 +179,12 @@ if __name__ == '__main__':
         }
         
         # dynamic create variable names to reference df with globals()[entity]
-        globals()[entity] = create_dataframe(entity_schema, num_rows=2)
+        if not isinstance(entity_schema['primary_key'], list):
+            globals()[entity] = create_dataframe(entity_schema, num_rows=200, primary_key_unique=True)
+
+        else:
+            globals()[entity] = create_dataframe(entity_schema, num_rows=200, primary_key_unique=False)
+            
         dataframes[entity] = globals()[entity]
 
         # tbl_source for each dataframe
@@ -181,18 +202,18 @@ if __name__ == '__main__':
         if "foreign_keys" in entity_info:
             foreign_keys[entity] = []
             for fk_column, refers_to in entity_info["foreign_keys"].items():
-                foreign_keys[entity].append((fk_column, refers_to))
+                foreign_keys[entity].append((fk_column, refers_to[0], refers_to[1]))
     
     #Add foreign keys info to tbl_sources
     for entity, listT in foreign_keys.items():
         for tuple in listT:
-            col, other = tuple
-            h.add_foreignkeys(tbl_sources[entity], col, tbl_sources[other], col)
+            col, other_col, other = tuple
+            h.add_foreignkeys(tbl_sources[entity], col, tbl_sources[other], other_col)
     
     #Base queries
     allqueries = []
     for entity, source in tbl_sources.items():
-        allqueries += source.gen_base_queries(query_types)
+        allqueries += source.gen_base_queries(params)
 
     res = []
     count = 1
@@ -201,19 +222,16 @@ if __name__ == '__main__':
         print(f"*** query #{count} is generating ***")
         count += 1
         #each pandas query object generates up to 100 unmerged pandas queries (depending on how many valid queries from gen_queries)
-        res += pq.get_new_pandas_queries(query_complexity)[:100]
+        res += pq.get_new_pandas_queries(params)[:100]
     
     print("done")
     #create pandas_query_pool object with list of unmerged queries and generate merge operations on them
     pandas_queries_list = pandas_query_pool(res)
     pandas_queries_list.shuffle_queries()
-    if multi_line:
-        pandas_queries_list.save_unmerged_examples_multiline(dir=Export_Rout, filename="unmerged_queries_auto_sf0000")
-    else:
-        pandas_queries_list.save_unmerged_examples(dir=Export_Rout, filename="unmerged_queries_auto_sf0000")
+    
     # can't be merged if data schema is too simple (too few columns), generates 1000 merged queries with 3 merges each by default
     # Some of the merged queries are invalid (outputs “Exception occurred” and not saved in merged_queries.txt)    
-    pandas_queries_list.generate_possible_merge_operations(max_merge=num_merges, max_q=num_queries)
+    pandas_queries_list.generate_possible_merge_operations(params, max_merge=num_merges, max_q=num_queries)
     if multi_line:
         pandas_queries_list.save_merged_examples_multiline(dir=Export_Rout, filename="merged_queries_auto_sf0000")
     else:
@@ -229,136 +247,6 @@ if __name__ == '__main__':
     region = pd.read_csv("./benchmarks/region.csv")
     supplier = pd.read_csv("./benchmarks/supplier.csv")
 
-    
-    def execute_unmerged_queries(dir, filename):
-        """execute unmerged queries in unmerged_queries_auto_sf0000.txt on the 
-        datasets in benchmarks folder (customer.csv, lineitem.csv, etc.)
-        """
-        
-        # Read the unmerged queries file
-        with open("results/unmerged_queries_auto_sf0000.txt", 'r') as file:
-            unmerged_queries = file.readlines()
-
-        #store the query, whether or not it is valid, execution time, and cardinality of the result set in a text file
-        try:
-            f = open(f"{dir}/{filename}.txt", "a")
-        except:
-            filepath = f"{dir}/{filename}.txt"
-            os.makedirs(os.path.dirname(filepath), exist_ok=True)
-            f = open(f"{dir}/{filename}.txt", "a")
-
-        f.write("Query, Valid, Execution Time, Cardinality \n")
-        
-        # Iterate over each unmerged queries and execute the query on the appropriate dataset
-        for query in unmerged_queries:
-            query_string = query.split('=', 1)[1].strip()
-
-            start = time.time()
-            result = pd.eval(query_string)
-            end = time.time()
-
-            print(result)
-            f.write(f"{query,}")
-
-            #query is valid if result set is non empty
-            if (result.empty): {
-                f.write(f"{False,},")
-            }
-            else: {
-                f.write(f"{True,},")
-            }
-                
-            #write query execution time and cardinality of the result set
-            f.write(f"{end-start,},")
-            f.write(f"{len(result)}\n")
-
-        f.close()
-
-
-    def execute_unmerged_queries_multiline(dir, filename):
-        """Execute unmerged queries in unmerged_queries_auto_sf0000.txt on the 
-        datasets in benchmarks folder (customer.csv, lineitem.csv, etc.)
-        """
-
-        # Read the unmerged queries file
-        with open("results/unmerged_queries_auto_sf0000.txt", 'r') as file:
-            unmerged_queries = file.readlines()
-
-        # Store the query, whether or not it is valid, execution time, and cardinality of the result set in a text file
-        try:
-            f = open(f"{dir}/{filename}.txt", "a")
-        except:
-            filepath = f"{dir}/{filename}.txt"
-            os.makedirs(os.path.dirname(filepath), exist_ok=True)
-            f = open(f"{dir}/{filename}.txt", "a")
-
-        f.write("Query, Valid, Execution Time, Cardinality \n")
-
-        # Collect and execute each unmerged query block
-        current_query_block = []
-        for query in unmerged_queries:
-            if query.strip() != "Next":
-                current_query_block.append(query.strip())
-            else:
-                if current_query_block:
-                    # Combine the current query block into a single query string
-                    combined_query = ""
-                    last_df_name = ""
-                    skip_next = False
-                    for i, subquery in enumerate(current_query_block):
-                        if skip_next:
-                            skip_next = False
-                            continue
-                            
-                        if "=" in subquery:
-                            df_name, subquery_body = subquery.split('=', 1)
-                            df_name = df_name.strip()
-                            subquery_body = subquery_body.strip()
-
-                            if "groupby" in subquery_body:
-                                combined_query += f"\n{df_name} = {subquery_body}\n"
-                                last_df_name = df_name
-                                if i + 1 < len(current_query_block) and "agg" in current_query_block[i + 1]:
-                                    agg_query = current_query_block[i + 1]
-                                    agg_df_name, agg_body = agg_query.split('=', 1)
-                                    combined_query += f"{agg_df_name.strip()} = {agg_body.strip()}"
-                                    last_df_name = agg_df_name.strip()
-                                    skip_next = True
-                            else:
-                                if i == 0:
-                                    combined_query = f"{df_name} = {subquery_body}"
-                                else:
-                                    combined_query += f"\n{df_name} = {subquery_body}"
-                                last_df_name = df_name
-
-                    try:
-                        start = time.time()
-                        exec(combined_query, globals())
-                        result = eval(last_df_name)
-                        end = time.time()
-
-                        print(result)
-                        f.write(f"{combined_query}, ")
-
-                        # Query is valid if the result set is non-empty
-                        if result.empty:
-                            f.write(f"{False}, ")
-                        else:
-                            f.write(f"{True}, ")
-
-                        # Write query execution time and cardinality of the result set
-                        f.write(f"{end - start}, ")
-                        f.write(f"{len(result)}\n")
-                    except Exception as e:
-                        print(f"Error executing query block: {e}")
-                        f.write(f"{combined_query}, {False}, 0, 0\n")
-                    
-                    # Reset for the next query block
-                    current_query_block = []
-        
-        f.close()
-        file.close()
-        
 
     def execute_merged_queries(dir, filename):
         """execute merged queries in merged_queries_auto_sf0000.txt on the 
@@ -375,7 +263,11 @@ if __name__ == '__main__':
             os.makedirs(os.path.dirname(filepath), exist_ok=True)
             f = open(f"{dir}/{filename}.txt", "a")
 
-        f.write("Query, Valid, Execution Time, Cardinality \n")
+        f.write("Query, Valid, Execution Time, Cardinality, Selections, Projections, Group by, Aggregations \n")
+
+        # Regular expressions to match selections and projections
+        selection_pattern = re.compile(r'\b\w+\[\((.*?)\)\]')
+        projection_pattern = re.compile(r'\[\[.*?\]\]')
         
         # Iterate over each merged queries and execute the query on the appropriate dataset
         for query in merged_queries:
@@ -389,7 +281,7 @@ if __name__ == '__main__':
             f.write(f"{query,}")
 
             #query is valid if result set is non empty
-            if (result.empty): {
+            if len(result) == 0: {
                 f.write(f"{False,},")
             }
             else: {
@@ -398,7 +290,23 @@ if __name__ == '__main__':
                 
             #write query execution time and cardinality of the result set
             f.write(f"{end-start,},")
-            f.write(f"{len(result)}\n")
+            f.write(f"{len(result)},")
+            
+            # Count the number of merges, group by, and aggregations
+            num_merges = query_string.count("merge")
+            num_groupby = query_string.count("groupby")
+            num_agg = query_string.count("agg")
+
+            # Count selections and projections using regular expressions
+            num_selections = len(selection_pattern.findall(query_string))
+            num_projections = len(projection_pattern.findall(query_string))
+
+            # Write counts of operations
+            f.write(f"{num_selections},")
+            f.write(f"{num_projections},")
+            f.write(f"{num_merges},")
+            f.write(f"{num_groupby},")
+            f.write(f"{num_agg}\n")
 
         f.close()
         file.close()
@@ -418,7 +326,11 @@ if __name__ == '__main__':
             os.makedirs(os.path.dirname(filepath), exist_ok=True)
             f = open(f"{dir}/{filename}.txt", "a")
 
-        f.write("Query, Valid, Execution Time, Cardinality \n")
+        f.write("Query, Valid, Execution Time, Cardinality, Selections, Projections, Group by, Aggregations \n")
+
+        # Regular expressions to match selections and projections
+        selection_pattern = re.compile(r'\b\w+\[\((.*?)\)\]')
+        projection_pattern = re.compile(r'\[\[.*?\]\]')
 
         # Collect and execute each unmerged query block
         current_query_block = []
@@ -471,14 +383,31 @@ if __name__ == '__main__':
                         f.write(f"{combined_query}, ")
 
                         # Query is valid if the result set is non-empty
-                        if result.empty:
+                        if len(result) == 0:
                             f.write(f"{False}, ")
                         else:
                             f.write(f"{True}, ")
 
                         # Write query execution time and cardinality of the result set
                         f.write(f"{end - start}, ")
-                        f.write(f"{len(result)}\n")
+                        f.write(f"{len(result)},")
+
+                        # Count the number of merges, group by, and aggregations
+                        num_merges = combined_query.count("merge")
+                        num_groupby = combined_query.count("groupby")
+                        num_agg = combined_query.count("agg")
+
+                        # Count selections and projections using regular expressions
+                        num_selections = len(selection_pattern.findall(combined_query))
+                        num_projections = len(projection_pattern.findall(combined_query))
+
+                        # Write counts of operations
+                        f.write(f"{num_selections},")
+                        f.write(f"{num_projections},")
+                        f.write(f"{num_merges},")
+                        f.write(f"{num_groupby},")
+                        f.write(f"{num_agg}\n")
+
                     except Exception as e:
                         print(f"Error executing query block: {e}")
                         f.write(f"{combined_query}, {False}, 0, 0\n")
@@ -490,12 +419,9 @@ if __name__ == '__main__':
         file.close()
 
     if multi_line:
-        execute_unmerged_queries_multiline(dir=Export_Rout, filename="unmerged_query_execution_results.csv")
         execute_merged_queries_multiline(dir=Export_Rout, filename="merged_query_execution_results.csv")
     else:
-        execute_unmerged_queries(dir=Export_Rout, filename="unmerged_query_execution_results.csv")
         execute_merged_queries(dir=Export_Rout, filename="merged_query_execution_results.csv")
-
 
 ## Changes made from last prototype
 
