@@ -4,6 +4,6 @@
     "num_merges": 3,
     "group by": "True",
     "aggregation": "True",
-    "num_queries": 5000,
+    "num_queries": 1000,
     "multi_line": "True"
 }
