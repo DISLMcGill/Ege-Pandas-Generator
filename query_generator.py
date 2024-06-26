@@ -667,7 +667,7 @@ class pandas_query():
         self.pre_gen_query = self.setup_query(q_gen_query)  
         self.df_name = q_gen_query[0].df_name       
         self.num_merges = 0
-        self.operations = [      #why is list of operations different from the operations class? not used
+        self.operations = [      #not used
             "select",
             "merge",
             "order",
@@ -1078,7 +1078,7 @@ class pandas_query():
         """
         # Ensure 'query' is a DataFrame here; the exact implementation may vary.
         # 'query_string' should be a string that represents a pandas operation.
-        query_string = self.get_query_string()  # Ensure this returns a safe, valid pandas expression. (why not query.get_query_string()?)
+        query_string = self.get_query_string()  # Ensure this returns a safe, valid pandas expression. 
         local_dict = {
         'dataframes': dataframes,
         'data_ranges': data_ranges,
@@ -1361,7 +1361,6 @@ class pandas_query_pool():
 
         print(f" ##### Successfully write the merged queries into file {dir}/{filename}.txt #####")
         f.close()
-        #sys.exit(f"Exception count: {exception_count}")
     
     def shuffle_queries(self):
         """
@@ -2074,6 +2073,9 @@ if __name__ == '__main__':
     import string
     import re
 
+    #To measure total execution time of the query generator
+    start = time.time()
+
     parser = argparse.ArgumentParser(description='Query Generator CLI')
     parser.add_argument('--schema', type=str, required=True, help='Path to the relational schema JSON file')
     parser.add_argument('--params', type=str, required=True, help='Path to the user-defined parameters JSON file')
@@ -2181,6 +2183,7 @@ if __name__ == '__main__':
             col, other_col, other = tuple
             h.add_foreignkeys(tbl_sources[entity], col, tbl_sources[other], other_col)
     
+    end2 = time.time()
     #Base queries
     allqueries = []
     for entity, source in tbl_sources.items():
@@ -2188,6 +2191,8 @@ if __name__ == '__main__':
 
     res = []
     count = 1
+    
+    end3 = time.time()
     #for data_structure.json, generates 4 queries for each of the 5 entities, so 20 pandas query objects
     for pq in allqueries:
         print(f"*** query #{count} is generating ***")
@@ -2195,6 +2200,7 @@ if __name__ == '__main__':
         #each pandas query object generates up to 100 unmerged pandas queries (depending on how many valid queries from gen_queries)
         res += pq.get_new_pandas_queries(params)[:100]
     
+    end4 = time.time()
     print("done")
     #create pandas_query_pool object with list of unmerged queries and generate merge operations on them
     pandas_queries_list = pandas_query_pool(res)
@@ -2203,8 +2209,19 @@ if __name__ == '__main__':
     # can't be merged if data schema is too simple (too few columns), generates 1000 merged queries with 3 merges each by default
     # Some of the merged queries are invalid (outputs “Exception occurred” and not saved in merged_queries.txt)    
     pandas_queries_list.generate_possible_merge_operations(params, max_merge=num_merges, max_q=num_queries)
+    end5 = time.time()
     if multi_line:
         pandas_queries_list.save_merged_examples_multiline(dir=Export_Rout, filename="merged_queries_auto_sf0000")
     else:
         pandas_queries_list.save_merged_examples(dir=Export_Rout, filename="merged_queries_auto_sf0000")
+
+    end = time.time()
+
+    #print total time taken at each step of the query generation process
+    print(f"Total time taken: {end - start} seconds")
+    print(f"Time taken to create dataframes and parse relational schema: {end2 - start} seconds")
+    print(f"Time taken to generate base queries: {end3 - end2} seconds")
+    print(f"Time taken to generate unmerged queries: {end4 - end3} seconds")
+    print(f"Time taken to generate merged queries: {end5 - end4} seconds")
+    print(f"Time taken to save merged queries: {end - end5} seconds")
         

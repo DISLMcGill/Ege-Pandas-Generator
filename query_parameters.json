@@ -5,5 +5,5 @@
     "group by": "True",
     "aggregation": "True",
     "num_queries": 1000,
-    "multi_line": "True"
+    "multi_line": "False"
 }

@@ -5,14 +5,14 @@ import re
 import time
 
 # Load datasets
-customer = pd.read_csv("./benchmarks/customer.csv")
-lineitem = pd.read_csv("./benchmarks/lineitem.csv")
-nation = pd.read_csv("./benchmarks/nation.csv")
-orders = pd.read_csv("./benchmarks/orders.csv")
-part = pd.read_csv("./benchmarks/part.csv")
-partsupp = pd.read_csv("./benchmarks/partsupp.csv")
-region = pd.read_csv("./benchmarks/region.csv")
-supplier = pd.read_csv("./benchmarks/supplier.csv")
+customer = pd.read_csv("./benchmarks/customer_2.csv")
+lineitem = pd.read_csv("./benchmarks/lineitem_2.csv")
+nation = pd.read_csv("./benchmarks/nation_2.csv")
+orders = pd.read_csv("./benchmarks/orders_2.csv")
+part = pd.read_csv("./benchmarks/part_2.csv")
+partsupp = pd.read_csv("./benchmarks/partsupp_2.csv")
+region = pd.read_csv("./benchmarks/region_2.csv")
+supplier = pd.read_csv("./benchmarks/supplier_2.csv")
 
 # Local dictionary defining the context for pd.eval()
 local_dict = {
